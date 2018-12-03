@@ -147,6 +147,52 @@ namespace DbHelper
             return result;
         }
 
+        public static List<string> ListTables()
+        {
+            OracleConnection connection = null;
+            List<String> result = null;
+            try
+            {
+                connection = new OracleConnection(_ConnectionString);
+                connection.Open();
+
+                using (var command = new OracleCommand())
+                {
+                    command.CommandText =
+                        "select table_name from user_tables";
+                    command.CommandType = CommandType.Text;
+                    command.Connection = connection;
+                    command.BindByName = true;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            result = new List<String>();
+                            while (reader.Read())
+                            {
+                                var str = reader.GetString(0);
+                                if (!string.IsNullOrEmpty(str))
+                                {
+                                    result.Add(str);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                    connection.Dispose();
+                }
+            }
+
+            return result;
+        }
+
         public static List<KeyValuePair<String, String>> ListPackages(string ownerName)
         {
             OracleConnection connection = null;

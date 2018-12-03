@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbHelper", "DbHelper.csproj", "{F7D55229-C09C-4C7D-9A80-D716572D39AB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F7D55229-C09C-4C7D-9A80-D716572D39AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7D55229-C09C-4C7D-9A80-D716572D39AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7D55229-C09C-4C7D-9A80-D716572D39AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7D55229-C09C-4C7D-9A80-D716572D39AB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {08F8BBEC-69E2-4F04-B4F1-B835F1C6265E}
+	EndGlobalSection
+EndGlobal

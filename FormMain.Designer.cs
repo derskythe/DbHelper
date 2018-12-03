@@ -55,10 +55,17 @@
             this.btnGenerateProcedure = new System.Windows.Forms.Button();
             this.cmbProcedureList = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.tabGenPlSql = new System.Windows.Forms.TabPage();
+            this.btnGeneratePlSql = new System.Windows.Forms.Button();
+            this.cmbTable = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtPlSql = new System.Windows.Forms.TextBox();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.tabMain.SuspendLayout();
             this.tabConnection.SuspendLayout();
             this.tabViews.SuspendLayout();
             this.tabProc.SuspendLayout();
+            this.tabGenPlSql.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabMain
@@ -66,6 +73,7 @@
             this.tabMain.Controls.Add(this.tabConnection);
             this.tabMain.Controls.Add(this.tabViews);
             this.tabMain.Controls.Add(this.tabProc);
+            this.tabMain.Controls.Add(this.tabGenPlSql);
             this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabMain.Location = new System.Drawing.Point(0, 0);
             this.tabMain.Name = "tabMain";
@@ -75,6 +83,7 @@
             // 
             // tabConnection
             // 
+            this.tabConnection.Controls.Add(this.btnRefresh);
             this.tabConnection.Controls.Add(this.btnConnect);
             this.tabConnection.Controls.Add(this.txtPort);
             this.tabConnection.Controls.Add(this.txtPassword);
@@ -332,6 +341,67 @@
             this.label7.TabIndex = 4;
             this.label7.Text = "Procedures";
             // 
+            // tabGenPlSql
+            // 
+            this.tabGenPlSql.Controls.Add(this.txtPlSql);
+            this.tabGenPlSql.Controls.Add(this.btnGeneratePlSql);
+            this.tabGenPlSql.Controls.Add(this.cmbTable);
+            this.tabGenPlSql.Controls.Add(this.label8);
+            this.tabGenPlSql.Location = new System.Drawing.Point(4, 22);
+            this.tabGenPlSql.Name = "tabGenPlSql";
+            this.tabGenPlSql.Padding = new System.Windows.Forms.Padding(3);
+            this.tabGenPlSql.Size = new System.Drawing.Size(1039, 596);
+            this.tabGenPlSql.TabIndex = 3;
+            this.tabGenPlSql.Text = "Generate PL/SQL proc from table";
+            this.tabGenPlSql.UseVisualStyleBackColor = true;
+            // 
+            // btnGeneratePlSql
+            // 
+            this.btnGeneratePlSql.Location = new System.Drawing.Point(941, 28);
+            this.btnGeneratePlSql.Name = "btnGeneratePlSql";
+            this.btnGeneratePlSql.Size = new System.Drawing.Size(75, 23);
+            this.btnGeneratePlSql.TabIndex = 5;
+            this.btnGeneratePlSql.Text = "Generate";
+            this.btnGeneratePlSql.UseVisualStyleBackColor = true;
+            this.btnGeneratePlSql.Click += new System.EventHandler(this.btnGeneratePlSql_Click);
+            // 
+            // cmbTable
+            // 
+            this.cmbTable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbTable.Location = new System.Drawing.Point(74, 28);
+            this.cmbTable.Name = "cmbTable";
+            this.cmbTable.Size = new System.Drawing.Size(860, 21);
+            this.cmbTable.Sorted = true;
+            this.cmbTable.TabIndex = 4;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(23, 28);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(49, 13);
+            this.label8.TabIndex = 3;
+            this.label8.Text = "Table list";
+            // 
+            // txtPlSql
+            // 
+            this.txtPlSql.Location = new System.Drawing.Point(26, 98);
+            this.txtPlSql.Multiline = true;
+            this.txtPlSql.Name = "txtPlSql";
+            this.txtPlSql.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtPlSql.Size = new System.Drawing.Size(990, 479);
+            this.txtPlSql.TabIndex = 8;
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(180, 176);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 6;
+            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -348,6 +418,8 @@
             this.tabViews.PerformLayout();
             this.tabProc.ResumeLayout(false);
             this.tabProc.PerformLayout();
+            this.tabGenPlSql.ResumeLayout(false);
+            this.tabGenPlSql.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -381,6 +453,12 @@
         private System.Windows.Forms.RadioButton radioClass;
         private System.Windows.Forms.RadioButton radioSeparate;
         private System.Windows.Forms.CheckBox checkCleanPlural;
+        private System.Windows.Forms.TabPage tabGenPlSql;
+        private System.Windows.Forms.Button btnGeneratePlSql;
+        private System.Windows.Forms.ComboBox cmbTable;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox txtPlSql;
+        private System.Windows.Forms.Button btnRefresh;
     }
 }
 
