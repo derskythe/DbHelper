@@ -44,11 +44,7 @@ namespace DbHelper
                     UpdateViewCombo();
                     UpdateProcCombo();
                     UpdateTableCombo();
-
-                    MessageBox.Show(@"Success!",
-                                    @"Info",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Information);
+                    MessageBoxEx.Show(this, @"Success!", @"Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
@@ -128,7 +124,7 @@ namespace DbHelper
         private void ActionException(Exception exp)
         {
             Log.Error(exp, exp.Message);
-            MessageBox.Show(exp.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, exp.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void btnGenerateView_Click(object sender, EventArgs e)
@@ -255,8 +251,7 @@ namespace DbHelper
                                    ".Value == null ? 0 : ((OracleDecimal)")
                                .Append("cmd.Parameters[\"")
                                .Append(info.DbName)
-                               .Append("\"]")
-                               .Append(").ToInt64();\n");
+                               .Append("\"].Value).ToInt64();\n");
                         }
                     }
                 }

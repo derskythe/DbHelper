@@ -62,6 +62,7 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="MessageBoxEx.cs" />
     <Compile Include="OracleDb.cs" />
     <Compile Include="ParameterInfo.cs" />
     <Compile Include="ProcedureInfo.cs" />
