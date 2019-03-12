@@ -86,20 +86,20 @@ namespace DbHelper
         private void UpdateTableCombo()
         {
             cmbTable.Items.Clear();
-            OracleDb.ListTables().ForEach(item => { cmbTable.Items.Add(item); });
+            OracleDb.ListTables()?.ForEach(item => { cmbTable.Items.Add(item); });
         }
 
         private void UpdateViewCombo()
         {
             cmbView.Items.Clear();
-            OracleDb.ListViews().ForEach(item => { cmbView.Items.Add(item); });
+            OracleDb.ListViews()?.ForEach(item => { cmbView.Items.Add(item); });
         }
 
         private void UpdateProcCombo()
         {
             cmbProcedureList.Items.Clear();
             OracleDb.ListPackages(Settings.Default.DbUsername)
-                    .ForEach(item => cmbProcedureList.Items.Add(item.Key + "." + item.Value));
+                    ?.ForEach(item => cmbProcedureList.Items.Add(item.Key + "." + item.Value));
         }
 
         private void FormMain_Load(object sender, EventArgs e)
