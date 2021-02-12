@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DbHelper
 {
-    class ProcedureInfo
+    internal class ProcedureInfo
     {
         private int _Index;
 
         public int Count { get; set; }
 
-        public String PackageName { get; set; }
+        public string PackageName { get; set; }
 
-        public String ProcedureName { get; set; }
+        public string ProcedureName { get; set; }
 
         public List<List<ParameterInfo>> ParamList { get; }
 

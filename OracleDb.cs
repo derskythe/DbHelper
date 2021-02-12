@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Windows.Forms.VisualStyles;
 using NLog;
 using Oracle.ManagedDataAccess.Client;
 
@@ -64,7 +63,7 @@ namespace DbHelper
 
         private static OracleConnection GetConnection()
         {
-            if (String.IsNullOrEmpty(_ConnectionString))
+            if (string.IsNullOrEmpty(_ConnectionString))
             {
                 throw new Exception("Connection not initialized!");
             }
@@ -80,7 +79,7 @@ namespace DbHelper
             return value != DBNull.Value ? (int?)Convert.ToInt32(value) : null;
         }
 
-        private static String GetString(object order)
+        private static string GetString(this object order)
         {
             return order != DBNull.Value ? Convert.ToString(order) : null;
         }
@@ -95,12 +94,12 @@ namespace DbHelper
             return reader[order] != DBNull.Value ? (int?)Convert.ToInt32(reader[order]) : null;
         }
 
-        private static String GetString(OracleDataReader reader, string order)
+        private static string GetString(OracleDataReader reader, string order)
         {
             return reader[order] != DBNull.Value ? Convert.ToString(reader[order]) : null;
         }
 
-        private static DateTime? GetDateTime(OracleDataReader reader, String order)
+        private static DateTime? GetDateTime(OracleDataReader reader, string order)
         {
             return reader[order] != DBNull.Value ? Convert.ToDateTime(reader[order]) : (DateTime?)null;
         }
@@ -108,7 +107,7 @@ namespace DbHelper
         public static List<string> ListViews()
         {
             OracleConnection connection = null;
-            List<String> result = null;
+            List<string> result = null;
             try
             {
                 connection = new OracleConnection(_ConnectionString);
@@ -126,10 +125,10 @@ namespace DbHelper
                     {
                         if (reader.HasRows)
                         {
-                            result = new List<String>();
+                            result = new List<string>();
                             while (reader.Read())
                             {
-                                result.Add(GetString(reader["view_name"]));
+                                result.Add(reader["view_name"].GetString());
                             }
                         }
                     }
@@ -150,7 +149,7 @@ namespace DbHelper
         public static List<string> ListTables()
         {
             OracleConnection connection = null;
-            List<String> result = null;
+            List<string> result = null;
             try
             {
                 connection = new OracleConnection(_ConnectionString);
@@ -168,7 +167,7 @@ namespace DbHelper
                     {
                         if (reader.HasRows)
                         {
-                            result = new List<String>();
+                            result = new List<string>();
                             while (reader.Read())
                             {
                                 var str = reader.GetString(0);
@@ -193,10 +192,10 @@ namespace DbHelper
             return result;
         }
 
-        public static List<KeyValuePair<String, String>> ListPackages(string ownerName)
+        public static List<KeyValuePair<string, string>> ListPackages(string ownerName)
         {
             OracleConnection connection = null;
-            List<KeyValuePair<String, String>> result = null;
+            List<KeyValuePair<string, string>> result = null;
             try
             {
                 connection = new OracleConnection(_ConnectionString);
@@ -215,7 +214,7 @@ namespace DbHelper
                     {
                         if (reader.HasRows)
                         {
-                            result = new List<KeyValuePair<String, String>>();
+                            result = new List<KeyValuePair<string, string>>();
                             while (reader.Read())
                             {
                                 result.Add(new KeyValuePair<string, string>(
@@ -238,7 +237,7 @@ namespace DbHelper
             return result;
         }
 
-        public static ProcedureInfo ListProcedureParameters(string package, String procedureName)
+        public static ProcedureInfo ListProcedureParameters(string package, string procedureName)
         {
             OracleConnection connection = null;
             var result = new ProcedureInfo(0, package, procedureName);
@@ -269,10 +268,10 @@ namespace DbHelper
                                 var name = GetString(reader["ARGUMENT_NAME"]);
                                 var info = new ParameterInfo(
                                     name,
-                                    GetString(reader["DATA_TYPE"]),
-                                    GetString(reader["in_out"]) == "IN",
+                                    reader["DATA_TYPE"].GetString(),
+                                    reader["in_out"].GetString().IsEqual("IN"),
                                     i++,
-                                    Utils.GetNetType(GetString(reader["DATA_TYPE"])),
+                                    reader["DATA_TYPE"].GetString().GetNetType(),
                                     Utils.ToUpperCamelCase(name, false),
                                     Utils.ToLowerCamelCase(name, false)
                                 );
@@ -294,10 +293,10 @@ namespace DbHelper
             return result;
         }
 
-        public static List<KeyValuePair<String, String>> ListColumns(string tableOrView)
+        public static List<KeyValuePair<string, string>> ListColumns(string tableOrView)
         {
             OracleConnection connection = null;
-            List<KeyValuePair<String, String>> result = null;
+            List<KeyValuePair<string, string>> result = null;
             try
             {
                 connection = new OracleConnection(_ConnectionString);
@@ -316,12 +315,14 @@ namespace DbHelper
                     {
                         if (reader.HasRows)
                         {
-                            result = new List<KeyValuePair<String, String>>();
+                            result = new List<KeyValuePair<string, string>>();
                             while (reader.Read())
                             {
                                 result.Add(new KeyValuePair<string, string>(
-                                               GetString(reader["column_name"]),
-                                               GetString(reader["DATA_TYPE"])));
+                                        reader["column_name"].GetString(),
+                                        reader["DATA_TYPE"].GetString()
+                                    )
+                                );
 
                             }
                         }
