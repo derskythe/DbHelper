@@ -37,9 +37,9 @@ namespace DbHelper
                     Settings.Default.DbUsername = txtUsername.Text;
                     Settings.Default.Save();
 
-                    UpdateViewCombo();
                     UpdateProcCombo();
                     UpdateTableCombo();
+                    UpdateViewCombo();
                     MessageBoxEx.Show(this, @"Success!", @"Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else

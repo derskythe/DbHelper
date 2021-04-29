@@ -37,11 +37,9 @@ namespace DbHelper
             try
             {
                 connection = GetConnection();
-                using (OracleCommand cmd = connection.CreateCommand())
-                {
-                    cmd.CommandText = "SELECT 1 FROM dual";
-                    cmd.ExecuteScalar();
-                }
+                using OracleCommand cmd = connection.CreateCommand();
+                cmd.CommandText = "SELECT 1 FROM dual";
+                cmd.ExecuteScalar();
 
                 return true;
             }
@@ -113,24 +111,20 @@ namespace DbHelper
                 connection = new OracleConnection(_ConnectionString);
                 connection.Open();
 
-                using (var command = new OracleCommand())
-                {
-                    command.CommandText =
-                        "select view_name from user_views";
-                    command.CommandType = CommandType.Text;
-                    command.Connection = connection;
-                    command.BindByName = true;
+                using var command = new OracleCommand();
+                command.CommandText =
+                    "select view_name from user_views union select table_name view_name from user_tables";
+                command.CommandType = CommandType.Text;
+                command.Connection = connection;
+                command.BindByName = true;
 
-                    using (var reader = command.ExecuteReader())
+                using var reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    result = new List<string>();
+                    while (reader.Read())
                     {
-                        if (reader.HasRows)
-                        {
-                            result = new List<string>();
-                            while (reader.Read())
-                            {
-                                result.Add(reader["view_name"].GetString());
-                            }
-                        }
+                        result.Add(reader["view_name"].GetString());
                     }
                 }
             }
@@ -155,27 +149,23 @@ namespace DbHelper
                 connection = new OracleConnection(_ConnectionString);
                 connection.Open();
 
-                using (var command = new OracleCommand())
-                {
-                    command.CommandText =
-                        "select table_name from user_tables";
-                    command.CommandType = CommandType.Text;
-                    command.Connection = connection;
-                    command.BindByName = true;
+                using var command = new OracleCommand();
+                command.CommandText =
+                    "select table_name from user_tables";
+                command.CommandType = CommandType.Text;
+                command.Connection = connection;
+                command.BindByName = true;
 
-                    using (var reader = command.ExecuteReader())
+                using var reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    result = new List<string>();
+                    while (reader.Read())
                     {
-                        if (reader.HasRows)
+                        var str = reader.GetString(0);
+                        if (!string.IsNullOrEmpty(str))
                         {
-                            result = new List<string>();
-                            while (reader.Read())
-                            {
-                                var str = reader.GetString(0);
-                                if (!string.IsNullOrEmpty(str))
-                                {
-                                    result.Add(str);
-                                }
-                            }
+                            result.Add(str);
                         }
                     }
                 }
@@ -192,6 +182,51 @@ namespace DbHelper
             return result;
         }
 
+        // public static List<KeyValuePair<string, string>> ListPackages(string ownerName)
+        // {
+        //     OracleConnection connection = null;
+        //     List<KeyValuePair<string, string>> result = null;
+        //     try
+        //     {
+        //         connection = new OracleConnection(_ConnectionString);
+        //         connection.Open();
+        //
+        //         using (var command = new OracleCommand())
+        //         {
+        //             command.CommandText =
+        //                 "SELECT a.OBJECT_NAME,p.PROCEDURE_NAME FROM SYS.ALL_OBJECTS a, SYS.ALL_PROCEDURES p WHERE a.OBJECT_NAME = p.OBJECT_NAME AND a.OBJECT_TYPE = 'PACKAGE' AND a.OWNER = :ownerName AND p.PROCEDURE_NAME IS NOT NULL ORDER BY a.OBJECT_NAME,p.PROCEDURE_NAME";
+        //             command.CommandType = CommandType.Text;
+        //             command.Connection = connection;
+        //             command.BindByName = true;
+        //             command.Parameters.Add("ownerName", OracleDbType.Varchar2, ParameterDirection.Input).Value = ownerName.ToUpperInvariant();
+        //
+        //             using (var reader = command.ExecuteReader())
+        //             {
+        //                 if (reader.HasRows)
+        //                 {
+        //                     result = new List<KeyValuePair<string, string>>();
+        //                     while (reader.Read())
+        //                     {
+        //                         result.Add(new KeyValuePair<string, string>(
+        //                                        GetString(reader["OBJECT_NAME"]),
+        //                                        GetString(reader["PROCEDURE_NAME"])));
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     finally
+        //     {
+        //         if (connection != null)
+        //         {
+        //             connection.Close();
+        //             connection.Dispose();
+        //         }
+        //     }
+        //
+        //     return result;
+        // }
+
         public static List<KeyValuePair<string, string>> ListPackages(string ownerName)
         {
             OracleConnection connection = null;
@@ -200,6 +235,30 @@ namespace DbHelper
             {
                 connection = new OracleConnection(_ConnectionString);
                 connection.Open();
+
+                using (var command = new OracleCommand())
+                {
+                    command.CommandText =
+                        "SELECT a.OBJECT_NAME,p.PROCEDURE_NAME FROM SYS.ALL_OBJECTS a, SYS.ALL_PROCEDURES p WHERE a.OBJECT_NAME = p.OBJECT_NAME AND a.OBJECT_TYPE = 'PROCEDURE' AND a.OWNER = :ownerName ORDER BY a.OBJECT_NAME,p.PROCEDURE_NAME";
+                    command.CommandType = CommandType.Text;
+                    command.Connection = connection;
+                    command.BindByName = true;
+                    command.Parameters.Add("ownerName", OracleDbType.Varchar2, ParameterDirection.Input).Value = ownerName.ToUpperInvariant();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            result = new List<KeyValuePair<string, string>>();
+                            while (reader.Read())
+                            {
+                                result.Add(new KeyValuePair<string, string>(
+                                    GetString(reader["OBJECT_NAME"]),
+                                    string.Empty));
+                            }
+                        }
+                    }
+                }
 
                 using (var command = new OracleCommand())
                 {
@@ -246,38 +305,34 @@ namespace DbHelper
                 connection = new OracleConnection(_ConnectionString);
                 connection.Open();
 
-                using (var command = new OracleCommand())
-                {
-                    command.CommandText =
-                        "SELECT t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t WHERE PACKAGE_NAME = :packageName AND OBJECT_NAME = :procName ORDER BY t.SEQUENCE";
-                    command.CommandType = CommandType.Text;
-                    command.Connection = connection;
-                    command.BindByName = true;
-                    command.Parameters.Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input).Value = package;
-                    command.Parameters
-                           .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
-                           .Value = procedureName;
+                using var command = new OracleCommand();
+                command.CommandText =
+                    "SELECT t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t WHERE OBJECT_NAME = :procName ORDER BY t.SEQUENCE";
+                command.CommandType = CommandType.Text;
+                command.Connection = connection;
+                command.BindByName = true;
+                //command.Parameters.Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input).Value = package;
+                command.Parameters
+                       .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
+                       .Value = package;
 
-                    using (var reader = command.ExecuteReader())
+                using var reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    int i = 0;
+                    while (reader.Read())
                     {
-                        if (reader.HasRows)
-                        {
-                            int i = 0;
-                            while (reader.Read())
-                            {
-                                var name = GetString(reader["ARGUMENT_NAME"]);
-                                var info = new ParameterInfo(
-                                    name,
-                                    reader["DATA_TYPE"].GetString(),
-                                    reader["in_out"].GetString().IsEqual("IN"),
-                                    i++,
-                                    reader["DATA_TYPE"].GetString().GetNetType(),
-                                    Utils.ToUpperCamelCase(name, false),
-                                    Utils.ToLowerCamelCase(name, false)
-                                );
-                                result.AddParam(info);
-                            }
-                        }
+                        var name = GetString(reader["ARGUMENT_NAME"]);
+                        var info = new ParameterInfo(
+                            name,
+                            reader["DATA_TYPE"].GetString(),
+                            reader["in_out"].GetString().IsEqual("IN"),
+                            i++,
+                            reader["DATA_TYPE"].GetString().GetNetType(),
+                            Utils.ToUpperCamelCase(name, false),
+                            Utils.ToLowerCamelCase(name, false)
+                        );
+                        result.AddParam(info);
                     }
                 }
             }
@@ -302,30 +357,26 @@ namespace DbHelper
                 connection = new OracleConnection(_ConnectionString);
                 connection.Open();
 
-                using (var command = new OracleCommand())
+                using var command = new OracleCommand();
+                command.CommandText =
+                    "SELECT t.column_name, t.DATA_TYPE FROM user_tab_cols t WHERE table_name = :viewName";
+                command.CommandType = CommandType.Text;
+                command.Connection = connection;
+                command.BindByName = true;
+                command.Parameters.Add("viewName", OracleDbType.Varchar2, ParameterDirection.Input).Value = tableOrView;
+
+                using var reader = command.ExecuteReader();
+                if (reader.HasRows)
                 {
-                    command.CommandText =
-                        "SELECT t.column_name, t.DATA_TYPE FROM user_tab_cols t WHERE table_name = :viewName";
-                    command.CommandType = CommandType.Text;
-                    command.Connection = connection;
-                    command.BindByName = true;
-                    command.Parameters.Add("viewName", OracleDbType.Varchar2, ParameterDirection.Input).Value = tableOrView;
-
-                    using (var reader = command.ExecuteReader())
+                    result = new List<KeyValuePair<string, string>>();
+                    while (reader.Read())
                     {
-                        if (reader.HasRows)
-                        {
-                            result = new List<KeyValuePair<string, string>>();
-                            while (reader.Read())
-                            {
-                                result.Add(new KeyValuePair<string, string>(
-                                        reader["column_name"].GetString(),
-                                        reader["DATA_TYPE"].GetString()
-                                    )
-                                );
+                        result.Add(new KeyValuePair<string, string>(
+                                reader["column_name"].GetString(),
+                                reader["DATA_TYPE"].GetString()
+                            )
+                        );
 
-                            }
-                        }
                     }
                 }
             }
