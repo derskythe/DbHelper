@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbHelper", "DbHelper.csproj", "{F7D55229-C09C-4C7D-9A80-D716572D39AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbHelperOracle", "DbHelperOracle\DbHelperOracle.csproj", "{F7D55229-C09C-4C7D-9A80-D716572D39AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbHelperMsSql", "DbHelperMsSql\DbHelperMsSql.csproj", "{37738646-FC39-4DB5-93DA-4CD1042862F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbWinForms", "DbWinForms\DbWinForms.csproj", "{48409713-C072-44D3-A9D0-FCCF253BC55E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SettingsHelper", "SettingsHelpers\SettingsHelper.csproj", "{F0720460-7FBD-4947-A7A3-A5BEC951A5D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{F7D55229-C09C-4C7D-9A80-D716572D39AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7D55229-C09C-4C7D-9A80-D716572D39AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7D55229-C09C-4C7D-9A80-D716572D39AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37738646-FC39-4DB5-93DA-4CD1042862F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37738646-FC39-4DB5-93DA-4CD1042862F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37738646-FC39-4DB5-93DA-4CD1042862F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37738646-FC39-4DB5-93DA-4CD1042862F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48409713-C072-44D3-A9D0-FCCF253BC55E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48409713-C072-44D3-A9D0-FCCF253BC55E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48409713-C072-44D3-A9D0-FCCF253BC55E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48409713-C072-44D3-A9D0-FCCF253BC55E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0720460-7FBD-4947-A7A3-A5BEC951A5D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0720460-7FBD-4947-A7A3-A5BEC951A5D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0720460-7FBD-4947-A7A3-A5BEC951A5D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0720460-7FBD-4947-A7A3-A5BEC951A5D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

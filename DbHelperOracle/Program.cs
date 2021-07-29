@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace DbHelper
+namespace DbHelperOracle
 {
     internal static class Program
     {

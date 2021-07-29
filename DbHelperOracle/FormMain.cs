@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
-using DbHelper.Properties;
+using DbHelperOracle.Properties;
 using NLog;
 
-namespace DbHelper
+namespace DbHelperOracle
 {
     public partial class FormMain : Form
     {

@@ -4,7 +4,7 @@ using System.Data;
 using NLog;
 using Oracle.ManagedDataAccess.Client;
 
-namespace DbHelper
+namespace DbHelperOracle
 {
     internal static class OracleDb
     {
