@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using DbWinForms;
 using DbWinForms.Models;
 
 namespace DbHelper
@@ -177,7 +178,7 @@ namespace DbHelper
                         funcData.Append("GetParameterOut(\"")
                            .Append(info.Name)
                            .Append("\", ")
-                           .Append(info.NetType.GetSqlDbType())
+                           .Append(info.DbType.GetDbParamType())
                            .Append(", ");
                         funcData.Append("null, ParameterDirection.Output");
                     }
@@ -186,7 +187,7 @@ namespace DbHelper
                         funcData.Append("GetParameter(\"")
                            .Append(info.Name)
                            .Append("\", ")
-                           .Append(info.NetType.GetSqlDbType())
+                           .Append(info.DbType.GetDbParamType())
                            .Append(", ");
 
                         if (radioSeparateChecked)
@@ -274,7 +275,7 @@ namespace DbHelper
                         funcData.Append("GetParameterOut(\"")
                                 .Append(info.Name)
                                 .Append("\", ")
-                                .Append(info.NetType.GetSqlDbType())
+                                .Append(info.DbType.GetDbParamType())
                                 .Append(", ");
                         funcData.Append("null, ParameterDirection.Output");
                     }
@@ -283,7 +284,7 @@ namespace DbHelper
                         funcData.Append("GetParameter(\"")
                                 .Append(info.Name)
                                 .Append("\", ")
-                                .Append(info.NetType.GetSqlDbType())
+                                .Append(info.DbType.GetDbParamType())
                                 .Append(", ");
 
                         if (radioSeparateChecked)

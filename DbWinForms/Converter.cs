@@ -12,7 +12,9 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using DbWinForms.Models;
 
@@ -21,7 +23,7 @@ namespace DbWinForms
     /// <summary>
     /// Class Converter.
     /// </summary>
-    internal static class Converter
+    public static class Converter
     {
         public static int ToInt32(DbDataReader row)
         {
@@ -141,6 +143,20 @@ namespace DbWinForms
             if (msSqlDbType.Contains("VARIANT"))
             {
                 return "object";
+            }
+
+            return "dynamic";
+        }
+
+        public static string GetDbParamType(this string msSqlDbType)
+        {
+            msSqlDbType = msSqlDbType.ToUpperInvariant();
+            foreach (string name in Enum.GetNames(typeof(SqlDbType)))
+            {
+                if (name.ToUpperInvariant() == msSqlDbType)
+                {
+                    return "SqlDbType." + name;
+                }
             }
 
             return "dynamic";
