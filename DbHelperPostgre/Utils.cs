@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Text;
-using DbWinForms;
-using DbWinForms.Models;
+using DbHelperPostgre.Db;
 using EnumsNET;
+using NpgsqlTypes;
 using Shared;
 
-namespace DbHelperMsSql
+namespace DbHelperPostgre
 {
     internal static class Utils
     {
@@ -38,7 +37,8 @@ namespace DbHelperMsSql
             }
 
             funcData.Append(" FROM ").Append(selectedItem).Append(" t\";\r\n\r\n");
-            funcData.Append(SPACE).Append("var paramList = new List<DbParameter>\r\n{};\r\n");
+            funcData.Append(SPACE).Append("var paramList = new List<NpgsqlParameter>\r\n{\r\n");
+            funcData.Append(SPACE).Append("GetParameter(\"@id\", 0, NpgsqlDbType.Integer)\r\n}\r\n");
             funcData.Append("return await Many(query, paramList, Converter.To")
                     .Append(className)
                     .Append(");\r\n}\r\n\r\n");
@@ -78,7 +78,7 @@ namespace DbHelperMsSql
         public static string GeneratePlSqlProcedure(string selectedItem, List<ParameterInfo> list)
         {
             var str = new StringBuilder();
-            str.Append("PROCEDURE SAVE_").Append(selectedItem).Append("(\r\n");
+            str.Append("CREATE FUNCTION ").Append(selectedItem).Append("_SAVE(\r\n");
             var i = 0;
 
             var fieldInsertName = new StringBuilder();
@@ -86,31 +86,49 @@ namespace DbHelperMsSql
             var fieldUpdate = new StringBuilder();
             foreach (var pair in list)
             {
-                str.Append("V_").Append(pair.Name.ToLowerCamelCase(false));
-                str.Append(pair.Name.IsEqual("id") ? " IN OUT " : " IN ");
+                bool isId = pair.Name.IsEqual("id");
+                str.Append("V_").Append(pair.Name);
+                str.Append(isId ? " IN OUT " : " IN ");
                 str.Append(selectedItem).Append('.').Append(pair.Name).Append("%TYPE");
+
                 fieldInsertName.Append(pair.Name);
-                fieldInsertValues.Append("V_").Append(pair.Name);
-                fieldUpdate.Append(pair.Name).Append(" = ").Append("V_").Append(pair.Name);
-                if (i < list.Count - 1)
+                if (pair.Name.IsEqual("INSERT_DATE"))
                 {
-                    str.Append(",\r\n");
-                    fieldInsertName.Append(",\r\n");
-                    fieldInsertValues.Append(",\r\n");
-                    fieldUpdate.Append(",\r\n");
+                    fieldInsertValues.Append("timezone('Asia/Baku'::text, now())");
+                }
+                else
+                {
+                    fieldInsertValues.Append("V_").Append(pair.Name);
+                }
+
+                if (!isId)
+                {
+                    fieldUpdate.Append(pair.Name).Append(" = ").Append("V_").Append(pair.Name);
+                    if (i < list.Count - 1)
+                    {
+                        str.Append(",\r\n");
+                        fieldInsertName.Append(",\r\n");
+                        fieldInsertValues.Append(",\r\n");
+                        fieldUpdate.Append(",\r\n");
+                    }
+                }
+                else
+                {
+                    if (i < list.Count - 1)
+                    {
+                        str.Append(",\r\n");
+                        fieldInsertName.Append(",\r\n");
+                        fieldInsertValues.Append(",\r\n");
+                    }
                 }
 
                 i++;
             }
 
-            str.Append(") IS\r\n");
-            str.Append(
-                       "EXP_CUSTOM EXCEPTION;\r\nPRAGMA EXCEPTION_INIT(EXP_CUSTOM, -20001);\r\nV_CODE NUMBER;\r\nV_ERRM VARCHAR2(255);\r\nBEGIN\r\n"
-                      );
-            // IF V_ID IS NULL THEN
-            // INSERT STATEMENT
+            str.Append(") RETURNS INTEGER\r\nLANGUAGE plpgsql\r\nAS\r\n$$\r\nBEGIN\r\n");
+
             str.Append("IF V_ID IS NULL THEN\r\n");
-            str.Append("SELECT SEQ_").Append(selectedItem).Append("_ID.NEXTVAL INTO V_ID FROM DUAL;\r\n");
+            str.Append("v_id := NEXTVAL('").Append(selectedItem).Append("_id_seq');\r\n");
             str.Append("INSERT ").Append("INTO ").Append(selectedItem).Append("\r\n(");
             str.Append(fieldInsertName).Append("\r\n)\r\nVALUES\r\n(\r\n");
             str.Append(fieldInsertValues).Append("\r\n);\r\n");
@@ -120,24 +138,30 @@ namespace DbHelperMsSql
             str.Append("UPDATE ").Append(selectedItem).Append("\r\nSET\r\n");
             str.Append(fieldUpdate);
             str.Append("\r\nWHERE id = V_ID;\r\nEND IF;\r\n");
-            // EXCEPTION
-            str.Append(
-                       "EXCEPTION\r\nWHEN OTHERS THEN\r\nROLLBACK;\r\nV_CODE:= SQLCODE;\r\nV_ERRM:= SUBSTR(SQLERRM, 1, 255);\r\nRAISE_APPLICATION_ERROR(-20001, V_CODE || CHR(10) || V_ERRM || CHR(10) || DBMS_UTILITY.FORMAT_ERROR_BACKTRACE || CHR(10));\r\nEND "
-                      )
-               //.Append("SAVE_")
-               //.Append(selectedItem)
-               .Append(";\r\n");
-
+            str.Append("END;\r\n$$;");
             var result = str.ToString();
             return result;
         }
 
         #endregion
 
-        public static string GenerateProcedure(string selectedItem, List<ParameterInfo> paramList, bool radioSeparateChecked)
+        public static string GenerateProcedure(
+            string selectedItem,
+            string returnType,
+            List<ParameterInfo> paramList,
+            bool radioSeparateChecked)
         {
             var funcData = new StringBuilder();
-            funcData.Append("public async Task ").Append(selectedItem.ToUpperCamelCase(true));
+            if (!string.IsNullOrEmpty(returnType) && !returnType.IsEqual("void"))
+            {
+                funcData.Append("public async Task<").Append(returnType.GetNetType()).Append("> ");
+            }
+            else
+            {
+                funcData.Append("public async Task ");
+            }
+
+            funcData.Append(selectedItem.ToUpperCamelCase(true));
 
             var i = 0;
             if (radioSeparateChecked)
@@ -170,12 +194,12 @@ namespace DbHelperMsSql
 
             if (paramList.Count > 0)
             {
-                funcData.Append("var paramList = new List<DbParameter>\r\n{\r\n");
+                funcData.Append("var paramList = new List<NpgsqlParameter>\r\n{\r\n");
                 foreach (var info in paramList)
                 {
                     if (!info.InParam)
                     {
-                        funcData.Append("GetParameterOut(\"")
+                        funcData.Append("GetParameterOut(\"@")
                                 .Append(info.Name)
                                 .Append("\", ")
                                 .Append(info.DbType.GetDbParamType())
@@ -184,12 +208,9 @@ namespace DbHelperMsSql
                     }
                     else
                     {
-                        funcData.Append("GetParameter(\"")
+                        funcData.Append("GetParameter(\"@")
                                 .Append(info.Name)
-                                .Append("\", ")
-                                .Append(info.DbType.GetDbParamType())
-                                .Append(", ");
-
+                                .Append("\", ");
                         if (radioSeparateChecked)
                         {
                             funcData.Append(info.Name.ToLowerCamelCase(false));
@@ -198,6 +219,8 @@ namespace DbHelperMsSql
                         {
                             funcData.Append("item.").Append(info.Name);
                         }
+
+                        funcData.Append(", ").Append(info.DbType.GetDbParamType());
                     }
 
                     funcData.Append("),\r\n");
@@ -206,158 +229,17 @@ namespace DbHelperMsSql
                 funcData.Append("};\r\n\r\n");
             }
 
-            funcData.Append("await ExecuteNonQuery(\"")
-                    .Append(selectedItem);
+            if (!string.IsNullOrEmpty(returnType) && !returnType.IsEqual("void"))
+            {
+                funcData.Append("return await ExecuteNonQuery<").Append(returnType.GetNetType()).Append(">(\"");
+            }
+            else
+            {
+                funcData.Append("await ExecuteNonQuery(\"");
+            }
+
+            funcData.Append(selectedItem);
             funcData.Append(paramList.Count > 0 ? "\", paramList);\r\n}" : "\", null);\r\n}");
-
-            return funcData.ToString();
-        }
-
-        internal static string GenerateProcedure(
-            string selectedItem,
-            string className,
-            List<ParameterInfo> paramList,
-            List<ParameterInfo> returnedFields,
-            bool radioSeparateChecked)
-        {
-            var funcData = new StringBuilder();
-            var singleRecord = selectedItem.StartsWith("get");
-            if (singleRecord)
-            {
-                funcData.Append("public async Task<")
-                        .Append(className)
-                        .Append("> ")
-                        .Append(selectedItem.ToUpperCamelCase(true));
-            }
-            else
-            {
-                funcData.Append("public async Task<List<")
-                        .Append(className)
-                        .Append(">> ")
-                        .Append(selectedItem.ToUpperCamelCase(true));
-            }
-
-            var i = 0;
-            if (radioSeparateChecked)
-            {
-                if (paramList.Count > 3)
-                {
-                    funcData.Append("(\r\n");
-                }
-                else
-                {
-                    funcData.Append('(');
-                }
-
-                foreach (var info in paramList)
-                {
-                    funcData.Append(info.NetType).Append(' ').Append(info.Name.ToLowerCamelCase(false));
-                    i++;
-                    if (i < paramList.Count)
-                    {
-                        funcData.Append(paramList.Count <= 3 ? ", " : ",\r\n");
-                    }
-                }
-
-                funcData.Append(")\r\n{\r\n");
-            }
-            else if (paramList.Count > 0)
-            {
-                funcData.Append("(FooClass item)\r\n{\r\n");
-            }
-
-            if (paramList.Count > 0)
-            {
-                funcData.Append("var paramList = new List<DbParameter>\r\n{\r\n");
-                foreach (var info in paramList)
-                {
-                    if (!info.InParam)
-                    {
-                        funcData.Append("GetParameterOut(\"")
-                                .Append(info.Name)
-                                .Append("\", ")
-                                .Append(info.DbType.GetDbParamType())
-                                .Append(", ");
-                        funcData.Append("null, ParameterDirection.Output");
-                    }
-                    else
-                    {
-                        funcData.Append("GetParameter(\"")
-                                .Append(info.Name)
-                                .Append("\", ")
-                                .Append(info.DbType.GetDbParamType())
-                                .Append(", ");
-
-                        if (radioSeparateChecked)
-                        {
-                            funcData.Append(info.Name.ToLowerCamelCase(false));
-                        }
-                        else
-                        {
-                            funcData.Append("item.").Append(info.Name);
-                        }
-                    }
-
-                    funcData.Append("),\r\n");
-                }
-
-                funcData.Append("};\r\n\r\n");
-            }
-
-            funcData.Append("return await ");
-
-            if (singleRecord)
-            {
-                funcData.Append("Single");
-            }
-            else
-            {
-                funcData.Append("Many");
-            }
-
-
-            funcData.Append("(\"")
-                    .Append(selectedItem)
-                    .Append("\", ")
-                    .Append(paramList.Count > 0 ? "paramList, " : "null, ")
-                    .Append("Converter.To")
-                    .Append(className)
-                    .Append(");\r\n}\r\n\r\n");
-
-            funcData.Append("public static ")
-                    .Append(className)
-                    .Append(" To")
-                    .Append(className)
-                    .Append("(DbDataReader reader)\r\n{\r\n");
-            funcData.Append("var result = new ").Append(className).Append("\r\n{\r\n");
-            foreach (var pair in returnedFields)
-            {
-                var paramName = pair.Name.ToUpperCamelCase(true);
-                funcData.Append(SPACE)
-                        .Append(SPACE)
-                        .Append(SPACE)
-                        .Append(SPACE)
-                        .Append(SPACE)
-                        .Append(paramName)
-                        .Append(" = ")
-                        .Append("reader[\"")
-                        .Append(pair.Name)
-                        .Append("\"]")
-                        .Append(".Get");
-                if (pair.NetType == "byte[]")
-                {
-                    funcData.Append("Bytes");
-                }
-                else
-                {
-                    funcData.Append(char.ToUpperInvariant(pair.NetType[0]))
-                            .Append(pair.NetType.Substring(1));
-                }
-
-                funcData.Append("(),\r\n");
-            }
-
-            funcData.Append("};\r\nreturn result;\r\n}");
 
             return funcData.ToString();
         }
@@ -451,23 +333,20 @@ namespace DbHelperMsSql
             return classData.ToString();
         }
 
-        private static string GetSqlDbType(this string type)
+        private static string GetNpgsqlDbType(this string type)
         {
             return type switch
             {
-                "long" => "SqlDbType.BigInt",
-                "byte[]" => "SqlDbType.VarBinary",
-                "int" => "SqlDbType.Int",
-                "decimal" => "SqlDbType.Decimal",
-                "string" => "SqlDbType.VarChar",
-                "DateTime" => "SqlDbType.DateTime",
-                "bool" => "SqlDbType.Bit",
-                "DateTimeOffset" => "SqlDbType.DateTimeOffset",
-                "double" => "SqlDbType.Float",
-                "float" => "SqlDbType.Real",
-                "short" => "SqlDbType.SmallInt",
-                "TimeSpan" => "SqlDbType.Time",
-                "byte" => "SqlDbType.TinyInt",
+                "long" => "NpgsqlDbType.BigInt",
+                "byte[]" => "NpgsqlDbType.Bytea",
+                "int" => "NpgsqlDbType.Integer",
+                "decimal" => "NpgsqlDbType.Numeric",
+                "string" => "NpgsqlDbType.Varchar",
+                "DateTime" => "NpgsqlDbType.Timestamp",
+                "bool" => "NpgsqlDbType.Bit",
+                "double" => "NpgsqlDbType.Double",
+                "float" => "NpgsqlDbType.Real",
+                "short" => "NpgsqlDbType.SmallInt",
                 _ => string.Empty
             };
         }
@@ -488,14 +367,44 @@ namespace DbHelperMsSql
             }
         }
 
-        private static string GetDbParamType(this string msSqlDbType)
+        public static string GetDbParamType(this string dbType)
         {
-            msSqlDbType = msSqlDbType.ToUpperInvariant();
-            foreach (string name in Enums.GetNames(typeof(SqlDbType)))
+            dbType = dbType.ToUpperInvariant();
+            if (dbType.IsEqual("CHARACTER VARYING"))
             {
-                if (name.ToUpperInvariant() == msSqlDbType)
+                return "NpgsqlDbType.Varchar";
+            }
+
+            if (dbType.IsEqual("ARRAY"))
+            {
+                return "NpgsqlDbType.Array | NpgsqlDbType.Integer";
+            }
+
+            if (dbType.IsEqual("timestamp without time zone"))
+            {
+                return "NpgsqlDbType.Timestamp";
+            }
+
+            if (dbType.IsEqual("timestamp with time zone"))
+            {
+                return "NpgsqlDbType.TimestampTz";
+            }
+
+            if (dbType.IsEqual("time without time zone"))
+            {
+                return "NpgsqlDbType.Time";
+            }
+
+            if (dbType.IsEqual("time with time zone"))
+            {
+                return "NpgsqlDbType.TimeTz";
+            }
+
+            foreach (var name in Enums.GetNames(typeof(NpgsqlDbType)))
+            {
+                if (name.IsEqual(dbType))
                 {
-                    return "SqlDbType." + name;
+                    return "NpgsqlDbType." + name;
                 }
             }
 

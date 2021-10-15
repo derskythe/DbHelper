@@ -16,7 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using SettingsHelper;
 
-namespace DbHelper
+namespace DbHelperMsSql.Properties.SettingsElements
 {
     /// <summary>
     /// Class Settings.

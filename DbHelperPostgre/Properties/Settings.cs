@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using DbHelperMsSql.Properties.SettingsElements;
+using DbHelperPostgre.Properties.SettingsElements;
 using SettingsHelper;
 
-namespace DbHelperMsSql.Properties
+namespace DbHelperPostgre.Properties
 {
     public class Settings : SettingsHolderBase
     {

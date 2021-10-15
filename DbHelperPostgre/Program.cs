@@ -1,14 +1,17 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using DbHelperMsSql.Properties;
+using DbHelperPostgre.Properties;
 
-namespace DbHelperMsSql
+namespace DbHelperPostgre
 {
-    internal static class Program
+    static class Program
     {
         public static Settings Settings { get; private set; }
         /// <summary>
-        /// The main entry point for the application.
+        ///  The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
@@ -40,6 +43,7 @@ namespace DbHelperMsSql
                 logger.Debug(Settings.ToString);
 #endif
 
+                Application.SetHighDpiMode(HighDpiMode.SystemAware);
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new FormMain());

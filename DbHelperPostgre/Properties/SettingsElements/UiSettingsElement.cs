@@ -1,6 +1,6 @@
 ﻿using SettingsHelper;
 
-namespace DbHelperMsSql.Properties.SettingsElements
+namespace DbHelperPostgre.Properties.SettingsElements
 {
     public class UiSettingsElement : SettingsElementBase
     {

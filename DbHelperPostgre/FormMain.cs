@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Containers.Settings;
-using DbHelperMsSql.Properties;
-using DbWinForms;
-using Markdig;
+using DbHelperPostgre.Properties;
+using DbHelperPostgre.Properties.SettingsElements;
 using NLog;
 using Shared;
 
-namespace DbHelperMsSql
+namespace DbHelperPostgre
 {
     public partial class FormMain : Form
     {
@@ -20,7 +18,7 @@ namespace DbHelperMsSql
 
         private readonly Settings _Settings;
 
-        private DataAccessTheory _DataAccess;
+        private Db.Db _DataAccess;
 
         public FormMain()
         {
@@ -56,19 +54,19 @@ namespace DbHelperMsSql
             try
             {
                 Cursor = Cursors.WaitCursor;
-                _DataAccess = new DataAccessTheory(new DbConfigOption()
-                                                   {
-                                                       HostName = txtHostname.Text,
-                                                       Username = txtUsername.Text,
-                                                       Password = txtPassword.Text,
-                                                       ServiceName = txtServiceName.Text
-                                                   }
-                                                  );
+                _DataAccess = new Db.Db(new DbConfigSettingsElement()
+                {
+                    HostName = txtHostname.Text,
+                    Username = txtUsername.Text,
+                    Password = txtPassword.Text,
+                    Database = txtServiceName.Text
+                }
+                                       );
 
                 if (await _DataAccess.CheckConnection())
                 {
                     _Settings.DbConfig.HostName = txtHostname.Text;
-                    _Settings.DbConfig.ServiceName = txtServiceName.Text;
+                    _Settings.DbConfig.Database = txtServiceName.Text;
                     _Settings.DbConfig.Password = txtPassword.Text;
                     _Settings.DbConfig.Username = txtUsername.Text;
                     _Settings.Save();
@@ -116,6 +114,7 @@ namespace DbHelperMsSql
         private async void UpdateViewCombo()
         {
             ComboView.Items.Clear();
+            ComboTablesForProcedureGeneration.Items.Clear();
 
             var tables = await _DataAccess.ListTables();
             var views = await _DataAccess.ListViews();
@@ -123,22 +122,28 @@ namespace DbHelperMsSql
             foreach (var item in tables)
             {
                 ComboView.Items.Add(new ComboboxItem
-                                    {
-                                        Id = item,
-                                        Value = $"{item} (Table)",
-                                        IsTable = true
-                                    }
+                {
+                    Id = item,
+                    Value = $"{item} (Table)",
+                    IsTable = true
+                }
                                    );
+                ComboTablesForProcedureGeneration.Items.Add(new ComboboxItem
+                {
+                    Id = item,
+                    Value = $"{item} (Table)",
+                    IsTable = true
+                });
             }
 
             foreach (var item in views)
             {
                 ComboView.Items.Add(new ComboboxItem
-                                    {
-                                        Id = item,
-                                        Value = $"{item} (Table)",
-                                        IsTable = true
-                                    }
+                {
+                    Id = item,
+                    Value = $"{item} (Table)",
+                    IsTable = true
+                }
                                    );
             }
 
@@ -164,17 +169,28 @@ namespace DbHelperMsSql
             var list = await _DataAccess.ListProcedures();
             foreach (var item in list)
             {
-                ComboProcedureList.Items.Add(item);
+                ComboProcedureList.Items.Add(new ComboboxItem
+                {
+                    Id = item.SpecificName,
+                    Value = $"{item.Name} ({item.DbType})",
+                    IsTable = false,
+                    AdditionalData = item.DbType,
+                    ClearName = item.Name
+                });
             }
 
+            ComboView.DisplayMember = "Value";
+            ComboView.ValueMember = "Id";
+
             var i = 0;
-            foreach (string item in ComboProcedureList.Items)
+            foreach (ComboboxItem item in ComboProcedureList.Items)
             {
-                if (item == _Settings.Ui.ComboProcedureList)
+                if (item.Id == _Settings.Ui.ComboProcedureList)
                 {
                     ComboProcedureList.SelectedIndex = i;
                     break;
                 }
+
                 i++;
             }
         }
@@ -182,7 +198,7 @@ namespace DbHelperMsSql
         private async void FormMain_Load(object sender, EventArgs e)
         {
             txtHostname.Text = _Settings.DbConfig.HostName;
-            txtServiceName.Text = _Settings.DbConfig.ServiceName;
+            txtServiceName.Text = _Settings.DbConfig.Database;
             txtPassword.Text = _Settings.DbConfig.Password;
             txtUsername.Text = _Settings.DbConfig.Username;
 
@@ -238,34 +254,23 @@ namespace DbHelperMsSql
         {
             try
             {
-                var sel = ComboProcedureList.SelectedItem;
-                var selectedItem = sel?.ToString();
-                if (string.IsNullOrEmpty(selectedItem))
+                if (!(ComboProcedureList.SelectedItem is ComboboxItem sel))
                 {
                     return;
                 }
 
-                var paramList = await _DataAccess.ListProcedureParameters(selectedItem);
-                var returnedFields = await _DataAccess.ListProcedureColumns(selectedItem);
-               
-                if (returnedFields.Count == 0)
+                var selectedName = sel.Id;
+                if (string.IsNullOrEmpty(selectedName))
                 {
-                    txtProcedure.Text = Utils.GenerateProcedure(selectedItem, paramList, radioSeparate.Checked);
-                }
-                else
-                {
-                    var className = selectedItem.GetClassName();
-                    txtProcedure.Text =
-                        Utils.GenerateProcedure(selectedItem,
-                                                className,
-                                                paramList,
-                                                returnedFields,
-                                                radioSeparate.Checked
-                                               );
-                    txtProcedure.Text += "\r\n\r\n" + Markdown.ToPlainText(Utils.GenerateClassData(className, returnedFields));
+                    return;
                 }
 
-                _Settings.Ui.ComboProcedureList = selectedItem;
+                var paramList = await _DataAccess.ListProcedureParameters(selectedName);
+                txtProcedure.Text = Utils.GenerateProcedure(sel.ClearName,
+                                                            sel.AdditionalData,
+                                                            paramList,
+                                                            radioSeparate.Checked);
+                _Settings.Ui.ComboProcedureList = selectedName;
                 _Settings.Save();
             }
             catch (Exception exp)
@@ -278,13 +283,17 @@ namespace DbHelperMsSql
         {
             try
             {
-                var sel = cmbTable.SelectedItem;
-                if (string.IsNullOrEmpty(sel?.ToString()))
+                if (!(ComboTablesForProcedureGeneration.SelectedItem is ComboboxItem sel))
                 {
                     return;
                 }
 
-                var selectedItem = sel.ToString();
+                if (string.IsNullOrEmpty(sel.Id))
+                {
+                    return;
+                }
+
+                var selectedItem = sel.Id;
                 var list = await _DataAccess.ListColumns(selectedItem, true);
                 if (list == null)
                 {
@@ -317,6 +326,16 @@ namespace DbHelperMsSql
             _Settings.Ui.Width = Width;
             _Settings.Ui.Height = Height;
             _Settings.Save();
+        }
+
+        private void ComboView_SelectedValueChanged(object sender, EventArgs e)
+        {
+            ButtonGenerateView.PerformClick();
+        }
+
+        private void ComboTablesForProcedureGeneration_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ButtonGeneratePlSql.PerformClick();
         }
     }
 }

@@ -12,7 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
-namespace DbHelper
+namespace Shared
 {
     /// <summary>
     /// Class ComboboxItem.
@@ -35,13 +35,16 @@ namespace DbHelper
         /// <value><c>true</c> if this instance is table; otherwise, <c>false</c>.</value>
         public bool IsTable { get; set; }
 
+        public string ClearName { get; set; }
+        public string AdditionalData { get; set; }
+
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return $"Id: {Id}, Value: {Value}";
+            return Value;
         }
     }
 }

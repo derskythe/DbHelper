@@ -16,21 +16,21 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using SettingsHelper;
 
-namespace DbHelper
+namespace DbHelperPostgre.Properties.SettingsElements
 {
     /// <summary>
     /// Class Settings.
     /// Implements the <see cref="SettingsElementBase" />
     /// </summary>
     /// <seealso cref="SettingsElementBase" />
-    public class SettingsElement : SettingsElementBase
+    public class DbConfigSettingsElement : SettingsElementBase
     {
         /// <summary>
         /// Gets or sets the name of the host.
         /// </summary>
         /// <value>The name of the host.</value>
-        [Required]
         [DataMember]
+        [Required]
         public string HostName { get; set; }
 
         /// <summary>
@@ -55,7 +55,15 @@ namespace DbHelper
         /// <value>The name of the service.</value>
         [DataMember]
         [Required]
-        public string ServiceName { get; set; }
+        public string Database { get; set; }
+
+        /// <summary>
+        /// Gets or sets the port.
+        /// </summary>
+        /// <value>The port.</value>
+        [DataMember]
+        [Range(1, 65535, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
+        public int Port { get; set; }
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
@@ -63,14 +71,8 @@ namespace DbHelper
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return $"Server={HostName};" +
-                   $"Database={ServiceName};" +
-                   $"User Id={Username};" +
-                   $"Password={Password};" +
-                   "Persist Security Info=True;" +
-                   "Integrated Security=True;" +
-                   "MultipleActiveResultSets=true;" +
-                   "Trusted_Connection=False;";
+            var connectionString = $"Host={HostName};Port=5400;Database={Database};User Id={Username};Password={Password};";
+            return connectionString;
         }
     }
 }
