@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
+using Shared;
 
 namespace DbHelperPostgre.Db
 {
@@ -73,13 +70,13 @@ ORDER BY r.routine_name, p.ordinal_position";
             return await Many(sql, parameterList, Converter.ToParameterInfo);
         }
 
-        public async Task<List<ParameterInfo>> ListColumns(string tableName, bool isTable)
+        public async Task<List<ParameterInfo>> ListColumns(string tableName, ObjectType objectType)
         {
             var parameterList = new List<NpgsqlParameter>
             {
                 GetParameter("@name", tableName)
             };
-            var sql = isTable ?
+            var sql = objectType == ObjectType.Table ?
                 @"select
        c.column_name,
        c.data_type, c.ordinal_position

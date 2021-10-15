@@ -1,4 +1,4 @@
-﻿namespace DbHelperOracle
+﻿namespace DbHelperOracle.Db
 {
     class ParameterInfo
     {

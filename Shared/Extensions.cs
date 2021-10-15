@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Shared
 {
@@ -14,11 +12,11 @@ namespace Shared
             var fields = new StringBuilder();
             if (list != null)
             {
-                foreach (T item in list)
+                foreach (var item in list)
                 {
                     if (item != null)
                     {
-                        fields.Append(item).Append("\n");
+                        fields.Append(item).Append('\n');
                     }
                 }
             }
@@ -167,25 +165,26 @@ namespace Shared
             {
                 if (!string.IsNullOrEmpty(word))
                 {
-                    str.Append(char.ToUpperInvariant(word[0])).Append(word.Substring(1));
+                    str.Append(char.ToUpperInvariant(word[0])).Append(word[1..]);
                 }
             }
 
             var result = str.ToString();
-            if (manyType)
+            if (!manyType)
             {
-                var r = new Regex(@"^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
+                return result;
+            }
+            var r = new Regex(@"^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
+            if (r.IsMatch(result))
+            {
+                result = r.Match(result).Groups[1].Value;
+            }
+            else
+            {
+                r = new Regex(@"^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
                 if (r.IsMatch(result))
                 {
                     result = r.Match(result).Groups[1].Value;
-                }
-                else
-                {
-                    r = new Regex(@"^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
-                    if (r.IsMatch(result))
-                    {
-                        result = r.Match(result).Groups[1].Value;
-                    }
                 }
             }
 
@@ -208,11 +207,11 @@ namespace Shared
                 {
                     if (i == 0)
                     {
-                        str.Append(char.ToLowerInvariant(word[0])).Append(word.Substring(1));
+                        str.Append(char.ToLowerInvariant(word[0])).Append(word[1..]);
                     }
                     else
                     {
-                        str.Append(char.ToUpperInvariant(word[0])).Append(word.Substring(1));
+                        str.Append(char.ToUpperInvariant(word[0])).Append(word[1..]);
                     }
 
                     i++;
@@ -220,20 +219,21 @@ namespace Shared
             }
 
             var result = str.ToString();
-            if (manyType)
+            if (!manyType)
             {
-                var r = new Regex(@"^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
+                return result;
+            }
+            var r = new Regex(@"^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
+            if (r.IsMatch(result))
+            {
+                result = r.Match(result).Groups[1].Value;
+            }
+            else
+            {
+                r = new Regex(@"^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
                 if (r.IsMatch(result))
                 {
                     result = r.Match(result).Groups[1].Value;
-                }
-                else
-                {
-                    r = new Regex(@"^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
-                    if (r.IsMatch(result))
-                    {
-                        result = r.Match(result).Groups[1].Value;
-                    }
                 }
             }
 

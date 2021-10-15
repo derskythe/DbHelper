@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace DbHelperOracle
+namespace DbHelperOracle.Db
 {
     internal class ProcedureInfo
     {
@@ -49,6 +49,11 @@ namespace DbHelperOracle
             Count = count;
             PackageName = packageName;
             ProcedureName = procedureName;
+        }
+
+        public override string ToString()
+        {
+            return string.IsNullOrEmpty(PackageName) ? ProcedureName : $"{ProcedureName}.{ProcedureName}";
         }
     }
 }

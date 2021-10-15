@@ -90,7 +90,7 @@ namespace DbHelperMsSql
             Cursor = Cursors.Default;
         }
 
-        private async void btnRefresh_Click(object sender, EventArgs e)
+        private async void ButtonRefresh_Click(object sender, EventArgs e)
         {
             try
             {
@@ -123,29 +123,29 @@ namespace DbHelperMsSql
             foreach (var item in tables)
             {
                 ComboView.Items.Add(new ComboboxItem
-                                    {
-                                        Id = item,
-                                        Value = $"{item} (Table)",
-                                        IsTable = true
-                                    }
-                                   );
+                    {
+                        Id = item,
+                        Value = $"{item} (Table)",
+                        ObjectType = ObjectType.Table
+                    }
+                );
             }
 
             foreach (var item in views)
             {
                 ComboView.Items.Add(new ComboboxItem
-                                    {
-                                        Id = item,
-                                        Value = $"{item} (Table)",
-                                        IsTable = true
-                                    }
-                                   );
+                    {
+                        Id = item,
+                        Value = $"{item} (Table)",
+                        ObjectType = ObjectType.View
+                    }
+                );
             }
 
             ComboView.DisplayMember = "Value";
             ComboView.ValueMember = "Id";
 
-            int i = 0;
+            var i = 0;
             foreach (ComboboxItem item in ComboView.Items)
             {
                 if (item.Id == _Settings.Ui.ComboView)
@@ -206,19 +206,18 @@ namespace DbHelperMsSql
         {
             try
             {
-                if (!(ComboView.SelectedItem is ComboboxItem sel))
+                if (ComboView.SelectedItem is not ComboboxItem comboBoxItem)
                 {
                     return;
                 }
 
-                var selectedItem = sel.Id;
-                var list = await _DataAccess.ListColumns(selectedItem, sel.IsTable);
+                var selectedItem = comboBoxItem.Id;
+                var list = await _DataAccess.ListColumns(selectedItem, comboBoxItem.ObjectType);
                 if (list == null)
                 {
                     ActionException(new Exception("Column list is null!"));
                     return;
                 }
-
                 var className = selectedItem.ToUpperCamelCase(true, checkCleanPlural.Checked);
 
                 // Gen class
@@ -238,8 +237,8 @@ namespace DbHelperMsSql
         {
             try
             {
-                var sel = ComboProcedureList.SelectedItem;
-                var selectedItem = sel?.ToString();
+                var comboBoxItem = ComboProcedureList.SelectedItem;
+                var selectedItem = comboBoxItem?.ToString();
                 if (string.IsNullOrEmpty(selectedItem))
                 {
                     return;
@@ -247,7 +246,7 @@ namespace DbHelperMsSql
 
                 var paramList = await _DataAccess.ListProcedureParameters(selectedItem);
                 var returnedFields = await _DataAccess.ListProcedureColumns(selectedItem);
-               
+
                 if (returnedFields.Count == 0)
                 {
                     txtProcedure.Text = Utils.GenerateProcedure(selectedItem, paramList, radioSeparate.Checked);
@@ -255,14 +254,16 @@ namespace DbHelperMsSql
                 else
                 {
                     var className = selectedItem.GetClassName();
-                    txtProcedure.Text =
-                        Utils.GenerateProcedure(selectedItem,
-                                                className,
-                                                paramList,
-                                                returnedFields,
-                                                radioSeparate.Checked
-                                               );
-                    txtProcedure.Text += "\r\n\r\n" + Markdown.ToPlainText(Utils.GenerateClassData(className, returnedFields));
+                    txtProcedure.Text = Utils.GenerateProcedure(
+                        selectedItem,
+                        className,
+                        paramList,
+                        returnedFields,
+                        radioSeparate.Checked
+                    );
+                    txtProcedure.Text += "\r\n\r\n" + Markdown.ToPlainText(
+                        Utils.GenerateClassData(className, returnedFields)
+                    );
                 }
 
                 _Settings.Ui.ComboProcedureList = selectedItem;
@@ -274,18 +275,18 @@ namespace DbHelperMsSql
             }
         }
 
-        private async void btnGeneratePlSql_Click(object sender, EventArgs e)
+        private async void ButtonGeneratePlSql_Click(object sender, EventArgs e)
         {
             try
             {
-                var sel = cmbTable.SelectedItem;
-                if (string.IsNullOrEmpty(sel?.ToString()))
+                var comboBoxItem = cmbTable.SelectedItem;
+                if (string.IsNullOrEmpty(comboBoxItem?.ToString()))
                 {
                     return;
                 }
 
-                var selectedItem = sel.ToString();
-                var list = await _DataAccess.ListColumns(selectedItem, true);
+                var selectedItem = comboBoxItem.ToString();
+                var list = await _DataAccess.ListColumns(selectedItem, ObjectType.Table);
                 if (list == null)
                 {
                     ActionException(new Exception("Column list is null!"));
@@ -306,7 +307,7 @@ namespace DbHelperMsSql
             ButtonGenerateProcedure.PerformClick();
         }
 
-        private void tabMain_SelectedIndexChanged(object sender, EventArgs e)
+        private void TabMain_SelectedIndexChanged(object sender, EventArgs e)
         {
             _Settings.Ui.TabIndex = tabMain.SelectedIndex;
             _Settings.Save();

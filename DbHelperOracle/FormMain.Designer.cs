@@ -30,8 +30,8 @@
         {
             this.tabMain = new System.Windows.Forms.TabControl();
             this.tabConnection = new System.Windows.Forms.TabPage();
-            this.btnRefresh = new System.Windows.Forms.Button();
-            this.btnConnect = new System.Windows.Forms.Button();
+            this.ButtonRefresh = new System.Windows.Forms.Button();
+            this.ButtonConnect = new System.Windows.Forms.Button();
             this.txtPort = new System.Windows.Forms.TextBox();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.txtUsername = new System.Windows.Forms.TextBox();
@@ -43,23 +43,22 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tabViews = new System.Windows.Forms.TabPage();
-            this.checkCleanPlural = new System.Windows.Forms.CheckBox();
             this.txtViewFunction = new System.Windows.Forms.TextBox();
             this.txtClass = new System.Windows.Forms.TextBox();
-            this.btnGenerate = new System.Windows.Forms.Button();
-            this.cmbView = new System.Windows.Forms.ComboBox();
+            this.ButtonGenerateView = new System.Windows.Forms.Button();
+            this.ComboView = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.tabProc = new System.Windows.Forms.TabPage();
             this.radioClass = new System.Windows.Forms.RadioButton();
             this.radioSeparate = new System.Windows.Forms.RadioButton();
             this.txtProcedure = new System.Windows.Forms.TextBox();
-            this.btnGenerateProcedure = new System.Windows.Forms.Button();
-            this.cmbProcedureList = new System.Windows.Forms.ComboBox();
+            this.ButtonGenerateProcedure = new System.Windows.Forms.Button();
+            this.ComboProcedureList = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.tabGenPlSql = new System.Windows.Forms.TabPage();
             this.txtPlSql = new System.Windows.Forms.TextBox();
-            this.btnGeneratePlSql = new System.Windows.Forms.Button();
-            this.cmbTable = new System.Windows.Forms.ComboBox();
+            this.ButtonGeneratePlSql = new System.Windows.Forms.Button();
+            this.ComboTableForProcedureGenerate = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.tabMain.SuspendLayout();
             this.tabConnection.SuspendLayout();
@@ -81,11 +80,12 @@
             this.tabMain.SelectedIndex = 0;
             this.tabMain.Size = new System.Drawing.Size(1222, 718);
             this.tabMain.TabIndex = 0;
+            this.tabMain.SelectedIndexChanged += new System.EventHandler(this.TabMain_SelectedIndexChanged);
             // 
             // tabConnection
             // 
-            this.tabConnection.Controls.Add(this.btnRefresh);
-            this.tabConnection.Controls.Add(this.btnConnect);
+            this.tabConnection.Controls.Add(this.ButtonRefresh);
+            this.tabConnection.Controls.Add(this.ButtonConnect);
             this.tabConnection.Controls.Add(this.txtPort);
             this.tabConnection.Controls.Add(this.txtPassword);
             this.tabConnection.Controls.Add(this.txtUsername);
@@ -105,27 +105,27 @@
             this.tabConnection.Text = "Connection";
             this.tabConnection.UseVisualStyleBackColor = true;
             // 
-            // btnRefresh
+            // ButtonRefresh
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(210, 203);
-            this.btnRefresh.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(88, 27);
-            this.btnRefresh.TabIndex = 6;
-            this.btnRefresh.Text = "Refresh";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.ButtonRefresh.Location = new System.Drawing.Point(210, 203);
+            this.ButtonRefresh.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ButtonRefresh.Name = "ButtonRefresh";
+            this.ButtonRefresh.Size = new System.Drawing.Size(88, 27);
+            this.ButtonRefresh.TabIndex = 6;
+            this.ButtonRefresh.Text = "Refresh";
+            this.ButtonRefresh.UseVisualStyleBackColor = true;
+            this.ButtonRefresh.Click += new System.EventHandler(this.ButtonRefresh_Click);
             // 
-            // btnConnect
+            // ButtonConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(115, 203);
-            this.btnConnect.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(88, 27);
-            this.btnConnect.TabIndex = 5;
-            this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
+            this.ButtonConnect.Location = new System.Drawing.Point(115, 203);
+            this.ButtonConnect.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ButtonConnect.Name = "ButtonConnect";
+            this.ButtonConnect.Size = new System.Drawing.Size(88, 27);
+            this.ButtonConnect.TabIndex = 5;
+            this.ButtonConnect.Text = "Connect";
+            this.ButtonConnect.UseVisualStyleBackColor = true;
+            this.ButtonConnect.Click += new System.EventHandler(this.ButtonConnect_Click);
             // 
             // txtPort
             // 
@@ -220,11 +220,10 @@
             // 
             // tabViews
             // 
-            this.tabViews.Controls.Add(this.checkCleanPlural);
             this.tabViews.Controls.Add(this.txtViewFunction);
             this.tabViews.Controls.Add(this.txtClass);
-            this.tabViews.Controls.Add(this.btnGenerate);
-            this.tabViews.Controls.Add(this.cmbView);
+            this.tabViews.Controls.Add(this.ButtonGenerateView);
+            this.tabViews.Controls.Add(this.ComboView);
             this.tabViews.Controls.Add(this.label3);
             this.tabViews.Location = new System.Drawing.Point(4, 24);
             this.tabViews.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -234,17 +233,6 @@
             this.tabViews.TabIndex = 1;
             this.tabViews.Text = "Views";
             this.tabViews.UseVisualStyleBackColor = true;
-            // 
-            // checkCleanPlural
-            // 
-            this.checkCleanPlural.AutoSize = true;
-            this.checkCleanPlural.Location = new System.Drawing.Point(92, 54);
-            this.checkCleanPlural.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.checkCleanPlural.Name = "checkCleanPlural";
-            this.checkCleanPlural.Size = new System.Drawing.Size(89, 19);
-            this.checkCleanPlural.TabIndex = 4;
-            this.checkCleanPlural.Text = "Clean plural";
-            this.checkCleanPlural.UseVisualStyleBackColor = true;
             // 
             // txtViewFunction
             // 
@@ -266,26 +254,27 @@
             this.txtClass.Size = new System.Drawing.Size(574, 587);
             this.txtClass.TabIndex = 3;
             // 
-            // btnGenerate
+            // ButtonGenerateView
             // 
-            this.btnGenerate.Location = new System.Drawing.Point(1104, 23);
-            this.btnGenerate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnGenerate.Name = "btnGenerate";
-            this.btnGenerate.Size = new System.Drawing.Size(88, 27);
-            this.btnGenerate.TabIndex = 2;
-            this.btnGenerate.Text = "Generate";
-            this.btnGenerate.UseVisualStyleBackColor = true;
-            this.btnGenerate.Click += new System.EventHandler(this.btnGenerateView_Click);
+            this.ButtonGenerateView.Location = new System.Drawing.Point(1104, 23);
+            this.ButtonGenerateView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ButtonGenerateView.Name = "ButtonGenerateView";
+            this.ButtonGenerateView.Size = new System.Drawing.Size(88, 27);
+            this.ButtonGenerateView.TabIndex = 2;
+            this.ButtonGenerateView.Text = "Generate";
+            this.ButtonGenerateView.UseVisualStyleBackColor = true;
+            this.ButtonGenerateView.Click += new System.EventHandler(this.ButtonGenerateView_Click);
             // 
-            // cmbView
+            // ComboView
             // 
-            this.cmbView.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbView.Location = new System.Drawing.Point(92, 23);
-            this.cmbView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.cmbView.Name = "cmbView";
-            this.cmbView.Size = new System.Drawing.Size(1003, 23);
-            this.cmbView.Sorted = true;
-            this.cmbView.TabIndex = 1;
+            this.ComboView.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboView.Location = new System.Drawing.Point(92, 23);
+            this.ComboView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ComboView.Name = "ComboView";
+            this.ComboView.Size = new System.Drawing.Size(1003, 23);
+            this.ComboView.Sorted = true;
+            this.ComboView.TabIndex = 1;
+            this.ComboView.SelectedValueChanged += new System.EventHandler(this.ComboView_SelectedValueChanged);
             // 
             // label3
             // 
@@ -302,8 +291,8 @@
             this.tabProc.Controls.Add(this.radioClass);
             this.tabProc.Controls.Add(this.radioSeparate);
             this.tabProc.Controls.Add(this.txtProcedure);
-            this.tabProc.Controls.Add(this.btnGenerateProcedure);
-            this.tabProc.Controls.Add(this.cmbProcedureList);
+            this.tabProc.Controls.Add(this.ButtonGenerateProcedure);
+            this.tabProc.Controls.Add(this.ComboProcedureList);
             this.tabProc.Controls.Add(this.label7);
             this.tabProc.Location = new System.Drawing.Point(4, 24);
             this.tabProc.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -317,26 +306,28 @@
             // radioClass
             // 
             this.radioClass.AutoSize = true;
-            this.radioClass.Checked = true;
             this.radioClass.Location = new System.Drawing.Point(241, 54);
             this.radioClass.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.radioClass.Name = "radioClass";
             this.radioClass.Size = new System.Drawing.Size(88, 19);
             this.radioClass.TabIndex = 8;
-            this.radioClass.TabStop = true;
             this.radioClass.Text = "Class values";
             this.radioClass.UseVisualStyleBackColor = true;
+            this.radioClass.CheckedChanged += new System.EventHandler(this.radioSeparate_CheckedChanged);
             // 
             // radioSeparate
             // 
             this.radioSeparate.AutoSize = true;
+            this.radioSeparate.Checked = true;
             this.radioSeparate.Location = new System.Drawing.Point(105, 54);
             this.radioSeparate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.radioSeparate.Name = "radioSeparate";
             this.radioSeparate.Size = new System.Drawing.Size(106, 19);
             this.radioSeparate.TabIndex = 8;
+            this.radioSeparate.TabStop = true;
             this.radioSeparate.Text = "Separate values";
             this.radioSeparate.UseVisualStyleBackColor = true;
+            this.radioSeparate.CheckedChanged += new System.EventHandler(this.radioSeparate_CheckedChanged);
             // 
             // txtProcedure
             // 
@@ -348,31 +339,31 @@
             this.txtProcedure.Size = new System.Drawing.Size(1154, 552);
             this.txtProcedure.TabIndex = 7;
             // 
-            // btnGenerateProcedure
+            // ButtonGenerateProcedure
             // 
-            this.btnGenerateProcedure.Location = new System.Drawing.Point(1098, 22);
-            this.btnGenerateProcedure.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnGenerateProcedure.Name = "btnGenerateProcedure";
-            this.btnGenerateProcedure.Size = new System.Drawing.Size(88, 27);
-            this.btnGenerateProcedure.TabIndex = 6;
-            this.btnGenerateProcedure.Text = "Generate";
-            this.btnGenerateProcedure.UseVisualStyleBackColor = true;
-            this.btnGenerateProcedure.Click += new System.EventHandler(this.btnGenerateProcedure_Click);
+            this.ButtonGenerateProcedure.Location = new System.Drawing.Point(1096, 22);
+            this.ButtonGenerateProcedure.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ButtonGenerateProcedure.Name = "ButtonGenerateProcedure";
+            this.ButtonGenerateProcedure.Size = new System.Drawing.Size(88, 27);
+            this.ButtonGenerateProcedure.TabIndex = 6;
+            this.ButtonGenerateProcedure.Text = "Generate";
+            this.ButtonGenerateProcedure.UseVisualStyleBackColor = true;
+            this.ButtonGenerateProcedure.Click += new System.EventHandler(this.ButtonGenerateProcedure_Click);
             // 
-            // cmbProcedureList
+            // ComboProcedureList
             // 
-            this.cmbProcedureList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbProcedureList.Location = new System.Drawing.Point(105, 22);
-            this.cmbProcedureList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.cmbProcedureList.Name = "cmbProcedureList";
-            this.cmbProcedureList.Size = new System.Drawing.Size(984, 23);
-            this.cmbProcedureList.Sorted = true;
-            this.cmbProcedureList.TabIndex = 5;
+            this.ComboProcedureList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboProcedureList.Location = new System.Drawing.Point(105, 22);
+            this.ComboProcedureList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ComboProcedureList.Name = "ComboProcedureList";
+            this.ComboProcedureList.Size = new System.Drawing.Size(984, 23);
+            this.ComboProcedureList.TabIndex = 5;
+            this.ComboProcedureList.SelectedIndexChanged += new System.EventHandler(this.ComboProcedureList_SelectedIndexChanged);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(27, 25);
+            this.label7.Location = new System.Drawing.Point(31, 28);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(66, 15);
@@ -382,8 +373,8 @@
             // tabGenPlSql
             // 
             this.tabGenPlSql.Controls.Add(this.txtPlSql);
-            this.tabGenPlSql.Controls.Add(this.btnGeneratePlSql);
-            this.tabGenPlSql.Controls.Add(this.cmbTable);
+            this.tabGenPlSql.Controls.Add(this.ButtonGeneratePlSql);
+            this.tabGenPlSql.Controls.Add(this.ComboTableForProcedureGenerate);
             this.tabGenPlSql.Controls.Add(this.label8);
             this.tabGenPlSql.Location = new System.Drawing.Point(4, 24);
             this.tabGenPlSql.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -404,31 +395,32 @@
             this.txtPlSql.Size = new System.Drawing.Size(1154, 552);
             this.txtPlSql.TabIndex = 8;
             // 
-            // btnGeneratePlSql
+            // ButtonGeneratePlSql
             // 
-            this.btnGeneratePlSql.Location = new System.Drawing.Point(1098, 32);
-            this.btnGeneratePlSql.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnGeneratePlSql.Name = "btnGeneratePlSql";
-            this.btnGeneratePlSql.Size = new System.Drawing.Size(88, 27);
-            this.btnGeneratePlSql.TabIndex = 5;
-            this.btnGeneratePlSql.Text = "Generate";
-            this.btnGeneratePlSql.UseVisualStyleBackColor = true;
-            this.btnGeneratePlSql.Click += new System.EventHandler(this.btnGeneratePlSql_Click);
+            this.ButtonGeneratePlSql.Location = new System.Drawing.Point(1097, 29);
+            this.ButtonGeneratePlSql.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ButtonGeneratePlSql.Name = "ButtonGeneratePlSql";
+            this.ButtonGeneratePlSql.Size = new System.Drawing.Size(88, 27);
+            this.ButtonGeneratePlSql.TabIndex = 5;
+            this.ButtonGeneratePlSql.Text = "Generate";
+            this.ButtonGeneratePlSql.UseVisualStyleBackColor = true;
+            this.ButtonGeneratePlSql.Click += new System.EventHandler(this.ButtonGeneratePlSql_Click);
             // 
-            // cmbTable
+            // ComboTableForProcedureGenerate
             // 
-            this.cmbTable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbTable.Location = new System.Drawing.Point(86, 32);
-            this.cmbTable.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.cmbTable.Name = "cmbTable";
-            this.cmbTable.Size = new System.Drawing.Size(1003, 23);
-            this.cmbTable.Sorted = true;
-            this.cmbTable.TabIndex = 4;
+            this.ComboTableForProcedureGenerate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboTableForProcedureGenerate.Location = new System.Drawing.Point(86, 32);
+            this.ComboTableForProcedureGenerate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ComboTableForProcedureGenerate.Name = "ComboTableForProcedureGenerate";
+            this.ComboTableForProcedureGenerate.Size = new System.Drawing.Size(1003, 23);
+            this.ComboTableForProcedureGenerate.Sorted = true;
+            this.ComboTableForProcedureGenerate.TabIndex = 4;
+            this.ComboTableForProcedureGenerate.SelectedValueChanged += new System.EventHandler(this.ComboTableForProcedureGenerate_SelectedValueChanged);
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(27, 32);
+            this.label8.Location = new System.Drawing.Point(30, 35);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(52, 15);
@@ -445,6 +437,7 @@
             this.Name = "FormMain";
             this.Text = ".NET Database Helper";
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.ResizeEnd += new System.EventHandler(this.FormMain_ResizeEnd);
             this.tabMain.ResumeLayout(false);
             this.tabConnection.ResumeLayout(false);
             this.tabConnection.PerformLayout();
@@ -473,26 +466,25 @@
         private System.Windows.Forms.TextBox txtPort;
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.TextBox txtUsername;
-        private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.Button ButtonConnect;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button btnGenerate;
-        private System.Windows.Forms.ComboBox cmbView;
+        private System.Windows.Forms.Button ButtonGenerateView;
+        private System.Windows.Forms.ComboBox ComboView;
         private System.Windows.Forms.TextBox txtViewFunction;
         private System.Windows.Forms.TextBox txtClass;
         private System.Windows.Forms.TabPage tabProc;
         private System.Windows.Forms.TextBox txtProcedure;
-        private System.Windows.Forms.Button btnGenerateProcedure;
-        private System.Windows.Forms.ComboBox cmbProcedureList;
+        private System.Windows.Forms.Button ButtonGenerateProcedure;
+        private System.Windows.Forms.ComboBox ComboProcedureList;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.RadioButton radioClass;
         private System.Windows.Forms.RadioButton radioSeparate;
-        private System.Windows.Forms.CheckBox checkCleanPlural;
         private System.Windows.Forms.TabPage tabGenPlSql;
-        private System.Windows.Forms.Button btnGeneratePlSql;
-        private System.Windows.Forms.ComboBox cmbTable;
+        private System.Windows.Forms.Button ButtonGeneratePlSql;
+        private System.Windows.Forms.ComboBox ComboTableForProcedureGenerate;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtPlSql;
-        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button ButtonRefresh;
     }
 }
 

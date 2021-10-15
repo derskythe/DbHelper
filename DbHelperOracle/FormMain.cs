@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
+using DbHelperOracle.Db;
 using DbHelperOracle.Properties;
 using NLog;
+using Shared;
 
 namespace DbHelperOracle
 {
@@ -12,35 +14,69 @@ namespace DbHelperOracle
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
         // ReSharper restore InconsistentNaming
         // ReSharper restore FieldCanBeMadeReadOnly.Local
+        private readonly Settings _Settings;
 
         public FormMain()
         {
+            _Settings = Program.Settings;
             InitializeComponent();
+
+            var needSave = false;
+            if (_Settings.Ui.Width == 0)
+            {
+                needSave = true;
+                _Settings.Ui.Width = Width;
+            }
+
+            if (_Settings.Ui.Height == 0)
+            {
+                needSave = true;
+                _Settings.Ui.Height = Height;
+            }
+
+            if (needSave)
+            {
+                _Settings.Save();
+            }
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
+        private void ButtonConnect_Click(object sender, EventArgs e)
         {
+            Connect();
+        }
+
+        private void Connect()
+        {
+            Cursor = Cursors.WaitCursor;
+
             try
             {
-                Cursor = Cursors.WaitCursor;
                 OracleDb.Init(txtHostname.Text,
-                              txtUsername.Text,
-                              txtPassword.Text,
-                              txtServiceName.Text,
-                              txtPort.Text);
+                    txtUsername.Text,
+                    txtPassword.Text,
+                    txtServiceName.Text,
+                    txtPort.Text
+                );
                 if (OracleDb.CheckConnection())
                 {
-                    Settings.Default.DbHost = txtHostname.Text;
-                    Settings.Default.DbName = txtServiceName.Text;
-                    Settings.Default.DbPassword = txtPassword.Text;
-                    Settings.Default.DbPort = txtPort.Text;
-                    Settings.Default.DbUsername = txtUsername.Text;
-                    Settings.Default.Save();
+                    _Settings.DbConfig.HostName = txtHostname.Text;
+                    _Settings.DbConfig.ServiceName = txtServiceName.Text;
+                    _Settings.DbConfig.Password = txtPassword.Text;
+                    _Settings.DbConfig.Port = Convert.ToInt32(txtPort.Text);
+                    _Settings.DbConfig.Username = txtUsername.Text;
+                    _Settings.Save();
 
                     UpdateProcCombo();
                     UpdateTableCombo();
                     UpdateViewCombo();
-                    MessageBoxEx.Show(this, @"Success!", @"Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    MessageBoxEx.Show(
+                        this,
+                        @"Success!",
+                        @"Info",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
                 }
                 else
                 {
@@ -55,79 +91,112 @@ namespace DbHelperOracle
             Cursor = Cursors.Default;
         }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private void ButtonRefresh_Click(object sender, EventArgs e)
         {
-            try
-            {
-                Cursor = Cursors.WaitCursor;
-                if (OracleDb.CheckConnection())
-                {
-                    UpdateViewCombo();
-                    UpdateProcCombo();
-                    UpdateTableCombo();
-                }
-                else
-                {
-                    throw new Exception("Invalid data provided!");
-                }
-            }
-            catch (Exception exp)
-            {
-                ActionException(exp);
-            }
-
-            Cursor = Cursors.Default;
+            Connect();
         }
 
         private void UpdateTableCombo()
         {
-            cmbTable.Items.Clear();
-            OracleDb.ListTables()?.ForEach(item => { cmbTable.Items.Add(item); });
+            ComboTableForProcedureGenerate.Items.Clear();
+            // ReSharper disable once CoVariantArrayConversion
+            ComboTableForProcedureGenerate.Items.AddRange(OracleDb.ListTables().ToArray());
+            ComboTableForProcedureGenerate.DisplayMember = "Value";
+            ComboTableForProcedureGenerate.ValueMember = "Id";
+
+            var i = 0;
+            foreach (ComboboxItem item in ComboTableForProcedureGenerate.Items)
+            {
+                if (item.Id == _Settings.Ui.ComboView)
+                {
+                    ComboTableForProcedureGenerate.SelectedIndex = i;
+                    break;
+                }
+
+                i++;
+            }
         }
 
         private void UpdateViewCombo()
         {
-            cmbView.Items.Clear();
-            OracleDb.ListViews()?.ForEach(item => { cmbView.Items.Add(item); });
+            ComboView.Items.Clear();
+            // ReSharper disable once CoVariantArrayConversion
+            ComboView.Items.AddRange(OracleDb.ListViews().ToArray());
+            ComboView.DisplayMember = "Value";
+            ComboView.ValueMember = "Id";
+
+            var i = 0;
+            foreach (ComboboxItem item in ComboView.Items)
+            {
+                if (item.Id == _Settings.Ui.ComboView)
+                {
+                    ComboView.SelectedIndex = i;
+                    break;
+                }
+
+                i++;
+            }
         }
 
         private void UpdateProcCombo()
         {
-            cmbProcedureList.Items.Clear();
-            OracleDb.ListPackages(Settings.Default.DbUsername)
-                    ?.ForEach(item => cmbProcedureList.Items.Add(item.Key + "." + item.Value));
+            ComboProcedureList.Items.Clear();
+            // ReSharper disable CoVariantArrayConversion
+            var ownerName = _Settings.DbConfig.Username.ToUpperInvariant();
+            ComboProcedureList.Items.AddRange(OracleDb.ListPackages(ownerName).ToArray());
+            ComboProcedureList.Items.AddRange(OracleDb.ListProcedures(ownerName).ToArray());
+            // ReSharper restore CoVariantArrayConversion
+            ComboProcedureList.DisplayMember = "Value";
+            ComboProcedureList.ValueMember = "Id";
+
+            var i = 0;
+            foreach (ComboboxItem item in ComboProcedureList.Items)
+            {
+                if (item.Id == _Settings.Ui.ComboView)
+                {
+                    ComboProcedureList.SelectedIndex = i;
+                    break;
+                }
+
+                i++;
+            }
         }
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            txtHostname.Text = Settings.Default.DbHost;
-            txtServiceName.Text = Settings.Default.DbName;
-            txtPassword.Text = Settings.Default.DbPassword;
-            txtPort.Text = Settings.Default.DbPort;
-            txtUsername.Text = Settings.Default.DbUsername;
-#if DEBUG
-            //OracleDb.Init(txtHostname.Text,
-            //              txtUsername.Text,
-            //              txtPassword.Text,
-            //              txtServiceName.Text,
-            //              txtPort.Text);
-            //UpdateViewCombo();
-            //UpdateProcCombo();
-            //cmbProcedureList.SelectedIndex = 10;
-#endif
+            txtHostname.Text = _Settings.DbConfig.HostName;
+            txtServiceName.Text = _Settings.DbConfig.ServiceName;
+            txtPassword.Text = _Settings.DbConfig.Password;
+            txtPort.Text = _Settings.DbConfig.Port.ToString();
+            txtUsername.Text = _Settings.DbConfig.Username;
+
+            if (!string.IsNullOrEmpty(txtHostname.Text) && !string.IsNullOrEmpty(txtServiceName.Text) &&
+                !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtPort.Text) &&
+                !string.IsNullOrEmpty(txtUsername.Text))
+            {
+                Connect();
+            }
+
+            tabMain.SelectedIndex = _Settings.Ui.TabIndex;
         }
 
         private void ActionException(Exception exp)
         {
             Log.Error(exp, exp.Message);
-            MessageBox.Show(this, exp.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                this,
+                exp.Message,
+                @"Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
 
-        private void btnGenerateView_Click(object sender, EventArgs e)
+        private void ButtonGenerateView_Click(object sender, EventArgs e)
         {
             try
             {
-                var sel = cmbView.SelectedItem;
+                var sel = ComboView.SelectedItem;
                 if (string.IsNullOrEmpty(sel?.ToString()))
                 {
                     return;
@@ -141,13 +210,15 @@ namespace DbHelperOracle
                     return;
                 }
 
-                var className = Utils.ToUpperCamelCase(selectedItem, false, checkCleanPlural.Checked);
+                var className = selectedItem.ToUpperCamelCase(true);
 
                 // Gen class
                 txtClass.Text = Utils.GenerateClassData(className, list);
                 var funcData = Utils.GenerateViewFunction(className, list, selectedItem);
 
                 txtViewFunction.Text = funcData;
+                _Settings.Ui.ComboView = selectedItem;
+                _Settings.Save();
             }
             catch (Exception exp)
             {
@@ -155,18 +226,23 @@ namespace DbHelperOracle
             }
         }
 
-        private void btnGenerateProcedure_Click(object sender, EventArgs e)
+        private void ButtonGenerateProcedure_Click(object sender, EventArgs e)
         {
             try
             {
-                var sel = cmbProcedureList.SelectedItem;
-                var selectedItem = sel?.ToString();
-                if (string.IsNullOrEmpty(selectedItem))
+                if (ComboProcedureList.SelectedItem is not ComboboxItem selectedItem || string.IsNullOrEmpty(selectedItem.Id))
                 {
                     return;
                 }
 
-                txtProcedure.Text = Utils.GenerateProcedure(selectedItem, radioSeparate.Checked);
+                txtProcedure.Text = Utils.GenerateProcedure(
+                    _Settings.DbConfig.Username.ToUpperInvariant(),
+                    selectedItem.AdditionalData,
+                    selectedItem.ClearName,
+                    radioSeparate.Checked
+                );
+                _Settings.Ui.ComboView = selectedItem.Id;
+                _Settings.Save();
             }
             catch (Exception exp)
             {
@@ -174,11 +250,11 @@ namespace DbHelperOracle
             }
         }
 
-        private void btnGeneratePlSql_Click(object sender, EventArgs e)
+        private void ButtonGeneratePlSql_Click(object sender, EventArgs e)
         {
             try
             {
-                var sel = cmbTable.SelectedItem;
+                var sel = ComboTableForProcedureGenerate.SelectedItem;
                 if (string.IsNullOrEmpty(sel?.ToString()))
                 {
                     return;
@@ -199,6 +275,39 @@ namespace DbHelperOracle
             {
                 ActionException(exp);
             }
+        }
+
+        private void TabMain_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _Settings.Ui.TabIndex = tabMain.SelectedIndex;
+            _Settings.Save();
+        }
+
+        private void FormMain_ResizeEnd(object sender, EventArgs e)
+        {
+            _Settings.Ui.Width = Width;
+            _Settings.Ui.Height = Height;
+            _Settings.Save();
+        }
+
+        private void ComboView_SelectedValueChanged(object sender, EventArgs e)
+        {
+            ButtonGenerateView.PerformClick();
+        }
+
+        private void ComboProcedureList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ButtonGenerateProcedure.PerformClick();
+        }
+
+        private void ComboTableForProcedureGenerate_SelectedValueChanged(object sender, EventArgs e)
+        {
+            ButtonGeneratePlSql.PerformClick();
+        }
+
+        private void radioSeparate_CheckedChanged(object sender, EventArgs e)
+        {
+            ButtonGenerateProcedure.PerformClick();
         }
     }
 }

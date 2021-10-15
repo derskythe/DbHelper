@@ -88,7 +88,7 @@ namespace DbHelperPostgre
             Cursor = Cursors.Default;
         }
 
-        private async void btnRefresh_Click(object sender, EventArgs e)
+        private async void ButtonRefresh_Click(object sender, EventArgs e)
         {
             try
             {
@@ -122,35 +122,36 @@ namespace DbHelperPostgre
             foreach (var item in tables)
             {
                 ComboView.Items.Add(new ComboboxItem
-                {
-                    Id = item,
-                    Value = $"{item} (Table)",
-                    IsTable = true
-                }
-                                   );
+                    {
+                        Id = item,
+                        Value = $"{item} (Table)",
+                        ObjectType = ObjectType.Table
+                    }
+                );
                 ComboTablesForProcedureGeneration.Items.Add(new ComboboxItem
-                {
-                    Id = item,
-                    Value = $"{item} (Table)",
-                    IsTable = true
-                });
+                    {
+                        Id = item,
+                        Value = $"{item} (Table)",
+                        ObjectType = ObjectType.Table
+                    }
+                );
             }
 
             foreach (var item in views)
             {
                 ComboView.Items.Add(new ComboboxItem
-                {
-                    Id = item,
-                    Value = $"{item} (Table)",
-                    IsTable = true
-                }
-                                   );
+                    {
+                        Id = item,
+                        Value = $"{item} (Table)",
+                        ObjectType = ObjectType.Table
+                    }
+                );
             }
 
             ComboView.DisplayMember = "Value";
             ComboView.ValueMember = "Id";
 
-            int i = 0;
+            var i = 0;
             foreach (ComboboxItem item in ComboView.Items)
             {
                 if (item.Id == _Settings.Ui.ComboView)
@@ -173,7 +174,7 @@ namespace DbHelperPostgre
                 {
                     Id = item.SpecificName,
                     Value = $"{item.Name} ({item.DbType})",
-                    IsTable = false,
+                    ObjectType = ObjectType.Procedure,
                     AdditionalData = item.DbType,
                     ClearName = item.Name
                 });
@@ -202,33 +203,38 @@ namespace DbHelperPostgre
             txtPassword.Text = _Settings.DbConfig.Password;
             txtUsername.Text = _Settings.DbConfig.Username;
 
-#if DEBUG
-            if (!string.IsNullOrEmpty(txtHostname.Text))
+            if (!string.IsNullOrEmpty(txtHostname.Text) && !string.IsNullOrEmpty(txtServiceName.Text) &&
+                !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtUsername.Text))
             {
                 await ConnectDb();
             }
 
             tabMain.SelectedIndex = _Settings.Ui.TabIndex;
-#endif
         }
 
         private void ActionException(Exception exp)
         {
             Log.Error(exp, exp.Message);
-            MessageBox.Show(this, exp.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                this,
+                exp.Message,
+                @"Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
 
         private async void ButtonGenerateView_Click(object sender, EventArgs e)
         {
             try
             {
-                if (!(ComboView.SelectedItem is ComboboxItem sel))
+                if (ComboView.SelectedItem is not ComboboxItem sel)
                 {
                     return;
                 }
 
                 var selectedItem = sel.Id;
-                var list = await _DataAccess.ListColumns(selectedItem, sel.IsTable);
+                var list = await _DataAccess.ListColumns(selectedItem, sel.ObjectType);
                 if (list == null)
                 {
                     ActionException(new Exception("Column list is null!"));
@@ -254,7 +260,7 @@ namespace DbHelperPostgre
         {
             try
             {
-                if (!(ComboProcedureList.SelectedItem is ComboboxItem sel))
+                if (ComboProcedureList.SelectedItem is not ComboboxItem sel)
                 {
                     return;
                 }
@@ -279,22 +285,22 @@ namespace DbHelperPostgre
             }
         }
 
-        private async void btnGeneratePlSql_Click(object sender, EventArgs e)
+        private async void ButtonGeneratePlSql_Click(object sender, EventArgs e)
         {
             try
             {
-                if (!(ComboTablesForProcedureGeneration.SelectedItem is ComboboxItem sel))
+                if (ComboTablesForProcedureGeneration.SelectedItem is not ComboboxItem comboBoxItem)
                 {
                     return;
                 }
 
-                if (string.IsNullOrEmpty(sel.Id))
+                if (string.IsNullOrEmpty(comboBoxItem.Id))
                 {
                     return;
                 }
 
-                var selectedItem = sel.Id;
-                var list = await _DataAccess.ListColumns(selectedItem, true);
+                var selectedItem = comboBoxItem.Id;
+                var list = await _DataAccess.ListColumns(selectedItem, comboBoxItem.ObjectType);
                 if (list == null)
                 {
                     ActionException(new Exception("Column list is null!"));
@@ -315,7 +321,7 @@ namespace DbHelperPostgre
             ButtonGenerateProcedure.PerformClick();
         }
 
-        private void tabMain_SelectedIndexChanged(object sender, EventArgs e)
+        private void TabMain_SelectedIndexChanged(object sender, EventArgs e)
         {
             _Settings.Ui.TabIndex = tabMain.SelectedIndex;
             _Settings.Save();
@@ -336,6 +342,11 @@ namespace DbHelperPostgre
         private void ComboTablesForProcedureGeneration_SelectedIndexChanged(object sender, EventArgs e)
         {
             ButtonGeneratePlSql.PerformClick();
+        }
+
+        private void radioSeparate_CheckedChanged(object sender, EventArgs e)
+        {
+            ButtonGenerateProcedure.PerformClick();
         }
     }
 }

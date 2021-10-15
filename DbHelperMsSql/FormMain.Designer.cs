@@ -79,7 +79,7 @@
             this.tabMain.SelectedIndex = 0;
             this.tabMain.Size = new System.Drawing.Size(1397, 766);
             this.tabMain.TabIndex = 0;
-            this.tabMain.SelectedIndexChanged += new System.EventHandler(this.tabMain_SelectedIndexChanged);
+            this.tabMain.SelectedIndexChanged += new System.EventHandler(this.TabMain_SelectedIndexChanged);
             // 
             // tabConnection
             // 
@@ -111,7 +111,7 @@
             this.btnRefresh.TabIndex = 6;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.btnRefresh.Click += new System.EventHandler(this.ButtonRefresh_Click);
             // 
             // btnConnect
             // 
@@ -398,7 +398,7 @@
             this.btnGeneratePlSql.TabIndex = 5;
             this.btnGeneratePlSql.Text = "Generate";
             this.btnGeneratePlSql.UseVisualStyleBackColor = true;
-            this.btnGeneratePlSql.Click += new System.EventHandler(this.btnGeneratePlSql_Click);
+            this.btnGeneratePlSql.Click += new System.EventHandler(this.ButtonGeneratePlSql_Click);
             // 
             // cmbTable
             // 

@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
 using DbWinForms.Models;
+using Shared;
 
 namespace DbWinForms
 {
@@ -53,13 +54,13 @@ namespace DbWinForms
             return await Many(sql, parameterList, CommandType.Text, Converter.ToProcedureParameterInfo);
         }
 
-        public async Task<List<ParameterInfo>> ListColumns(string tableName, bool isTable)
+        public async Task<List<ParameterInfo>> ListColumns(string tableName, ObjectType objectType)
         {
             var parameterList = new List<DbParameter>
             {
                 GetParameter("@name", tableName)
             };
-            var sql = isTable ?
+            var sql = objectType == ObjectType.Table ?
                 @"SELECT
             c.column_id AS order_num
             , c.name AS name
