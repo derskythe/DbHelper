@@ -37,8 +37,8 @@ namespace DbHelperPostgre
             }
 
             funcData.Append(" FROM ").Append(selectedItem).Append(" t\";\r\n\r\n");
-            funcData.Append(SPACE).Append("var paramList = new List<NpgsqlParameter>\r\n{\r\n");
-            funcData.Append(SPACE).Append("GetParameter(\"@id\", 0, NpgsqlDbType.Integer)\r\n}\r\n");
+            funcData.Append(SPACE).Append("var paramList = new List<NpgsqlParameter> { ");
+            funcData.Append(SPACE).Append("GetParameter(\"@id\", 0, NpgsqlDbType.Integer) };\r\n");
             funcData.Append("return await Many(query, paramList, Converter.To")
                     .Append(className)
                     .Append(");\r\n}\r\n\r\n");
@@ -87,23 +87,23 @@ namespace DbHelperPostgre
             foreach (var pair in list)
             {
                 bool isId = pair.Name.IsEqual("id");
-                str.Append("V_").Append(pair.Name);
-                str.Append(isId ? " IN OUT " : " IN ");
-                str.Append(selectedItem).Append('.').Append(pair.Name).Append("%TYPE");
+                str.Append(SPACE).Append("V_").Append(pair.Name);
+                str.Append(SPACE).Append(isId ? " IN OUT " : " IN ");
+                str.Append(SPACE).Append(selectedItem).Append('.').Append(pair.Name).Append("%TYPE");
 
-                fieldInsertName.Append(pair.Name);
+                fieldInsertName.Append(SPACE).Append(pair.Name);
                 if (pair.Name.IsEqual("INSERT_DATE"))
                 {
-                    fieldInsertValues.Append("timezone('Asia/Baku'::text, now())");
+                    fieldInsertValues.Append(SPACE).Append("timezone('Asia/Baku'::text, now())");
                 }
                 else
                 {
-                    fieldInsertValues.Append("V_").Append(pair.Name);
+                    fieldInsertValues.Append(SPACE).Append(SPACE).Append("V_").Append(pair.Name);
                 }
 
                 if (!isId)
                 {
-                    fieldUpdate.Append(pair.Name).Append(" = ").Append("V_").Append(pair.Name);
+                    fieldUpdate.Append(SPACE).Append(SPACE).Append(pair.Name).Append(" = ").Append("V_").Append(pair.Name);
                     if (i < list.Count - 1)
                     {
                         str.Append(",\r\n");
@@ -127,18 +127,18 @@ namespace DbHelperPostgre
 
             str.Append(") RETURNS INTEGER\r\nLANGUAGE plpgsql\r\nAS\r\n$$\r\nBEGIN\r\n");
 
-            str.Append("IF V_ID IS NULL THEN\r\n");
-            str.Append("v_id := NEXTVAL('").Append(selectedItem).Append("_id_seq');\r\n");
-            str.Append("INSERT ").Append("INTO ").Append(selectedItem).Append("\r\n(");
-            str.Append(fieldInsertName).Append("\r\n)\r\nVALUES\r\n(\r\n");
-            str.Append(fieldInsertValues).Append("\r\n);\r\n");
+            str.Append(SPACE).Append("IF V_ID IS NULL THEN\r\n");
+            str.Append(SPACE).Append("INSERT ").Append("INTO ").Append(selectedItem).Append("\r\n(");
+            str.Append(SPACE).Append(fieldInsertName).Append("\r\n)\r\nVALUES\r\n(\r\n");
+            str.Append(SPACE).Append(fieldInsertValues).Append("\r\n) RETURNING id INTO v_id;\r\n");
             // ELSE
             // UPDATE STATEMENT
-            str.Append("ELSE\r\n");
-            str.Append("UPDATE ").Append(selectedItem).Append("\r\nSET\r\n");
-            str.Append(fieldUpdate);
-            str.Append("\r\nWHERE id = V_ID;\r\nEND IF;\r\n");
-            str.Append("END;\r\n$$;");
+            str.Append(SPACE).Append("ELSE\r\n");
+            str.Append(SPACE).Append("UPDATE ").Append(selectedItem).Append("\r\nSET\r\n");
+            str.Append(SPACE).Append(fieldUpdate).AppendLine("");
+            str.Append(SPACE).Append("WHERE id = V_ID;\r\n");
+            str.Append(SPACE).Append("END IF;\r\n");
+            str.Append(SPACE).Append("END;\r\n$$;");
             var result = str.ToString();
             return result;
         }
@@ -231,7 +231,7 @@ namespace DbHelperPostgre
 
             if (!string.IsNullOrEmpty(returnType) && !returnType.IsEqual("void"))
             {
-                funcData.Append("return await ExecuteNonQuery<").Append(returnType.GetNetType()).Append(">(\"");
+                funcData.Append("return await ExecuteScalar<").Append(returnType.GetNetType()).Append(">(\"");
             }
             else
             {

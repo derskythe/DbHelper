@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ColorCode;
 using DbHelperPostgre.Properties;
 using DbHelperPostgre.Properties.SettingsElements;
+using EnumsNET;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Formatting;
 using NLog;
 using Shared;
 
@@ -119,32 +124,34 @@ namespace DbHelperPostgre
             var tables = await _DataAccess.ListTables();
             var views = await _DataAccess.ListViews();
 
+            var objectType = ObjectType.Table;
             foreach (var item in tables)
             {
                 ComboView.Items.Add(new ComboboxItem
-                    {
-                        Id = item,
-                        Value = $"{item} (Table)",
-                        ObjectType = ObjectType.Table
-                    }
+                {
+                    Id = item,
+                    Value = $"{item} ({objectType.AsString()})",
+                    ObjectType = objectType
+                }
                 );
                 ComboTablesForProcedureGeneration.Items.Add(new ComboboxItem
                     {
                         Id = item,
-                        Value = $"{item} (Table)",
-                        ObjectType = ObjectType.Table
-                    }
+                        Value = $"{item} ({objectType.AsString()})",
+                        ObjectType = objectType
+                }
                 );
             }
 
+            objectType = ObjectType.View;
             foreach (var item in views)
             {
                 ComboView.Items.Add(new ComboboxItem
                     {
                         Id = item,
-                        Value = $"{item} (Table)",
-                        ObjectType = ObjectType.Table
-                    }
+                        Value = $"{item} ({objectType.AsString()})",
+                        ObjectType = objectType
+                }
                 );
             }
 
@@ -242,10 +249,26 @@ namespace DbHelperPostgre
                 }
 
                 var className = selectedItem.ToUpperCamelCase(true, checkCleanPlural.Checked);
+                if (sel.ObjectType == ObjectType.View && sel.Value.StartsWith("v_", StringComparison.OrdinalIgnoreCase))
+                {
+                    className = className[1..];
+                }
 
                 // Gen class
-                txtClass.Text = Utils.GenerateClassData(className, list);
-                txtViewFunction.Text = Utils.GenerateSelectTableOrViewMethod(className, list, selectedItem);
+                txtClass.Text = FormatUsingRoslyn(Utils.GenerateClassData(className, list));
+                txtViewFunction.Text = FormatUsingRoslyn(
+                    Utils.GenerateSelectTableOrViewMethod(className, list, selectedItem)
+                );
+
+                await InitializeAsync(webViewClass);
+                await InitializeAsync(webViewViewFunction);
+
+                var formatter = new HtmlFormatter();
+                var htmlClass = formatter.GetHtmlString(txtClass.Text, Languages.CSharp);
+                var htmlViewFunction = formatter.GetHtmlString(txtViewFunction.Text, Languages.CSharp);
+
+                webViewClass.NavigateToString(htmlClass);
+                webViewViewFunction.NavigateToString(htmlViewFunction);
 
                 _Settings.Ui.ComboView = selectedItem;
                 _Settings.Save();
@@ -272,10 +295,17 @@ namespace DbHelperPostgre
                 }
 
                 var paramList = await _DataAccess.ListProcedureParameters(selectedName);
-                txtProcedure.Text = Utils.GenerateProcedure(sel.ClearName,
-                                                            sel.AdditionalData,
-                                                            paramList,
-                                                            radioSeparate.Checked);
+                txtProcedure.Text = FormatUsingRoslyn(Utils.GenerateProcedure(sel.ClearName,
+                        sel.AdditionalData,
+                        paramList,
+                        radioSeparate.Checked
+                    )
+                );
+                var formatter = new HtmlFormatter();
+                var html = formatter.GetHtmlString(txtProcedure.Text, Languages.CSharp);
+
+                await InitializeAsync(webViewProcedure);
+                webViewProcedure.NavigateToString(html);
                 _Settings.Ui.ComboProcedureList = selectedName;
                 _Settings.Save();
             }
@@ -307,8 +337,13 @@ namespace DbHelperPostgre
                     return;
                 }
 
-                var result = Utils.GeneratePlSqlProcedure(selectedItem, list);
-                txtPlSql.Text = result;
+                txtPlSql.Text = Utils.GeneratePlSqlProcedure(selectedItem, list);
+
+                var formatter = new HtmlFormatter();
+                var html = formatter.GetHtmlString(txtPlSql.Text, Languages.Sql);
+
+                await InitializeAsync(webViewPlSql);
+                webViewPlSql.NavigateToString(html);
             }
             catch (Exception exp)
             {
@@ -347,6 +382,21 @@ namespace DbHelperPostgre
         private void radioSeparate_CheckedChanged(object sender, EventArgs e)
         {
             ButtonGenerateProcedure.PerformClick();
+        }
+
+        private async Task InitializeAsync(Microsoft.Web.WebView2.WinForms.WebView2 component)
+        {
+            await component.EnsureCoreWebView2Async(null);
+        }
+
+        private string FormatUsingRoslyn(string originalCode)
+        {
+            using (var workspace = new AdhocWorkspace())
+            {
+                var syntaxTree = CSharpSyntaxTree.ParseText(originalCode);
+                var formattedNode = Formatter.Format(syntaxTree.GetRoot(), workspace);
+                return formattedNode.ToFullString();
+            }
         }
     }
 }
