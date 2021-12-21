@@ -59,14 +59,16 @@ namespace DbHelperPostgre
             try
             {
                 Cursor = Cursors.WaitCursor;
+                var port = Convert.ToInt32(txtPort.Text);
                 _DataAccess = new Db.Db(new DbConfigSettingsElement()
-                {
-                    HostName = txtHostname.Text,
-                    Username = txtUsername.Text,
-                    Password = txtPassword.Text,
-                    Database = txtServiceName.Text
-                }
-                                       );
+                    {
+                        HostName = txtHostname.Text,
+                        Username = txtUsername.Text,
+                        Password = txtPassword.Text,
+                        Database = txtServiceName.Text,
+                        Port = port
+                    }
+                );
 
                 if (await _DataAccess.CheckConnection())
                 {
@@ -74,6 +76,7 @@ namespace DbHelperPostgre
                     _Settings.DbConfig.Database = txtServiceName.Text;
                     _Settings.DbConfig.Password = txtPassword.Text;
                     _Settings.DbConfig.Username = txtUsername.Text;
+                    _Settings.DbConfig.Port = port;
                     _Settings.Save();
 
                     UpdateProcCombo();
@@ -209,9 +212,10 @@ namespace DbHelperPostgre
             txtServiceName.Text = _Settings.DbConfig.Database;
             txtPassword.Text = _Settings.DbConfig.Password;
             txtUsername.Text = _Settings.DbConfig.Username;
+            txtPort.Text = _Settings.DbConfig.Port.ToString();
 
             if (!string.IsNullOrEmpty(txtHostname.Text) && !string.IsNullOrEmpty(txtServiceName.Text) &&
-                !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtUsername.Text))
+                !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPort.Text))
             {
                 await ConnectDb();
             }
@@ -391,12 +395,10 @@ namespace DbHelperPostgre
 
         private string FormatUsingRoslyn(string originalCode)
         {
-            using (var workspace = new AdhocWorkspace())
-            {
-                var syntaxTree = CSharpSyntaxTree.ParseText(originalCode);
-                var formattedNode = Formatter.Format(syntaxTree.GetRoot(), workspace);
-                return formattedNode.ToFullString();
-            }
+            using var workspace = new AdhocWorkspace();
+            var syntaxTree = CSharpSyntaxTree.ParseText(originalCode);
+            var formattedNode = Formatter.Format(syntaxTree.GetRoot(), workspace);
+            return formattedNode.ToFullString();
         }
     }
 }

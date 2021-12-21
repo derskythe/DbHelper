@@ -39,7 +39,7 @@ namespace DbHelperPostgre.Db
         public Db(DbConfigSettingsElement configuration)
         {
             ConnectionString = configuration.ToString();
-            var outputString = $"Host={configuration.HostName};Port=5400;Database={configuration.Database};User Id={configuration.Username};Password=*******;";
+            var outputString = $"Host={configuration.HostName};Port={configuration.Port};Database={configuration.Database};User Id={configuration.Username};Password=*******;";
             Log.Info(outputString);
         }
 

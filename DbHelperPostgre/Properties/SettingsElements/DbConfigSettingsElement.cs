@@ -62,6 +62,7 @@ namespace DbHelperPostgre.Properties.SettingsElements
         /// </summary>
         /// <value>The port.</value>
         [DataMember]
+        [Required]
         [Range(1, 65535, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public int Port { get; set; }
 
@@ -71,7 +72,7 @@ namespace DbHelperPostgre.Properties.SettingsElements
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            var connectionString = $"Host={HostName};Port=5400;Database={Database};User Id={Username};Password={Password};";
+            var connectionString = $"Host={HostName};Port={Port};Database={Database};User Id={Username};Password={Password};";
             return connectionString;
         }
     }
