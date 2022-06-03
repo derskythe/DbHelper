@@ -83,7 +83,7 @@ namespace DbHelperOracle
             {
                 str.Append("V_").Append(pair.Key);
                 str.Append(pair.Key.IsEqual("id") ? " IN OUT " : " IN ");
-                str.Append(selectedItem).Append(".").Append(pair.Key).Append("%TYPE");
+                str.Append(selectedItem).Append('.').Append(pair.Key).Append("%TYPE");
                 fieldInsertName.Append(pair.Key);
                 fieldInsertValues.Append("V_").Append(pair.Key);
                 fieldUpdate.Append(pair.Key).Append(" = ").Append("V_").Append(pair.Key);
@@ -106,7 +106,7 @@ namespace DbHelperOracle
             // INSERT STATEMENT
             str.Append("IF V_ID IS NULL THEN\r\n");
             str.Append("SELECT SEQ_").Append(selectedItem).Append("_ID.NEXTVAL INTO V_ID FROM DUAL;\r\n");
-            str.Append("INSERT INTO ").Append(selectedItem).Append("\r\n(");
+            str.Append("INSERT INTO").Append(' ').Append(selectedItem).Append("\r\n(");
             str.Append(fieldInsertName).Append("\r\n)\r\nVALUES\r\n(\r\n");
             str.Append(fieldInsertValues).Append("\r\n);\r\n");
             // ELSE
@@ -290,7 +290,7 @@ namespace DbHelperOracle
 
             if (oracleType.Contains("NUMBER"))
             {
-                return "int";
+                return "long";
             }
 
             if (oracleType.Contains("VARCHAR2") || oracleType.Contains("NVARCHAR2"))
