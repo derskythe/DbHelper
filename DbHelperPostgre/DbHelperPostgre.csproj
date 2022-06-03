@@ -27,13 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ColorCode.Core" Version="2.0.11" />
-    <PackageReference Include="ColorCode.HTML" Version="2.0.11" />
+    <PackageReference Include="ColorCode.Core" Version="2.0.13" />
+    <PackageReference Include="ColorCode.HTML" Version="2.0.13" />
     <PackageReference Include="Enums.NET" Version="4.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.11.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.992.28" />
-    <PackageReference Include="NLog" Version="4.7.11" />
-    <PackageReference Include="Npgsql" Version="5.0.10" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1185.39" />
+    <PackageReference Include="NLog" Version="4.7.15" />
+    <PackageReference Include="Npgsql" Version="6.0.4" />
   </ItemGroup>
 
   <ItemGroup>
