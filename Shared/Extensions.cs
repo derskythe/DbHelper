@@ -159,7 +159,16 @@ namespace Shared
                 return string.Empty;
             }
 
-            var s = cleanVar ? value.ToLowerInvariant().Split('_') : value[1..].ToLowerInvariant().Split('_');
+            string[] s;
+            var valueUpper = value.ToLowerInvariant();
+            if (valueUpper.StartsWith("v_"))
+            {
+                s = cleanVar ? valueUpper[2..].Split('_') : valueUpper[3..].Split('_');                
+            }
+            else
+            {
+                s = cleanVar ? valueUpper.Split('_') : valueUpper[1..].Split('_');
+            }
             var str = new StringBuilder();
             foreach (var word in s)
             {
