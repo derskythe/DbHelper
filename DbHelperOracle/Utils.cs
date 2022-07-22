@@ -4,18 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using DbHelperOracle.Db;
+// ReSharper disable HeuristicUnreachableCode
+#pragma warning disable CS0162
 
 namespace DbHelperOracle
 {
     internal static class Utils
     {
         private const string SPACE = "    ";
+        private const bool _IsStatic = false;
 
         public static string GenerateViewFunction(string className, List<KeyValuePair<string, string>> list, string selectedItem)
         {
             var funcData = new StringBuilder();
 
-            funcData.Append("public static async Task<List<").Append(className).Append(">> List").Append(className).Append("()\r\n{");
+            if (_IsStatic)
+            {
+                funcData.Append("public static async Task<List<").Append(className).Append(">> List").Append(className).Append("()\r\n{");
+            }
+            else
+            {
+                funcData.Append("public async Task<List<").Append(className).Append(">> List").Append(className).Append("()\r\n{");
+            }
 
             funcData.Append(SPACE).Append(SPACE).Append("const string query = \"SELECT ");
             var i = 0;
@@ -132,60 +142,89 @@ namespace DbHelperOracle
             var list = OracleDb.ListProcedureParameters(ownerName, packageName, procName);
 
             var str = new StringBuilder();
-            var methodHeader = "public static async Task " +
-                               ToUpperCamelCase(packageName, true) +
-                               ToUpperCamelCase(procName, true) + "(\r\n";
+            var upperPackageName = ToUpperCamelCase(packageName, true);
+            var upperProcName = ToUpperCamelCase(procName, true);
             foreach (var paramList in list.ParamList)
             {
-                str.Append(methodHeader);
-                var i = 0;
-                if (radioSeparateChecked)
-                {
-                    foreach (var info in paramList)
-                    {
-                        str.Append(info.NetType).Append(' ').Append(info.NameLowerCamelCase);
-
-                        i++;
-                        if (i < paramList.Count)
-                        {
-                            str.Append(",\r\n");
-                        }
-                    }
-                }
-                else
-                {
-                    str.Append("FooClass item");
-                }
-
-                str.Append(")\r\n{\r\n");
-                str.Append("var paramList = new List<DbParam> {\r\n");
+                var strParamList = new StringBuilder();
+                var strArgumentsList = new StringBuilder();
+                var listOutputTypes = new List<string>();
                 foreach (var info in paramList)
                 {
-                    str.Append("new DbParam(\"").Append(info.DbName).Append("\", ").Append(info.NetType.GetOracleType()).Append(", ");
+                    strParamList.Append("new DbParam(\"").Append(info.DbName).Append("\", ").Append(info.NetType.GetOracleType()).Append(", ");
+                    
                     if (!info.InParam)
                     {
-                        str.Append("null, ParameterDirection.Output");
+                        listOutputTypes.Add(info.NetType);
+                        strParamList.Append("null, ParameterDirection.Output");
                     }
                     else
                     {
                         if (radioSeparateChecked)
                         {
-                            str.Append(info.NameLowerCamelCase);
+                            strArgumentsList.Append(info.NetType).Append(' ').Append(info.NameLowerCamelCase).AppendLine(",");
+                            strParamList.Append(info.NameLowerCamelCase);
                         }
                         else
                         {
-                            str.Append("item.").Append(info.Name);
+                            if (strArgumentsList.Length <= 0)
+                            {
+                                strArgumentsList.AppendLine("FooClass item, ");
+                            }
+
+                            strParamList.Append("item.").Append(info.Name);
                         }
                     }
 
-                    str.Append("),\r\n");
+                    strParamList.Append("),\r\n");
                 }
+
+                if (listOutputTypes.Count > 0)
+                {
+                    if (listOutputTypes.Count > 1)
+                    {
+                        str.Append("public static async Task<(");
+                        str.Append(string.Join(',', listOutputTypes));
+                        str.Append(")> ").Append(upperPackageName).Append(upperProcName).Append("(\r\n");
+                    }
+                    else
+                    {
+                        str.Append("public static async Task<");
+                        str.Append(string.Join(',', listOutputTypes));
+                        str.Append("> ").Append(upperPackageName).Append(upperProcName).Append("(\r\n");
+                    }
+                }
+                else
+                {
+                    str.Append("public static async Task ").Append(upperPackageName).Append(upperProcName).Append("(\r\n");                    
+                }
+
+                var args = strArgumentsList.ToString();
+                str.Append(args.Substring(0, args.LastIndexOf(',')));
+
+                str.Append(")\r\n{\r\n");
+                str.Append("var paramList = new List<DbParam> {\r\n");
+                str.Append(strParamList);
                 str.Append("};\r\n\r\n");
-                str.Append("await ExecuteNonQuery(\"")
-                   .Append(string.IsNullOrEmpty(packageName) ? ownerName : ownerName + "." + packageName)
-                   .Append('.')
-                   .Append(procName)
-                   .AppendLine("\", paramList);\r\n}\r\n");
+
+                if (listOutputTypes.Count > 0)
+                {
+                    str.Append("var result = await ExecuteNonQuery<");
+                    str.Append(string.Join(',', listOutputTypes));
+                    str.Append(">(\"")
+                       .Append(string.IsNullOrEmpty(packageName) ? ownerName : ownerName + "." + packageName)
+                       .Append('.')
+                       .Append(procName)
+                       .AppendLine("\", paramList);\r\nreturn result;\r\n}\r\n");
+                }
+                else
+                {
+                    str.Append("await ExecuteNonQuery(\"")
+                       .Append(string.IsNullOrEmpty(packageName) ? ownerName : ownerName + "." + packageName)
+                       .Append('.')
+                       .Append(procName)
+                       .AppendLine("\", paramList);\r\n}\r\n");
+                }
             }
 
             str.AppendLine();
@@ -253,7 +292,7 @@ namespace DbHelperOracle
             {
                 classData.Append(pair)
                          .Append(": ")
-                         .Append("{")
+                         .Append('{')
                          .Append(i)
                          .Append("}, ");
                 i++;
