@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.7.7" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.101" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.180" />
   </ItemGroup>
 
   <ItemGroup>
