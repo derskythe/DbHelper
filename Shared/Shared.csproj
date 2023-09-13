@@ -1,10 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-	<PropertyGroup>
-		<TargetFramework>net5.0-windows</TargetFramework>
-		<UseWindowsForms>true</UseWindowsForms>
-	</PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net7.0-windows</TargetFramework>
+        <UseWindowsForms>true</UseWindowsForms>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\SettingsHelpers\SettingsHelper.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SettingsHelpers\SettingsHelper.csproj"/>
+    </ItemGroup>
 </Project>

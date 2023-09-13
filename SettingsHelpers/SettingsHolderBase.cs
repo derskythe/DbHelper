@@ -1,10 +1,10 @@
-﻿namespace SettingsHelper
+﻿namespace SettingsHelper;
+
+
+public abstract class SettingsHolderBase
 {
-    public abstract class SettingsHolderBase
+    public (bool Success, string OutputMessage) Save()
     {
-        public (bool Success, string OutputMessage) Save()
-        {
-            return SettingsHelpers.Save(this);
-        }
+        return SettingsHelpers.Save(this);
     }
 }

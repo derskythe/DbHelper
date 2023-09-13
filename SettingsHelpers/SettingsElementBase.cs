@@ -11,12 +11,12 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-namespace SettingsHelper
+namespace SettingsHelper;
+
+
+/// <summary>
+/// Class SettingsBase.
+/// </summary>
+public abstract class SettingsElementBase
 {
-    /// <summary>
-    /// Class SettingsBase.
-    /// </summary>
-    public abstract class SettingsElementBase
-    {
-    }
 }

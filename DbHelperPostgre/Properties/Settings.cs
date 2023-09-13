@@ -2,31 +2,31 @@
 using DbHelperPostgre.Properties.SettingsElements;
 using SettingsHelper;
 
-namespace DbHelperPostgre.Properties
+namespace DbHelperPostgre.Properties;
+
+
+public class Settings : SettingsHolderBase
 {
-    public class Settings : SettingsHolderBase
+    public DbConfigSettingsElement DbConfig { get; set; }
+    public UiSettingsElement Ui { get; set; }
+
+    public Settings()
     {
-        public DbConfigSettingsElement DbConfig { get; set; }
-        public UiSettingsElement Ui { get; set; }
+        DbConfig = new DbConfigSettingsElement();
+        Ui = new UiSettingsElement();
+    }
 
-        public Settings()
+    public virtual List<SettingsElementBase> ListSettingsElements()
+    {
+        return new()
         {
-            DbConfig = new DbConfigSettingsElement();
-            Ui = new UiSettingsElement();
-        }
+            DbConfig,
+            Ui
+        };
+    }
 
-        public virtual List<SettingsElementBase> ListSettingsElements()
-        {
-            return new()
-            {
-                DbConfig,
-                Ui
-            };
-        }
-
-        public override string ToString()
-        {
-            return $"{nameof(DbConfig)}: {DbConfig}, {nameof(Ui)}: {Ui}";
-        }
+    public override string ToString()
+    {
+        return $"{nameof(DbConfig)}: {DbConfig}, {nameof(Ui)}: {Ui}";
     }
 }

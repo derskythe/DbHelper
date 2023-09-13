@@ -1,25 +1,25 @@
 ﻿using System.Runtime.Serialization;
 
-namespace DbHelperPostgre.Db
+namespace DbHelperPostgre.Db;
+
+
+[DataContract]
+public class ProcedureInfo
 {
-    [DataContract]
-    public class ProcedureInfo
+    [DataMember]
+    public string Name { get; set; }
+
+    [DataMember]
+    public string DbType { get; set; }
+
+    [DataMember]
+    public string NetType { get; set; }
+
+    [DataMember]
+    public string SpecificName { get; set; }
+
+    public override string ToString()
     {
-        [DataMember]
-        public string Name { get; set; }
-
-        [DataMember]
-        public string DbType { get; set; }
-
-        [DataMember]
-        public string NetType { get; set; }
-
-        [DataMember]
-        public string SpecificName { get; set; }
-
-        public override string ToString()
-        {
-            return $"Name: {Name}, DbType: {DbType}, NetType: {NetType}, SpecificName: {SpecificName}";
-        }
+        return $"Name: {Name}, DbType: {DbType}, NetType: {NetType}, SpecificName: {SpecificName}";
     }
 }

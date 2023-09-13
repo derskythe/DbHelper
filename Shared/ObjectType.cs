@@ -14,33 +14,33 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Shared
+namespace Shared;
+
+
+/// <summary>
+/// Enum ObjectType
+/// </summary>
+[Serializable]
+public enum ObjectType
 {
     /// <summary>
-    /// Enum ObjectType
+    /// The table
     /// </summary>
-    [Serializable]
-    public enum ObjectType
-    {
-        /// <summary>
-        /// The table
-        /// </summary>
-        [EnumMember]
-        Table,
-        /// <summary>
-        /// The view
-        /// </summary>
-        [EnumMember]
-        View,
-        /// <summary>
-        /// The procedure
-        /// </summary>
-        [EnumMember]
-        Procedure,
-        /// <summary>
-        /// The package
-        /// </summary>
-        [EnumMember]
-        Package
-    }
+    [EnumMember]
+    Table,
+    /// <summary>
+    /// The view
+    /// </summary>
+    [EnumMember]
+    View,
+    /// <summary>
+    /// The procedure
+    /// </summary>
+    [EnumMember]
+    Procedure,
+    /// <summary>
+    /// The package
+    /// </summary>
+    [EnumMember]
+    Package
 }

@@ -1,11 +1,11 @@
 ﻿using Containers.Settings;
 
-namespace DbWinForms
+namespace DbWinForms;
+
+
+public partial class DataAccessTheory : BaseDataAccess
 {
-    public partial class DataAccessTheory : BaseDataAccess
+    public DataAccessTheory(DbConfigOption configuration) : base(configuration)
     {
-        public DataAccessTheory(DbConfigOption configuration) : base(configuration)
-        {
-        }
     }
 }
