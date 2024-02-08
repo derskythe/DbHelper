@@ -33,7 +33,7 @@
     <PackageReference Include="Enums.NET" Version="4.0.2" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.8.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1938.49" />
-    <PackageReference Include="NLog" Version="5.2.4" />
+    <PackageReference Include="NLog" Version="5.2.8" />
     <PackageReference Include="Npgsql" Version="7.0.4" />
   </ItemGroup>
 
