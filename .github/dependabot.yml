@@ -5,9 +5,13 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    assignees:
+      - "derskythe"
 
   # Maintain dependencies for dotnet
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "weekly"
+    assignees:
+      - "derskythe"
