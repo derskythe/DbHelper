@@ -5,6 +5,17 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    reviewers:
+      - "derskythe"
+    assignees:
+      - "derskythe"
+
+  - package-ecosystem: "docker"
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "derskythe"
     assignees:
       - "derskythe"
 
@@ -13,5 +24,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    reviewers:
+      - "derskythe"
     assignees:
       - "derskythe"
