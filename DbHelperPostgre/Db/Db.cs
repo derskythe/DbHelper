@@ -12,6 +12,9 @@ using Npgsql;
 using NpgsqlTypes;
 using Shared;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
+
 namespace DbHelperPostgre.Db;
 
 
@@ -24,6 +27,7 @@ public partial class Db
     /// The log
     /// </summary>
     protected static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
     // ReSharper restore InconsistentNaming
     // ReSharper restore FieldCanBeMadeReadOnly.Local
 
@@ -34,13 +38,15 @@ public partial class Db
     private string ConnectionString { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseDataAccess" /> class.
+    /// This class represents a database helper for PostgreSQL.
     /// </summary>
-    /// <param name="configuration">The configuration.</param>
     public Db(DbConfigSettingsElement configuration)
     {
         ConnectionString = configuration.ToString();
-        var outputString = $"Host={configuration.HostName};Port={configuration.Port};Database={configuration.Database};User Id={configuration.Username};Password=*******;";
+
+        var outputString
+            = $"Host={configuration.HostName};Port={configuration.Port};Database={configuration.Database};User Id={configuration.Username};Password=*******;";
+
         Log.Info(outputString);
     }
 
@@ -51,6 +57,7 @@ public partial class Db
     private NpgsqlConnection GetConnection()
     {
         var connection = new NpgsqlConnection(ConnectionString);
+
         if (connection.State != ConnectionState.Open)
         {
             connection.Open();
@@ -66,12 +73,13 @@ public partial class Db
     /// <param name="commandText">The command text.</param>
     /// <param name="commandType">Type of the command.</param>
     /// <returns>DbCommand.</returns>
-    private DbCommand GetCommand(NpgsqlConnection connection, string commandText, CommandType commandType)
+    private static DbCommand GetCommand(NpgsqlConnection connection, string commandText, CommandType commandType)
     {
         var command = new NpgsqlCommand(commandText, connection)
         {
             CommandType = commandType
         };
+
         return command;
     }
 
@@ -83,9 +91,11 @@ public partial class Db
     protected static NpgsqlParameter GetParameter(string parameter, object value, NpgsqlDbType? sqlType = null)
     {
         NpgsqlParameter parameterObject;
+
         if (value != null)
         {
             var type = value.GetType();
+
             if (type.IsEnum)
             {
                 parameterObject = new NpgsqlParameter(parameter, (int)value);
@@ -105,6 +115,7 @@ public partial class Db
         }
 
         parameterObject.Direction = ParameterDirection.Input;
+
         if (sqlType != null)
         {
             parameterObject.NpgsqlDbType = (NpgsqlDbType)sqlType;
@@ -121,12 +132,19 @@ public partial class Db
     /// <param name="sqlType">Type of the SQL.</param>
     /// <param name="logValues">if set to <c>true</c> [log values].</param>
     /// <returns>NpgsqlParameter.</returns>
-    protected NpgsqlParameter GetParameter(string parameter, object value, NpgsqlDbType sqlType, bool logValues)
+    protected static NpgsqlParameter GetParameter(
+        string parameter,
+        object value,
+        NpgsqlDbType sqlType,
+        bool logValues
+    )
     {
         NpgsqlParameter parameterObject;
+
         if (value != null)
         {
             var type = value.GetType();
+
             if (type.IsEnum)
             {
                 parameterObject = new NpgsqlParameter(parameter, (int)value);
@@ -164,23 +182,20 @@ public partial class Db
     /// <param name="value">The value.</param>
     /// <param name="parameterDirection">The parameter direction.</param>
     /// <returns>SqlParameter.</returns>
-    protected NpgsqlParameter GetParameterOut(
+    protected static NpgsqlParameter GetParameterOut(
         string parameter,
         SqlDbType type,
         object value = null,
-        ParameterDirection parameterDirection = ParameterDirection.InputOutput)
+        ParameterDirection parameterDirection = ParameterDirection.InputOutput
+    )
     {
         NpgsqlParameter parameterObject;
+
         if (value != null)
         {
-            if (value.GetType().IsEnum)
-            {
-                parameterObject = new NpgsqlParameter(parameter, (int)value);
-            }
-            else
-            {
-                parameterObject = new NpgsqlParameter(parameter, value);
-            }
+            parameterObject = value.GetType().IsEnum ?
+                new NpgsqlParameter(parameter, (int)value) :
+                new NpgsqlParameter(parameter, value);
         }
         else
         {
@@ -208,29 +223,31 @@ public partial class Db
     /// <returns>System.Int32.</returns>
     protected async Task ExecuteNonQuery(
         string procedureName,
-        List<NpgsqlParameter> parameters,
-        CommandType commandType = CommandType.StoredProcedure)
+        IReadOnlyList<NpgsqlParameter> parameters,
+        CommandType commandType = CommandType.StoredProcedure
+    )
     {
         NpgsqlConnection connection = null;
 
         try
         {
             connection = GetConnection();
-            using (var cmd = GetCommand(connection, procedureName, commandType))
-            {
-                if (parameters != null && parameters.Count > 0)
-                {
-                    cmd.Parameters.AddRange(parameters.ToArray());
-                }
+            await using var cmd = GetCommand(connection, procedureName, commandType);
 
-                await cmd.ExecuteNonQueryAsync();
+            if (parameters is { Count: > 0 })
+            {
+                cmd.Parameters.AddRange(parameters.ToArray());
             }
+
+            await cmd.ExecuteNonQueryAsync();
         }
         catch (Exception ex)
         {
             Log.Error(ex,
-                      $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
+                      $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, " +
+                      $"parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
         finally
@@ -248,28 +265,31 @@ public partial class Db
     /// <param name="procedureName">Name of the procedure.</param>
     /// <param name="parameters">The parameters.</param>
     /// <returns>System.Object.</returns>
-    protected async Task<T> ExecuteScalar<T>(string procedureName, List<NpgsqlParameter> parameters)
+    protected async Task<T> ExecuteScalar<T>(string procedureName, IReadOnlyList<NpgsqlParameter> parameters)
     {
         object returnValue;
         NpgsqlConnection connection = null;
+
         try
         {
             connection = GetConnection();
-            using (var cmd = GetCommand(connection, procedureName, CommandType.StoredProcedure))
-            {
-                if (parameters != null && parameters.Count > 0)
-                {
-                    cmd.Parameters.AddRange(parameters.ToArray());
-                }
 
-                returnValue = await cmd.ExecuteScalarAsync();
+            await using var cmd = GetCommand(connection, procedureName, CommandType.StoredProcedure);
+
+            if (parameters is { Count: > 0 })
+            {
+                cmd.Parameters.AddRange(parameters.ToArray());
             }
+
+            returnValue = await cmd.ExecuteScalarAsync();
         }
         catch (Exception ex)
         {
             Log.Error(ex,
-                      $"{ex.Message}. Failed to ExecuteScalar for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
+                      $"{ex.Message}. Failed to ExecuteScalar for {procedureName}, " +
+                      $"parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
         finally
@@ -283,29 +303,38 @@ public partial class Db
         return (T)returnValue;
     }
 
-    protected async Task<int> Count(string tableName, List<NpgsqlParameter> parameters)
+    protected async Task<int> Count(string tableName, IReadOnlyList<NpgsqlParameter> parameters)
     {
         int returnValue;
         NpgsqlConnection connection = null;
+
         try
         {
             connection = GetConnection();
-            using (var cmd = GetCommand(connection, $"SELECT COUNT(*) FROM {tableName}", CommandType.Text))
-            {
-                if (parameters != null && parameters.Count > 0)
-                {
-                    cmd.Parameters.AddRange(parameters.ToArray());
-                }
 
-                var rawValue = await cmd.ExecuteScalarAsync();
-                returnValue = rawValue != null ? Convert.ToInt32(rawValue) : 0;
+            await using var cmd = GetCommand(connection,
+                                             $"SELECT COUNT(*) FROM {tableName}",
+                                             CommandType.Text
+            );
+
+            if (parameters is { Count: > 0 })
+            {
+                cmd.Parameters.AddRange(parameters.ToArray());
             }
+
+            var rawValue = await cmd.ExecuteScalarAsync();
+
+            returnValue = rawValue != null ?
+                Convert.ToInt32(rawValue) :
+                0;
         }
         catch (Exception ex)
         {
             Log.Error(ex,
-                      $"{ex.Message}. Failed to Count for {tableName}, parameters: {parameters?.GetStringFromArray()}"
+                      $"{ex.Message}. Failed to Count for {tableName}, " +
+                      $"parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
         finally
@@ -313,6 +342,7 @@ public partial class Db
             if (connection != null)
             {
                 await connection.CloseAsync();
+                connection.Dispose();
             }
         }
 
@@ -328,47 +358,53 @@ public partial class Db
     /// <returns>DbDataReader.</returns>
     protected async Task<DbDataReader> GetDataReader(
         string procedureName,
-        List<NpgsqlParameter> parameters,
-        CommandType commandType = CommandType.Text)
+        IReadOnlyList<NpgsqlParameter> parameters,
+        CommandType commandType = CommandType.Text
+    )
     {
         DbDataReader ds;
 
         try
         {
             var connection = GetConnection();
-            {
-                using (var cmd = GetCommand(connection, procedureName, commandType))
-                {
-                    if (parameters != null && parameters.Count > 0)
-                    {
-                        cmd.Parameters.AddRange(parameters.Select(x => x.Clone()).ToArray());
-                    }
 
-                    ds = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
+            {
+                await using var cmd = GetCommand(connection, procedureName, commandType);
+
+                if (parameters is { Count: > 0 })
+                {
+                    cmd.Parameters.AddRange(
+                        parameters.Select(x => x.Clone()).ToArray()
+                    );
                 }
+
+                ds = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
             }
         }
         catch (Exception ex)
         {
             Log.Error(ex,
-                      $"{ex.Message}. Failed to GetDataReader for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
+                      $"{ex.Message}. Failed to GetDataReader for {procedureName}, " +
+                      $"parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
 
         return ds;
     }
 
-
     protected async Task<DbDataReader> GetDataReader(
         string procedureName,
-        CommandType commandType = CommandType.TableDirect)
+        CommandType commandType = CommandType.TableDirect
+    )
     {
         DbDataReader ds;
 
         try
         {
             var connection = GetConnection();
+
             {
                 var cmd = GetCommand(connection, procedureName, commandType);
                 ds = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
@@ -377,6 +413,7 @@ public partial class Db
         catch (Exception ex)
         {
             Log.Error(ex, $"{ex.Message}. Failed to GetDataReader for {procedureName}");
+
             throw;
         }
 
@@ -385,58 +422,61 @@ public partial class Db
 
     protected async Task<T> SelectSingle<T>(
         string cmdText,
-        List<NpgsqlParameter> parameters,
-        Func<DbDataReader, T> funcName)
+        IReadOnlyList<NpgsqlParameter> parameters,
+        Func<DbDataReader, T> funcName
+    )
     {
-        using (var dataReader = await GetDataReader(cmdText, parameters))
+        await using var dataReader = await GetDataReader(cmdText, parameters);
+
+        if (dataReader is not { HasRows: true }) return default;
+
+        while (await dataReader.ReadAsync())
         {
-            if (dataReader != null && dataReader.HasRows)
-            {
-                while (await dataReader.ReadAsync())
-                {
-                    return funcName(dataReader);
-                }
-            }
+            return funcName(dataReader);
         }
 
-        return default(T);
+        return default;
     }
 
     protected async Task<T> SelectSingle<T>(
         string cmdText,
-        List<NpgsqlParameter> parameters,
-        CommandType commandType = CommandType.Text)
+        IReadOnlyList<NpgsqlParameter> parameters,
+        CommandType commandType = CommandType.Text
+    )
     {
-        using (var dataReader = await GetDataReader(cmdText, parameters, commandType))
+        await using var dataReader = await GetDataReader(cmdText, parameters, commandType);
+
+        if (dataReader is not { HasRows: true })
         {
-            if (dataReader != null && dataReader.HasRows)
-            {
-                while (await dataReader.ReadAsync())
-                {
-                    return dataReader.GetFieldValue<T>(0);
-                }
-            }
+            return default;
         }
 
-        return default(T);
+        while (await dataReader.ReadAsync())
+        {
+            return dataReader.GetFieldValue<T>(0);
+        }
+
+        return default;
     }
 
     protected async Task<List<T>> Many<T>(
         string cmdText,
-        List<NpgsqlParameter> parameters,
-        Func<DbDataReader, T> funcName)
+        IReadOnlyList<NpgsqlParameter> parameters,
+        Func<DbDataReader, T> funcName
+    )
     {
         var result = new List<T>();
 
-        using (var dataReader = await GetDataReader(cmdText, parameters))
+        await using var dataReader = await GetDataReader(cmdText, parameters);
+
+        if (dataReader is not { HasRows: true })
         {
-            if (dataReader != null && dataReader.HasRows)
-            {
-                while (await dataReader.ReadAsync())
-                {
-                    result.Add(funcName(dataReader));
-                }
-            }
+            return result;
+        }
+
+        while (await dataReader.ReadAsync())
+        {
+            result.Add(funcName(dataReader));
         }
 
         return result;
@@ -444,8 +484,9 @@ public partial class Db
 
     private static (string where, List<NpgsqlParameter> paramList) AppendArrayParams<T>(
         string columnName,
-        List<T> list,
-        string paramPrefix = "apParam")
+        IReadOnlyList<T> list,
+        string paramPrefix = "apParam"
+    )
     {
         if (list == null || list.Count == 0)
         {
@@ -455,15 +496,18 @@ public partial class Db
         var fields = new List<NpgsqlParameter>();
         var str = new StringBuilder();
         str.Append(" ( ");
+
         for (var i = 0; i < list.Count; i++)
         {
             var paramName = $"@{paramPrefix}{i}";
+
             if (i != 0)
             {
                 str.Append(" OR ");
             }
 
             str.Append(columnName).Append(" = ").Append(paramName).Append(i);
+
             fields.Add(
                 GetParameter(paramName, list[i])
             );

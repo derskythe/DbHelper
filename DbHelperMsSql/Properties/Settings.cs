@@ -5,7 +5,7 @@ using SettingsHelper;
 namespace DbHelperMsSql.Properties;
 
 
-public class Settings : SettingsHolderBase
+public sealed class Settings : SettingsHolderBase
 {
     public DbConfigSettingsElement DbConfig { get; set; }
     public UiSettingsElement Ui { get; set; }
@@ -16,7 +16,7 @@ public class Settings : SettingsHolderBase
         Ui = new UiSettingsElement();
     }
 
-    public virtual List<SettingsElementBase> ListSettingsElements()
+    public List<SettingsElementBase> ListSettingsElements()
     {
         return new()
         {

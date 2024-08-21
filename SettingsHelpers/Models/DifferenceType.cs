@@ -1,18 +1,4 @@
-﻿// ***********************************************************************
-// Assembly         : SettingsHelper
-// Author           : Skif
-// Created          : 06-28-2021
-//
-// Last Modified By : Skif
-// Last Modified On : 06-28-2021
-// ***********************************************************************
-// <copyright file="DifferenceType.cs" company="SettingsHelper">
-//     Copyright (c) . All rights reserved.
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
-
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 
 namespace SettingsHelper.Models;

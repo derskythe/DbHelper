@@ -1,23 +1,8 @@
-﻿// ***********************************************************************
-// Assembly         : Db
-// Author           : p.g.parpura
-// Created          : 06-23-2020
-//
-// Last Modified By : p.g.parpura
-// Last Modified On : 08-19-2020
-// ***********************************************************************
-// <copyright file="Utils.cs" company="skif@skif.ws">
-//     Copyright (c) . All rights reserved.
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.Reflection;
 using System.Text;
 
 namespace DbWinForms;
@@ -77,7 +62,7 @@ internal static class Utils
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="source">The source.</param>
-    /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+    /// <returns><c>true</c> if value, <c>false</c> otherwise.</returns>
     public static bool GetBool<T>(this T source) where T : class
     {
         return source != DBNull.Value && Convert.ToInt32(source) != 0;
@@ -144,16 +129,16 @@ internal static class Utils
                 return string.Empty;
             }
 
-            FieldInfo field = value.GetType().GetField(value.ToString());
+            var field = value.GetType().GetField(value.ToString() ?? string.Empty);
 
             if (field == null)
             {
                 return string.Empty;
             }
-            var attribute = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute))
-                as DescriptionAttribute;
 
-            return attribute == null ? value.ToString() : attribute.Description;
+            return Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) is not DescriptionAttribute attribute ?
+                value.ToString() :
+                attribute.Description;
         }
         catch (Exception exp)
         {
@@ -172,6 +157,7 @@ internal static class Utils
     public static string GetStringFromArray<T>(this IEnumerable<T> list)
     {
         var fields = new StringBuilder();
+
         if (list != null)
         {
             foreach (T item in list)

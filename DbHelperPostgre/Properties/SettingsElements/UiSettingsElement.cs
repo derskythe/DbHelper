@@ -3,7 +3,7 @@
 namespace DbHelperPostgre.Properties.SettingsElements;
 
 
-public class UiSettingsElement : SettingsElementBase
+public sealed class UiSettingsElement : SettingsElementBase
 {
     public int Height { get; set; }
     public int Width { get; set; }

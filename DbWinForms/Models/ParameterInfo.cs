@@ -4,22 +4,53 @@ namespace DbWinForms.Models;
 
 
 [DataContract]
-public class ParameterInfo
+public readonly record struct ParameterInfo
 {
     [DataMember]
-    public string DbType { get; set; }
+    public int Index { get; }
 
     [DataMember]
-    public bool InParam { get; set; }
+    public string Name { get; }
 
     [DataMember]
-    public int Index { get; set; }
+    public string DbType { get; }
 
     [DataMember]
-    public string Name { get; set; }
+    public string NetType { get; }
 
     [DataMember]
-    public string NetType { get; set; }
+    public bool InParam { get; }
+
+    public ParameterInfo()
+    { }
+
+    public ParameterInfo(
+        int index,
+        string name,
+        string dbType,
+        string netType
+    )
+    {
+        Index = index;
+        Name = name;
+        DbType = dbType;
+        NetType = netType;
+    }
+
+    public ParameterInfo(
+        int index,
+        string name,
+        string dbType,
+        string netType,
+        bool inParam
+    )
+    {
+        Index = index;
+        Name = name;
+        DbType = dbType;
+        NetType = netType;
+        InParam = inParam;
+    }
 
     public override string ToString()
     {

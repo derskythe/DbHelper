@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using DbWinForms;
 using DbWinForms.Models;
 using EnumsNET;
 using Shared;
@@ -39,7 +38,7 @@ internal static class Utils
         }
 
         funcData.Append(" FROM ").Append(selectedItem).Append(" t\";\r\n\r\n");
-        funcData.Append(SPACE).Append("var paramList = new List<DbParameter>\r\n{};\r\n");
+        funcData.Append(SPACE).Append("var paramList = new DbParameter[]\r\n{};\r\n");
         funcData.Append("return await Many(query, paramList, Converter.To")
                 .Append(className)
                 .Append(");\r\n}\r\n\r\n");
@@ -171,7 +170,7 @@ internal static class Utils
 
         if (paramList.Count > 0)
         {
-            funcData.Append("var paramList = new List<DbParameter>\r\n{\r\n");
+            funcData.Append("var paramList = new DbParameter[]\r\n{\r\n");
             foreach (var info in paramList)
             {
                 if (!info.InParam)
@@ -269,7 +268,7 @@ internal static class Utils
 
         if (paramList.Count > 0)
         {
-            funcData.Append("var paramList = new List<DbParameter>\r\n{\r\n");
+            funcData.Append("var paramList = new DbParameter[]\r\n{\r\n");
             foreach (var info in paramList)
             {
                 if (!info.InParam)
@@ -369,7 +368,7 @@ internal static class Utils
 
         classData.Append("[Serializable]\r\n");
         classData.Append("[DataContract]\r\n");
-        classData.Append("public class ").Append(className).Append("\r\n{");
+        classData.Append("public sealed record ").Append(className).Append("\r\n{");
         var upperList = new List<string>();
         foreach (var pair in list)
         {

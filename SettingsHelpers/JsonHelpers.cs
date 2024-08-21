@@ -1,17 +1,4 @@
-﻿// ***********************************************************************
-// Assembly         : SettingsHelper
-// Author           : Skif
-// Created          : 06-28-2021
-//
-// Last Modified By : Skif
-// Last Modified On : 06-28-2021
-// ***********************************************************************
-// <copyright file="JsonHelpers.cs" company="SettingsHelper">
-//     Copyright (c) . All rights reserved.
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -77,9 +64,11 @@ internal static class JsonHelpers
     /// <param name="targetToken">The target token.</param>
     /// <param name="forcedList"></param>
     /// <returns>System.ValueTuple&lt;System.Boolean, List&lt;DetectedChanges&gt;&gt;.</returns>
-    public static (bool IsEqual, List<DetectedChanges> Differences) CompareJson(this JToken sourceToken,
-                                                                                JToken targetToken,
-                                                                                List<string> forcedList)
+    public static (bool IsEqual, List<DetectedChanges> Differences) CompareJson(
+        this JToken sourceToken,
+        JToken targetToken,
+        List<string> forcedList
+    )
     {
         if (sourceToken == null && targetToken == null)
         {
@@ -114,6 +103,7 @@ internal static class JsonHelpers
         }
 
         var differences = new List<DetectedChanges>();
+
         switch (sourceToken.Type)
         {
             case JTokenType.Object:
@@ -154,18 +144,23 @@ internal static class JsonHelpers
                                            model.Properties()
                                                 .Select(c => c.Name)
                                        );
+
                 var removedKeys = model.Properties().Select(c => c.Name).Except(current.Properties().Select(c => c.Name));
+
                 //var differentValues = model.Properties().Select(c => c.Path).Except(current.Properties().Select(c => c.Path));
                 var unchangedKeys = current.Properties()
                                            .Where(c => JToken.DeepEquals(c.Value, targetToken[c.Name]))
                                            .Select(c => c.Name);
+
                 var calculated = addedKeys as string[] ?? addedKeys.ToArray();
+
                 foreach (var token in calculated)
                 {
                     if (token.IsEqual("_forced"))
                     {
                         continue;
                     }
+
                     differences.Add(new DetectedChanges(
                                         MissedSide.Target,
                                         sourceToken[token]
@@ -187,20 +182,25 @@ internal static class JsonHelpers
                                                      .Select(c => c.Name)
                                                      .Except(calculated)
                                                      .Except(unchangedKeys);
+
                 foreach (var k in potentiallyModifiedKeys)
                 {
                     var foundDiff = CompareJson(current[k], model[k], forcedList);
+
                     if (!foundDiff.IsEqual)
                     {
                         differences.AddRange(foundDiff.Differences);
                     }
                 }
             }
+
                 break;
+
             case JTokenType.Array:
             {
                 var current = sourceToken as JArray;
                 var model = targetToken as JArray;
+
                 if (current == null && model == null)
                 {
                     return (false, new List<DetectedChanges>(0));
@@ -224,6 +224,7 @@ internal static class JsonHelpers
 
                 var plus = new JArray(current.Except(model, new JTokenEqualityComparer()));
                 var minus = new JArray(model.Except(current, new JTokenEqualityComparer()));
+
                 if (plus.HasValues)
                 {
                     foreach (var token in plus)
@@ -240,19 +241,23 @@ internal static class JsonHelpers
                     }
                 }
             }
+
                 break;
+
             default:
                 var (sourceHasValue, sourceValue) = ((JValue)sourceToken).HasValueTuple();
                 var (targetHasValue, targetValue) = ((JValue)targetToken).HasValueTuple();
+
                 if (sourceHasValue && targetHasValue && sourceValue.IsEqual(targetValue))
                 {
                     return (true, new List<DetectedChanges>(0));
                 }
+
                 if (forcedList.Contains(sourceToken.Path))
                 {
                     return (false, new List<DetectedChanges>
                     {
-                        new DetectedChanges(DifferenceType.ForcedChange,sourceToken.Path, sourceValue, targetValue)
+                        new DetectedChanges(DifferenceType.ForcedChange, sourceToken.Path, sourceValue, targetValue)
                     });
                 }
                 else

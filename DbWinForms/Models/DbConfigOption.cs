@@ -1,25 +1,12 @@
-﻿// ***********************************************************************
-// Assembly         : Containers
-// Author           : p.g.parpura
-// Created          : 08-31-2020
-//
-// Last Modified By : p.g.parpura
-// Last Modified On : 09-21-2020
-// ***********************************************************************
-// <copyright file="DbConfigOption.cs" company="skif@skif.ws">
-//     Copyright (c) . All rights reserved.
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Containers.Settings;
+namespace DbWinForms.Models;
 
 
 /// <summary>
 /// Class DbConfigOption.
 /// </summary>
-public class DbConfigOption
+public record DbConfigOption
 {
     /// <summary>
     /// The name

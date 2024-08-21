@@ -13,7 +13,7 @@ public partial class Db
     {
         try
         {
-            var result = await SelectSingle<int>(
+            var result = await SelectSingle(
                 "SELECT 1",
                 null,
                 Converter.ToInt
