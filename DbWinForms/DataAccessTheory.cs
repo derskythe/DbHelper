@@ -2,5 +2,5 @@
 
 namespace DbWinForms;
 
-
-public partial class DataAccessTheory(DbConfigOption configuration) : BaseDataAccess(configuration);
+public partial class DataAccessTheory
+(DbConfigOption configuration) : BaseDataAccess(configuration);

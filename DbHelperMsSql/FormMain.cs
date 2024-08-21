@@ -11,340 +11,272 @@ using Shared;
 
 namespace DbHelperMsSql;
 
+public partial class FormMain : Form {
+  // ReSharper disable FieldCanBeMadeReadOnly.Local
+  // ReSharper disable InconsistentNaming
+  private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-public partial class FormMain : Form
-{
-    // ReSharper disable FieldCanBeMadeReadOnly.Local
-    // ReSharper disable InconsistentNaming
-    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+  // ReSharper restore InconsistentNaming
+  // ReSharper restore FieldCanBeMadeReadOnly.Local
 
-    // ReSharper restore InconsistentNaming
-    // ReSharper restore FieldCanBeMadeReadOnly.Local
+  private readonly Settings _Settings;
 
-    private readonly Settings _Settings;
+  private DataAccessTheory _DataAccess;
 
-    private DataAccessTheory _DataAccess;
+  public FormMain() {
+    _Settings = Program.Settings;
+    InitializeComponent();
 
-    public FormMain()
-    {
-        _Settings = Program.Settings;
-        InitializeComponent();
+    var needSave = false;
 
-        var needSave = false;
-
-        if (_Settings.Ui.Width == 0)
-        {
-            needSave = true;
-            _Settings.Ui.Width = Width;
-        }
-
-        if (_Settings.Ui.Height == 0)
-        {
-            needSave = true;
-            _Settings.Ui.Height = Height;
-        }
-
-        if (needSave)
-        {
-            _Settings.Save();
-        }
+    if (_Settings.Ui.Width == 0) {
+      needSave = true;
+      _Settings.Ui.Width = Width;
     }
 
-    private async void ButtonConnectClick(object sender, EventArgs e)
-    {
-        await ConnectDb();
+    if (_Settings.Ui.Height == 0) {
+      needSave = true;
+      _Settings.Ui.Height = Height;
     }
 
-    private async Task ConnectDb()
-    {
-        try
-        {
-            Cursor = Cursors.WaitCursor;
+    if (needSave) {
+      _Settings.Save();
+    }
+  }
 
-            _DataAccess = new DataAccessTheory(new DbConfigOption()
-            {
-                HostName = txtHostname.Text,
-                Username = txtUsername.Text,
-                Password = txtPassword.Text,
-                ServiceName = txtServiceName.Text
-            }
-                                              );
+  private async void ButtonConnectClick(object sender, EventArgs e) {
+    await ConnectDb();
+  }
 
-            if (await _DataAccess.CheckConnection())
-            {
-                _Settings.DbConfig.HostName = txtHostname.Text;
-                _Settings.DbConfig.ServiceName = txtServiceName.Text;
-                _Settings.DbConfig.Password = txtPassword.Text;
-                _Settings.DbConfig.Username = txtUsername.Text;
-                _Settings.Save();
+  private async Task ConnectDb() {
+    try {
+      Cursor = Cursors.WaitCursor;
 
-                UpdateProcCombo();
-                UpdateViewCombo();
-                MessageBoxEx.Show(this, @"Success!", @"Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                throw new Exception("Invalid data provided!");
-            }
-        }
-        catch (Exception exp)
-        {
-            ActionException(exp);
-        }
+      _DataAccess = new DataAccessTheory(new DbConfigOption() {
+        HostName = txtHostname.Text, Username = txtUsername.Text,
+        Password = txtPassword.Text, ServiceName = txtServiceName.Text
+      });
 
-        Cursor = Cursors.Default;
+      if (await _DataAccess.CheckConnection()) {
+        _Settings.DbConfig.HostName = txtHostname.Text;
+        _Settings.DbConfig.ServiceName = txtServiceName.Text;
+        _Settings.DbConfig.Password = txtPassword.Text;
+        _Settings.DbConfig.Username = txtUsername.Text;
+        _Settings.Save();
+
+        UpdateProcCombo();
+        UpdateViewCombo();
+        MessageBoxEx.Show(this, @"Success!", @"Info", MessageBoxButtons.OK,
+                          MessageBoxIcon.Information);
+      } else {
+        throw new Exception("Invalid data provided!");
+      }
+    } catch (Exception exp) {
+      ActionException(exp);
     }
 
-    private async void ButtonRefresh_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            Cursor = Cursors.WaitCursor;
+    Cursor = Cursors.Default;
+  }
 
-            if (await _DataAccess.CheckConnection())
-            {
-                UpdateViewCombo();
-                UpdateProcCombo();
-            }
-            else
-            {
-                throw new Exception("Invalid data provided!");
-            }
-        }
-        catch (Exception exp)
-        {
-            ActionException(exp);
-        }
+  private async void ButtonRefresh_Click(object sender, EventArgs e) {
+    try {
+      Cursor = Cursors.WaitCursor;
 
-        Cursor = Cursors.Default;
+      if (await _DataAccess.CheckConnection()) {
+        UpdateViewCombo();
+        UpdateProcCombo();
+      } else {
+        throw new Exception("Invalid data provided!");
+      }
+    } catch (Exception exp) {
+      ActionException(exp);
     }
 
-    private async void UpdateViewCombo()
-    {
-        ComboView.Items.Clear();
+    Cursor = Cursors.Default;
+  }
 
-        var tables = await _DataAccess.ListTables();
-        var views = await _DataAccess.ListViews();
+  private async void UpdateViewCombo() {
+    ComboView.Items.Clear();
 
-        foreach (var item in tables)
-        {
-            ComboView.Items.Add(new ComboboxItem
-            {
-                Id = item,
-                Value = $"{item} (Table)",
-                ObjectType = ObjectType.Table
-            }
-                               );
-        }
+    var tables = await _DataAccess.ListTables();
+    var views = await _DataAccess.ListViews();
 
-        foreach (var item in views)
-        {
-            ComboView.Items.Add(new ComboboxItem
-            {
-                Id = item,
-                Value = $"{item} (Table)",
-                ObjectType = ObjectType.View
-            }
-                               );
-        }
-
-        ComboView.DisplayMember = "Value";
-        ComboView.ValueMember = "Id";
-
-        var i = 0;
-
-        foreach (ComboboxItem item in ComboView.Items)
-        {
-            if (item.Id == _Settings.Ui.ComboView)
-            {
-                ComboView.SelectedIndex = i;
-
-                break;
-            }
-
-            i++;
-        }
+    foreach (var item in tables) {
+      ComboView.Items.Add(new ComboboxItem { Id = item,
+                                             Value = $"{item} (Table)",
+                                             ObjectType = ObjectType.Table });
     }
 
-    private async void UpdateProcCombo()
-    {
-        ComboProcedureList.Items.Clear();
-        var list = await _DataAccess.ListProcedures();
-
-        foreach (var item in list)
-        {
-            ComboProcedureList.Items.Add(item);
-        }
-
-        var i = 0;
-
-        foreach (string item in ComboProcedureList.Items)
-        {
-            if (item == _Settings.Ui.ComboProcedureList)
-            {
-                ComboProcedureList.SelectedIndex = i;
-
-                break;
-            }
-
-            i++;
-        }
+    foreach (var item in views) {
+      ComboView.Items.Add(new ComboboxItem { Id = item,
+                                             Value = $"{item} (Table)",
+                                             ObjectType = ObjectType.View });
     }
 
-    private async void FormMain_Load(object sender, EventArgs e)
-    {
-        txtHostname.Text = _Settings.DbConfig.HostName;
-        txtServiceName.Text = _Settings.DbConfig.ServiceName;
-        txtPassword.Text = _Settings.DbConfig.Password;
-        txtUsername.Text = _Settings.DbConfig.Username;
+    ComboView.DisplayMember = "Value";
+    ComboView.ValueMember = "Id";
+
+    var i = 0;
+
+    foreach (ComboboxItem item in ComboView.Items) {
+      if (item.Id == _Settings.Ui.ComboView) {
+        ComboView.SelectedIndex = i;
+
+        break;
+      }
+
+      i++;
+    }
+  }
+
+  private async void UpdateProcCombo() {
+    ComboProcedureList.Items.Clear();
+    var list = await _DataAccess.ListProcedures();
+
+    foreach (var item in list) {
+      ComboProcedureList.Items.Add(item);
+    }
+
+    var i = 0;
+
+    foreach (string item in ComboProcedureList.Items) {
+      if (item == _Settings.Ui.ComboProcedureList) {
+        ComboProcedureList.SelectedIndex = i;
+
+        break;
+      }
+
+      i++;
+    }
+  }
+
+  private async void FormMain_Load(object sender, EventArgs e) {
+    txtHostname.Text = _Settings.DbConfig.HostName;
+    txtServiceName.Text = _Settings.DbConfig.ServiceName;
+    txtPassword.Text = _Settings.DbConfig.Password;
+    txtUsername.Text = _Settings.DbConfig.Username;
 
 #if DEBUG
-        if (!string.IsNullOrEmpty(txtHostname.Text))
-        {
-            await ConnectDb();
-        }
+    if (!string.IsNullOrEmpty(txtHostname.Text)) {
+      await ConnectDb();
+    }
 
-        tabMain.SelectedIndex = _Settings.Ui.TabIndex;
+    tabMain.SelectedIndex = _Settings.Ui.TabIndex;
 #endif
+  }
+
+  private void ActionException(Exception exp) {
+    Log.Error(exp, exp.Message);
+    MessageBox.Show(this, exp.Message, @"Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+  }
+
+  private async void ButtonGenerateView_Click(object sender, EventArgs e) {
+    try {
+      if (ComboView.SelectedItem is not ComboboxItem comboBoxItem) {
+        return;
+      }
+
+      var selectedItem = comboBoxItem.Id;
+      var list =
+          await _DataAccess.ListColumns(selectedItem, comboBoxItem.ObjectType);
+
+      if (list == null) {
+        ActionException(new Exception("Column list is null!"));
+
+        return;
+      }
+
+      var className =
+          selectedItem.ToUpperCamelCase(true, checkCleanPlural.Checked);
+
+      // Gen class
+      txtClass.Text = Utils.GenerateClassData(className, list);
+      txtViewFunction.Text =
+          Utils.GenerateSelectTableOrViewMethod(className, list, selectedItem);
+
+      _Settings.Ui.ComboView = selectedItem;
+      _Settings.Save();
+    } catch (Exception exp) {
+      ActionException(exp);
     }
+  }
 
-    private void ActionException(Exception exp)
-    {
-        Log.Error(exp, exp.Message);
-        MessageBox.Show(this, exp.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+  private async void ButtonGenerateProcedure_Click(object sender, EventArgs e) {
+    try {
+      var comboBoxItem = ComboProcedureList.SelectedItem;
+      var selectedItem = comboBoxItem?.ToString();
+
+      if (string.IsNullOrEmpty(selectedItem)) {
+        return;
+      }
+
+      var paramList = await _DataAccess.ListProcedureParameters(selectedItem);
+      var returnedFields = await _DataAccess.ListProcedureColumns(selectedItem);
+
+      if (returnedFields.Count == 0) {
+        txtProcedure.Text = Utils.GenerateProcedure(selectedItem, paramList,
+                                                    radioSeparate.Checked);
+      } else {
+        var className = selectedItem.GetClassName();
+        var procedureText = new StringBuilder();
+
+        procedureText.AppendLine(
+            Utils.GenerateProcedure(selectedItem, className, paramList,
+                                    returnedFields, radioSeparate.Checked));
+
+        procedureText.AppendLine(string.Empty);
+
+        procedureText.AppendLine(Markdown.ToPlainText(
+            Utils.GenerateClassData(className, returnedFields)));
+
+        txtProcedure.Text = procedureText.ToString();
+      }
+
+      _Settings.Ui.ComboProcedureList = selectedItem;
+      _Settings.Save();
+    } catch (Exception exp) {
+      ActionException(exp);
     }
+  }
 
-    private async void ButtonGenerateView_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            if (ComboView.SelectedItem is not ComboboxItem comboBoxItem)
-            {
-                return;
-            }
+  private async void ButtonGeneratePlSql_Click(object sender, EventArgs e) {
+    try {
+      var comboBoxItem = cmbTable.SelectedItem;
 
-            var selectedItem = comboBoxItem.Id;
-            var list = await _DataAccess.ListColumns(selectedItem, comboBoxItem.ObjectType);
+      if (string.IsNullOrEmpty(comboBoxItem?.ToString())) {
+        return;
+      }
 
-            if (list == null)
-            {
-                ActionException(new Exception("Column list is null!"));
+      var selectedItem = comboBoxItem.ToString();
+      var list = await _DataAccess.ListColumns(selectedItem, ObjectType.Table);
 
-                return;
-            }
+      if (list == null) {
+        ActionException(new Exception("Column list is null!"));
 
-            var className = selectedItem.ToUpperCamelCase(true, checkCleanPlural.Checked);
+        return;
+      }
 
-            // Gen class
-            txtClass.Text = Utils.GenerateClassData(className, list);
-            txtViewFunction.Text = Utils.GenerateSelectTableOrViewMethod(className, list, selectedItem);
-
-            _Settings.Ui.ComboView = selectedItem;
-            _Settings.Save();
-        }
-        catch (Exception exp)
-        {
-            ActionException(exp);
-        }
+      var result = Utils.GeneratePlSqlProcedure(selectedItem, list);
+      txtPlSql.Text = result;
+    } catch (Exception exp) {
+      ActionException(exp);
     }
+  }
 
-    private async void ButtonGenerateProcedure_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            var comboBoxItem = ComboProcedureList.SelectedItem;
-            var selectedItem = comboBoxItem?.ToString();
+  private void ComboProcedureList_SelectedValueChanged(object sender,
+                                                       EventArgs e) {
+    ButtonGenerateProcedure.PerformClick();
+  }
 
-            if (string.IsNullOrEmpty(selectedItem))
-            {
-                return;
-            }
+  private void TabMain_SelectedIndexChanged(object sender, EventArgs e) {
+    _Settings.Ui.TabIndex = tabMain.SelectedIndex;
+    _Settings.Save();
+  }
 
-            var paramList = await _DataAccess.ListProcedureParameters(selectedItem);
-            var returnedFields = await _DataAccess.ListProcedureColumns(selectedItem);
-
-            if (returnedFields.Count == 0)
-            {
-                txtProcedure.Text = Utils.GenerateProcedure(selectedItem, paramList, radioSeparate.Checked);
-            }
-            else
-            {
-                var className = selectedItem.GetClassName();
-                var procedureText = new StringBuilder();
-
-                procedureText.AppendLine(Utils.GenerateProcedure(
-                                             selectedItem,
-                                             className,
-                                             paramList,
-                                             returnedFields,
-                                             radioSeparate.Checked
-                                         )
-                                        );
-
-                procedureText.AppendLine(string.Empty);
-
-                procedureText.AppendLine(Markdown.ToPlainText(
-                                             Utils.GenerateClassData(className, returnedFields)
-                                         )
-                                        );
-
-                txtProcedure.Text = procedureText.ToString();
-            }
-
-            _Settings.Ui.ComboProcedureList = selectedItem;
-            _Settings.Save();
-        }
-        catch (Exception exp)
-        {
-            ActionException(exp);
-        }
-    }
-
-    private async void ButtonGeneratePlSql_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            var comboBoxItem = cmbTable.SelectedItem;
-
-            if (string.IsNullOrEmpty(comboBoxItem?.ToString()))
-            {
-                return;
-            }
-
-            var selectedItem = comboBoxItem.ToString();
-            var list = await _DataAccess.ListColumns(selectedItem, ObjectType.Table);
-
-            if (list == null)
-            {
-                ActionException(new Exception("Column list is null!"));
-
-                return;
-            }
-
-            var result = Utils.GeneratePlSqlProcedure(selectedItem, list);
-            txtPlSql.Text = result;
-        }
-        catch (Exception exp)
-        {
-            ActionException(exp);
-        }
-    }
-
-    private void ComboProcedureList_SelectedValueChanged(object sender, EventArgs e)
-    {
-        ButtonGenerateProcedure.PerformClick();
-    }
-
-    private void TabMain_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        _Settings.Ui.TabIndex = tabMain.SelectedIndex;
-        _Settings.Save();
-    }
-
-    private void FormMain_ResizeEnd(object sender, EventArgs e)
-    {
-        _Settings.Ui.Width = Width;
-        _Settings.Ui.Height = Height;
-        _Settings.Save();
-    }
+  private void FormMain_ResizeEnd(object sender, EventArgs e) {
+    _Settings.Ui.Width = Width;
+    _Settings.Ui.Height = Height;
+    _Settings.Save();
+  }
 }
