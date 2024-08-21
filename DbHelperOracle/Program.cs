@@ -19,9 +19,11 @@ internal static class Program
         var logger = LogManager.Setup()
                                .LoadConfigurationFromFile("NLog.config")
                                .GetCurrentClassLogger();
+
         try
         {
             logger.Info("Starting");
+
             var loadSettings = SettingsHelper.SettingsHelpers.Load<Settings>(
 #if DEBUG
                 false
@@ -29,14 +31,17 @@ internal static class Program
                     true
 #endif
             );
+
             if (!loadSettings.Success)
             {
                 throw new Exception(loadSettings.OutputMessage);
             }
+
             if (!string.IsNullOrWhiteSpace(loadSettings.OutputMessage))
             {
                 logger.Info(loadSettings.OutputMessage);
             }
+
             Settings = loadSettings.Value;
 
 #if DEBUG
@@ -51,7 +56,13 @@ internal static class Program
         catch (Exception exp)
         {
             logger.Error(exp, exp.Message);
+
             throw;
+        }
+        finally
+        {
+            logger.Info("Shutting down");
+            LogManager.Shutdown();
         }
     }
 }

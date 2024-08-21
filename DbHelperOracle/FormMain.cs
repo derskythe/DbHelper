@@ -13,6 +13,7 @@ public partial class FormMain : Form
     // ReSharper disable FieldCanBeMadeReadOnly.Local
     // ReSharper disable InconsistentNaming
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
     // ReSharper restore InconsistentNaming
     // ReSharper restore FieldCanBeMadeReadOnly.Local
     private readonly Settings _Settings;
@@ -23,6 +24,7 @@ public partial class FormMain : Form
         InitializeComponent();
 
         var needSave = false;
+
         if (_Settings.Ui.Width == 0)
         {
             needSave = true;
@@ -58,6 +60,7 @@ public partial class FormMain : Form
                           txtServiceName.Text,
                           txtPort.Text
             );
+
             if (OracleDb.CheckConnection())
             {
                 _Settings.DbConfig.HostName = txtHostname.Text;
@@ -100,17 +103,20 @@ public partial class FormMain : Form
     private void UpdateTableCombo()
     {
         ComboTableForProcedureGenerate.Items.Clear();
+
         // ReSharper disable once CoVariantArrayConversion
         ComboTableForProcedureGenerate.Items.AddRange(OracleDb.ListTables().ToArray());
         ComboTableForProcedureGenerate.DisplayMember = "Value";
         ComboTableForProcedureGenerate.ValueMember = "Id";
 
         var i = 0;
+
         foreach (ComboboxItem item in ComboTableForProcedureGenerate.Items)
         {
             if (item.Id == _Settings.Ui.ComboView)
             {
                 ComboTableForProcedureGenerate.SelectedIndex = i;
+
                 break;
             }
 
@@ -121,17 +127,20 @@ public partial class FormMain : Form
     private void UpdateViewCombo()
     {
         ComboView.Items.Clear();
+
         // ReSharper disable once CoVariantArrayConversion
         ComboView.Items.AddRange(OracleDb.ListViews().ToArray());
         ComboView.DisplayMember = "Value";
         ComboView.ValueMember = "Id";
 
         var i = 0;
+
         foreach (ComboboxItem item in ComboView.Items)
         {
             if (item.Id == _Settings.Ui.ComboView)
             {
                 ComboView.SelectedIndex = i;
+
                 break;
             }
 
@@ -142,20 +151,24 @@ public partial class FormMain : Form
     private void UpdateProcCombo()
     {
         ComboProcedureList.Items.Clear();
+
         // ReSharper disable CoVariantArrayConversion
         var ownerName = _Settings.DbConfig.Username.ToUpperInvariant();
         ComboProcedureList.Items.AddRange(OracleDb.ListPackages(ownerName).ToArray());
         ComboProcedureList.Items.AddRange(OracleDb.ListProcedures(ownerName).ToArray());
+
         // ReSharper restore CoVariantArrayConversion
         ComboProcedureList.DisplayMember = "Value";
         ComboProcedureList.ValueMember = "Id";
 
         var i = 0;
+
         foreach (ComboboxItem item in ComboProcedureList.Items)
         {
             if (item.Id == _Settings.Ui.ComboView)
             {
                 ComboProcedureList.SelectedIndex = i;
+
                 break;
             }
 
@@ -184,6 +197,7 @@ public partial class FormMain : Form
     private void ActionException(Exception exp)
     {
         Log.Error(exp, exp.Message);
+
         MessageBox.Show(
             this,
             exp.Message,
@@ -198,6 +212,7 @@ public partial class FormMain : Form
         try
         {
             var sel = ComboView.SelectedItem;
+
             if (string.IsNullOrEmpty(sel?.ToString()))
             {
                 return;
@@ -205,9 +220,11 @@ public partial class FormMain : Form
 
             var selectedItem = sel.ToString();
             var list = OracleDb.ListColumns(selectedItem);
+
             if (list == null)
             {
                 ActionException(new Exception("Column list is null!"));
+
                 return;
             }
 
@@ -242,6 +259,7 @@ public partial class FormMain : Form
                 selectedItem.ClearName,
                 radioSeparate.Checked
             );
+
             _Settings.Ui.ComboView = selectedItem.Id;
             _Settings.Save();
         }
@@ -256,6 +274,7 @@ public partial class FormMain : Form
         try
         {
             var sel = ComboTableForProcedureGenerate.SelectedItem;
+
             if (string.IsNullOrEmpty(sel?.ToString()))
             {
                 return;
@@ -263,9 +282,11 @@ public partial class FormMain : Form
 
             var selectedItem = sel.ToString();
             var list = OracleDb.ListColumns(selectedItem);
+
             if (list == null)
             {
                 ActionException(new Exception("Column list is null!"));
+
                 return;
             }
 

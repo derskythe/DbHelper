@@ -4,17 +4,17 @@ using System.Linq;
 namespace DbHelperOracle.Db;
 
 
-internal class ProcedureInfo
+internal struct ProcedureInfo(int count, string packageName, string procedureName)
 {
     private int _Index;
 
-    public int Count { get; set; }
+    public int Count { get; set; } = count;
 
-    public string PackageName { get; set; }
+    public string PackageName { get; set; } = packageName;
 
-    public string ProcedureName { get; set; }
+    public string ProcedureName { get; set; } = procedureName;
 
-    public List<List<ParameterInfo>> ParamList { get; }
+    public List<List<ParameterInfo>> ParamList { get; } = new();
 
     public void AddParam(ParameterInfo info)
     {
@@ -42,14 +42,6 @@ internal class ProcedureInfo
 
             ParamList[_Index].Add(info);
         }
-    }
-
-    public ProcedureInfo(int count, string packageName, string procedureName)
-    {
-        ParamList = new List<List<ParameterInfo>>();
-        Count = count;
-        PackageName = packageName;
-        ProcedureName = procedureName;
     }
 
     public override string ToString()
