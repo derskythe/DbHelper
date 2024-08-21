@@ -31,6 +31,7 @@ internal static class Converter
     public static string GetNetType(this string dbType)
     {
         dbType = dbType.ToUpperInvariant();
+
         if (dbType.Contains("INT8") || dbType.Contains("BIGINT"))
         {
             return "long";

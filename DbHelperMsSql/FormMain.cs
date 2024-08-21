@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Containers.Settings;
 using DbHelperMsSql.Properties;
 using DbWinForms;
+using DbWinForms.Models;
 using Markdig;
 using NLog;
 using Shared;
@@ -16,6 +17,7 @@ public partial class FormMain : Form
     // ReSharper disable FieldCanBeMadeReadOnly.Local
     // ReSharper disable InconsistentNaming
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
     // ReSharper restore InconsistentNaming
     // ReSharper restore FieldCanBeMadeReadOnly.Local
 
@@ -29,6 +31,7 @@ public partial class FormMain : Form
         InitializeComponent();
 
         var needSave = false;
+
         if (_Settings.Ui.Width == 0)
         {
             needSave = true;
@@ -57,6 +60,7 @@ public partial class FormMain : Form
         try
         {
             Cursor = Cursors.WaitCursor;
+
             _DataAccess = new DataAccessTheory(new DbConfigOption()
                 {
                     HostName = txtHostname.Text,
@@ -96,6 +100,7 @@ public partial class FormMain : Form
         try
         {
             Cursor = Cursors.WaitCursor;
+
             if (await _DataAccess.CheckConnection())
             {
                 UpdateViewCombo();
@@ -147,11 +152,13 @@ public partial class FormMain : Form
         ComboView.ValueMember = "Id";
 
         var i = 0;
+
         foreach (ComboboxItem item in ComboView.Items)
         {
             if (item.Id == _Settings.Ui.ComboView)
             {
                 ComboView.SelectedIndex = i;
+
                 break;
             }
 
@@ -163,19 +170,23 @@ public partial class FormMain : Form
     {
         ComboProcedureList.Items.Clear();
         var list = await _DataAccess.ListProcedures();
+
         foreach (var item in list)
         {
             ComboProcedureList.Items.Add(item);
         }
 
         var i = 0;
+
         foreach (string item in ComboProcedureList.Items)
         {
             if (item == _Settings.Ui.ComboProcedureList)
             {
                 ComboProcedureList.SelectedIndex = i;
+
                 break;
             }
+
             i++;
         }
     }
@@ -214,11 +225,14 @@ public partial class FormMain : Form
 
             var selectedItem = comboBoxItem.Id;
             var list = await _DataAccess.ListColumns(selectedItem, comboBoxItem.ObjectType);
+
             if (list == null)
             {
                 ActionException(new Exception("Column list is null!"));
+
                 return;
             }
+
             var className = selectedItem.ToUpperCamelCase(true, checkCleanPlural.Checked);
 
             // Gen class
@@ -240,6 +254,7 @@ public partial class FormMain : Form
         {
             var comboBoxItem = ComboProcedureList.SelectedItem;
             var selectedItem = comboBoxItem?.ToString();
+
             if (string.IsNullOrEmpty(selectedItem))
             {
                 return;
@@ -255,16 +270,25 @@ public partial class FormMain : Form
             else
             {
                 var className = selectedItem.GetClassName();
-                txtProcedure.Text = Utils.GenerateProcedure(
-                    selectedItem,
-                    className,
-                    paramList,
-                    returnedFields,
-                    radioSeparate.Checked
+                var procedureText = new StringBuilder();
+
+                procedureText.AppendLine(Utils.GenerateProcedure(
+                                             selectedItem,
+                                             className,
+                                             paramList,
+                                             returnedFields,
+                                             radioSeparate.Checked
+                                         )
                 );
-                txtProcedure.Text += "\r\n\r\n" + Markdown.ToPlainText(
-                    Utils.GenerateClassData(className, returnedFields)
+
+                procedureText.AppendLine(string.Empty);
+
+                procedureText.AppendLine(Markdown.ToPlainText(
+                                             Utils.GenerateClassData(className, returnedFields)
+                                         )
                 );
+
+                txtProcedure.Text = procedureText.ToString();
             }
 
             _Settings.Ui.ComboProcedureList = selectedItem;
@@ -281,6 +305,7 @@ public partial class FormMain : Form
         try
         {
             var comboBoxItem = cmbTable.SelectedItem;
+
             if (string.IsNullOrEmpty(comboBoxItem?.ToString()))
             {
                 return;
@@ -288,9 +313,11 @@ public partial class FormMain : Form
 
             var selectedItem = comboBoxItem.ToString();
             var list = await _DataAccess.ListColumns(selectedItem, ObjectType.Table);
+
             if (list == null)
             {
                 ActionException(new Exception("Column list is null!"));
+
                 return;
             }
 

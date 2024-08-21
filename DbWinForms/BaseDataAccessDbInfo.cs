@@ -12,22 +12,25 @@ public abstract partial class BaseDataAccess
 {
     public async Task<List<string>> ListTables()
     {
-        return await Many("SELECT NAME FROM SYS.TABLES", null, CommandType.Text, Converter.ToStringValue);
+        return await Many("SELECT NAME FROM SYS.TABLES", null,
+                          CommandType.Text, Converter.ToStringValue);
     }
 
     public async Task<List<string>> ListViews()
     {
-        return await Many("SELECT NAME FROM SYS.VIEWS", null, CommandType.Text, Converter.ToStringValue);
+        return await Many("SELECT NAME FROM SYS.VIEWS", null,
+                          CommandType.Text, Converter.ToStringValue);
     }
 
     public async Task<List<string>> ListProcedures()
     {
-        return await Many("SELECT NAME FROM SYS.PROCEDURES", null, CommandType.Text, Converter.ToStringValue);
+        return await Many("SELECT NAME FROM SYS.PROCEDURES", null,
+                          CommandType.Text, Converter.ToStringValue);
     }
 
     public async Task<List<ParameterInfo>> ListProcedureParameters(string name)
     {
-        var parameterList = new List<DbParameter>
+        var parameterList = new DbParameter[]
         {
             GetParameter("@procName", name)
         };
@@ -47,7 +50,7 @@ public abstract partial class BaseDataAccess
 
     public async Task<List<ParameterInfo>> ListProcedureColumns(string procedureName)
     {
-        var parameterList = new List<DbParameter>
+        var parameterList = new DbParameter[]
         {
             GetParameter("@procedureName", procedureName)
         };
@@ -57,7 +60,7 @@ public abstract partial class BaseDataAccess
 
     public async Task<List<ParameterInfo>> ListColumns(string tableName, ObjectType objectType)
     {
-        var parameterList = new List<DbParameter>
+        var parameterList = new DbParameter[]
         {
             GetParameter("@name", tableName)
         };

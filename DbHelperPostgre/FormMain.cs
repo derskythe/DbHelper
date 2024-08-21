@@ -19,6 +19,7 @@ public partial class FormMain : Form
     // ReSharper disable FieldCanBeMadeReadOnly.Local
     // ReSharper disable InconsistentNaming
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
     // ReSharper restore InconsistentNaming
     // ReSharper restore FieldCanBeMadeReadOnly.Local
 
@@ -32,6 +33,7 @@ public partial class FormMain : Form
         InitializeComponent();
 
         var needSave = false;
+
         if (_Settings.Ui.Width == 0)
         {
             needSave = true;
@@ -61,6 +63,7 @@ public partial class FormMain : Form
         {
             Cursor = Cursors.WaitCursor;
             var port = Convert.ToInt32(txtPort.Text);
+
             _DataAccess = new Db.Db(new DbConfigSettingsElement()
                 {
                     HostName = txtHostname.Text,
@@ -102,6 +105,7 @@ public partial class FormMain : Form
         try
         {
             Cursor = Cursors.WaitCursor;
+
             if (await _DataAccess.CheckConnection())
             {
                 UpdateViewCombo();
@@ -129,6 +133,7 @@ public partial class FormMain : Form
         var views = await _DataAccess.ListViews();
 
         var objectType = ObjectType.Table;
+
         foreach (var item in tables)
         {
             ComboView.Items.Add(new ComboboxItem
@@ -138,6 +143,7 @@ public partial class FormMain : Form
                     ObjectType = objectType
                 }
             );
+
             ComboTablesForProcedureGeneration.Items.Add(new ComboboxItem
                 {
                     Id = item,
@@ -148,6 +154,7 @@ public partial class FormMain : Form
         }
 
         objectType = ObjectType.View;
+
         foreach (var item in views)
         {
             ComboView.Items.Add(new ComboboxItem
@@ -163,11 +170,13 @@ public partial class FormMain : Form
         ComboView.ValueMember = "Id";
 
         var i = 0;
+
         foreach (ComboboxItem item in ComboView.Items)
         {
             if (item.Id == _Settings.Ui.ComboView)
             {
                 ComboView.SelectedIndex = i;
+
                 break;
             }
 
@@ -179,27 +188,31 @@ public partial class FormMain : Form
     {
         ComboProcedureList.Items.Clear();
         var list = await _DataAccess.ListProcedures();
+
         foreach (var item in list)
         {
             ComboProcedureList.Items.Add(new ComboboxItem
-            {
-                Id = item.SpecificName,
-                Value = $"{item.Name} ({item.DbType})",
-                ObjectType = ObjectType.Procedure,
-                AdditionalData = item.DbType,
-                ClearName = item.Name
-            });
+                {
+                    Id = item.SpecificName,
+                    Value = $"{item.Name} ({item.DbType})",
+                    ObjectType = ObjectType.Procedure,
+                    AdditionalData = item.DbType,
+                    ClearName = item.Name
+                }
+            );
         }
 
         ComboView.DisplayMember = "Value";
         ComboView.ValueMember = "Id";
 
         var i = 0;
+
         foreach (ComboboxItem item in ComboProcedureList.Items)
         {
             if (item.Id == _Settings.Ui.ComboProcedureList)
             {
                 ComboProcedureList.SelectedIndex = i;
+
                 break;
             }
 
@@ -227,6 +240,7 @@ public partial class FormMain : Form
     private void ActionException(Exception exp)
     {
         Log.Error(exp, exp.Message);
+
         MessageBox.Show(
             this,
             exp.Message,
@@ -247,13 +261,16 @@ public partial class FormMain : Form
 
             var selectedItem = sel.Id;
             var list = await _DataAccess.ListColumns(selectedItem, sel.ObjectType);
+
             if (list == null)
             {
                 ActionException(new Exception("Column list is null!"));
+
                 return;
             }
 
             var className = selectedItem.ToUpperCamelCase(true, checkCleanPlural.Checked);
+
             if (sel.ObjectType == ObjectType.View && sel.Value.StartsWith("v_", StringComparison.OrdinalIgnoreCase))
             {
                 className = className[1..];
@@ -261,6 +278,7 @@ public partial class FormMain : Form
 
             // Gen class
             txtClass.Text = FormatUsingRoslyn(Utils.GenerateClassData(className, list));
+
             txtViewFunction.Text = FormatUsingRoslyn(
                 Utils.GenerateSelectTableOrViewMethod(className, list, selectedItem)
             );
@@ -294,18 +312,21 @@ public partial class FormMain : Form
             }
 
             var selectedName = sel.Id;
+
             if (string.IsNullOrEmpty(selectedName))
             {
                 return;
             }
 
             var paramList = await _DataAccess.ListProcedureParameters(selectedName);
+
             txtProcedure.Text = FormatUsingRoslyn(Utils.GenerateProcedure(sel.ClearName,
                                                                           sel.AdditionalData,
                                                                           paramList,
                                                                           radioSeparate.Checked
                                                   )
             );
+
             var formatter = new HtmlFormatter();
             var html = formatter.GetHtmlString(txtProcedure.Text, Languages.CSharp);
 
@@ -336,9 +357,11 @@ public partial class FormMain : Form
 
             var selectedItem = comboBoxItem.Id;
             var list = await _DataAccess.ListColumns(selectedItem, comboBoxItem.ObjectType);
+
             if (list == null)
             {
                 ActionException(new Exception("Column list is null!"));
+
                 return;
             }
 
@@ -399,6 +422,7 @@ public partial class FormMain : Form
         using var workspace = new AdhocWorkspace();
         var syntaxTree = CSharpSyntaxTree.ParseText(originalCode);
         var formattedNode = Formatter.Format(syntaxTree.GetRoot(), workspace);
+
         return formattedNode.ToFullString();
     }
 }

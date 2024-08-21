@@ -1,24 +1,10 @@
-﻿// ***********************************************************************
-// Assembly         : Db
-// Author           : p.g.parpura
-// Created          : 04-30-2020
-//
-// Last Modified By : p.g.parpura
-// Last Modified On : 08-31-2020
-// ***********************************************************************
-// <copyright file="BaseDataAccess.cs" company="Db">
-//     Copyright (c) . All rights reserved.
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
-using Containers;
-using Containers.Settings;
+using DbWinForms.Models;
 using Microsoft.Data.SqlClient;
 using NLog;
 
@@ -36,7 +22,8 @@ public abstract partial class BaseDataAccess
     /// <summary>
     /// The log
     /// </summary>
-    protected static readonly Logger Log = LogManager.GetCurrentClassLogger();
+    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
     // ReSharper restore InconsistentNaming
     // ReSharper restore FieldCanBeMadeReadOnly.Local
 
@@ -53,6 +40,7 @@ public abstract partial class BaseDataAccess
     protected BaseDataAccess(DbConfigOption configuration)
     {
         ConnectionString = configuration.ToString();
+
         var outputString = $"Server={configuration.HostName};"      +
                            $"Database={configuration.ServiceName};" +
                            $"User Id={configuration.Username};"     +
@@ -62,6 +50,7 @@ public abstract partial class BaseDataAccess
                            "MultipleActiveResultSets=true;"         +
                            "Trusted_Connection=False;"              +
                            "TrustServerCertificate=True";
+
         Log.Info(outputString);
     }
 
@@ -72,6 +61,7 @@ public abstract partial class BaseDataAccess
     private SqlConnection GetConnection()
     {
         var connection = new SqlConnection(ConnectionString);
+
         if (connection.State != ConnectionState.Open)
         {
             connection.Open();
@@ -85,6 +75,7 @@ public abstract partial class BaseDataAccess
         try
         {
             await ListTables();
+
             return true;
         }
         catch (Exception exp)
@@ -108,6 +99,7 @@ public abstract partial class BaseDataAccess
         {
             CommandType = commandType
         };
+
         return command;
     }
 
@@ -117,12 +109,13 @@ public abstract partial class BaseDataAccess
     /// <param name="parameter">The parameter.</param>
     /// <param name="value">The value.</param>
     /// <returns>SqlParameter.</returns>
-    protected SqlParameter GetParameter(string parameter, object value)
+    private SqlParameter GetParameter(string parameter, object value)
     {
         var parameterObject = new SqlParameter(parameter, value ?? DBNull.Value)
         {
             Direction = ParameterDirection.Input
         };
+
         return parameterObject;
     }
 
@@ -133,6 +126,7 @@ public abstract partial class BaseDataAccess
             Direction = ParameterDirection.Input,
             SqlDbType = dbType
         };
+
         return parameterObject;
     }
 
@@ -148,7 +142,8 @@ public abstract partial class BaseDataAccess
         string parameter,
         SqlDbType type,
         object value = null,
-        ParameterDirection parameterDirection = ParameterDirection.InputOutput)
+        ParameterDirection parameterDirection = ParameterDirection.InputOutput
+    )
     {
         var parameterObject = new SqlParameter(parameter, type);
 
@@ -174,8 +169,9 @@ public abstract partial class BaseDataAccess
     /// <returns>System.Int32.</returns>
     protected async Task ExecuteNonQuery(
         string procedureName,
-        List<DbParameter> parameters,
-        CommandType commandType = CommandType.StoredProcedure)
+        IReadOnlyList<DbParameter> parameters,
+        CommandType commandType = CommandType.StoredProcedure
+    )
     {
         SqlConnection connection = null;
 
@@ -184,7 +180,7 @@ public abstract partial class BaseDataAccess
             connection = GetConnection();
             var cmd = GetCommand(connection, procedureName, commandType);
 
-            if (parameters != null && parameters.Count > 0)
+            if (parameters is { Count: > 0 })
             {
                 cmd.Parameters.AddRange(parameters.ToArray());
             }
@@ -196,6 +192,7 @@ public abstract partial class BaseDataAccess
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
         finally
@@ -209,8 +206,9 @@ public abstract partial class BaseDataAccess
 
     protected async Task<T1> ExecuteNonQuery<T1>(
         string procedureName,
-        List<DbParameter> parameters,
-        CommandType commandType = CommandType.StoredProcedure)
+        IReadOnlyList<DbParameter> parameters,
+        CommandType commandType = CommandType.StoredProcedure
+    )
         where T1 : IConvertible
     {
         SqlConnection connection = null;
@@ -221,7 +219,7 @@ public abstract partial class BaseDataAccess
             string returnParam1 = null;
             var cmd = GetCommand(connection, procedureName, commandType);
 
-            if (parameters != null && parameters.Count > 0)
+            if (parameters is { Count: > 0 })
             {
                 foreach (var parameter in parameters)
                 {
@@ -252,6 +250,7 @@ public abstract partial class BaseDataAccess
             await cmd.ExecuteNonQueryAsync();
 
             var returnValue1 = cmd.Parameters[returnParam1].Value;
+
             return ExtractValue<T1>(returnValue1);
         }
         catch (Exception ex)
@@ -259,6 +258,7 @@ public abstract partial class BaseDataAccess
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
         finally
@@ -273,7 +273,8 @@ public abstract partial class BaseDataAccess
     protected async Task<(T1, T2)> ExecuteNonQuery<T1, T2>(
         string procedureName,
         List<DbParameter> parameters,
-        CommandType commandType = CommandType.StoredProcedure)
+        CommandType commandType = CommandType.StoredProcedure
+    )
         where T1 : IConvertible
         where T2 : IConvertible
     {
@@ -286,7 +287,7 @@ public abstract partial class BaseDataAccess
             string returnParam2 = null;
             var cmd = GetCommand(connection, procedureName, commandType);
 
-            if (parameters != null && parameters.Count > 0)
+            if (parameters is { Count: > 0 })
             {
                 foreach (var parameter in parameters)
                 {
@@ -316,7 +317,8 @@ public abstract partial class BaseDataAccess
             if (string.IsNullOrEmpty(returnParam1) || string.IsNullOrEmpty(returnParam2))
             {
                 throw new
-                    ArgumentException($"Didn't find Output or InputOutput params. {nameof(returnParam1)}: {returnParam1}, {nameof(returnParam2)}: {returnParam2}"
+                    ArgumentException(
+                        $"Didn't find Output or InputOutput params. {nameof(returnParam1)}: {returnParam1}, {nameof(returnParam2)}: {returnParam2}"
                     );
             }
 
@@ -324,6 +326,7 @@ public abstract partial class BaseDataAccess
 
             var returnValue1 = cmd.Parameters[returnParam1].Value;
             var returnValue2 = cmd.Parameters[returnParam2].Value;
+
             return (ExtractValue<T1>(returnValue1), ExtractValue<T2>(returnValue2));
         }
         catch (Exception ex)
@@ -331,6 +334,7 @@ public abstract partial class BaseDataAccess
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
         finally
@@ -345,7 +349,8 @@ public abstract partial class BaseDataAccess
     protected async Task<(T1, T2, T3)> ExecuteNonQuery<T1, T2, T3>(
         string procedureName,
         List<DbParameter> parameters,
-        CommandType commandType = CommandType.StoredProcedure)
+        CommandType commandType = CommandType.StoredProcedure
+    )
         where T1 : IConvertible
         where T2 : IConvertible
         where T3 : IConvertible
@@ -360,7 +365,7 @@ public abstract partial class BaseDataAccess
             string returnParam3 = null;
             var cmd = GetCommand(connection, procedureName, commandType);
 
-            if (parameters != null && parameters.Count > 0)
+            if (parameters is { Count: > 0 })
             {
                 foreach (var parameter in parameters)
                 {
@@ -406,6 +411,7 @@ public abstract partial class BaseDataAccess
             var returnValue1 = cmd.Parameters[returnParam1].Value;
             var returnValue2 = cmd.Parameters[returnParam2].Value;
             var returnValue3 = cmd.Parameters[returnParam3].Value;
+
             return (ExtractValue<T1>(returnValue1), ExtractValue<T2>(returnValue2), ExtractValue<T3>(returnValue3));
         }
         catch (Exception ex)
@@ -413,6 +419,7 @@ public abstract partial class BaseDataAccess
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
         finally
@@ -427,7 +434,8 @@ public abstract partial class BaseDataAccess
     protected async Task<(T1, T2, T3, T4, T5, T6)> ExecuteNonQuery<T1, T2, T3, T4, T5, T6>(
         string procedureName,
         List<DbParameter> parameters,
-        CommandType commandType = CommandType.StoredProcedure)
+        CommandType commandType = CommandType.StoredProcedure
+    )
         where T1 : IConvertible
         where T2 : IConvertible
         where T3 : IConvertible
@@ -448,7 +456,7 @@ public abstract partial class BaseDataAccess
             string returnParam6 = null;
             var cmd = GetCommand(connection, procedureName, commandType);
 
-            if (parameters != null && parameters.Count > 0)
+            if (parameters is { Count: > 0 })
             {
                 foreach (var parameter in parameters)
                 {
@@ -482,7 +490,8 @@ public abstract partial class BaseDataAccess
                         else
                         {
                             throw new
-                                ArgumentException($"Too many OUTPUT params. Already set {returnParam1}, {returnParam2}, {returnParam3}, {returnParam4}, {returnParam5}, {returnParam6}"
+                                ArgumentException(
+                                    $"Too many OUTPUT params. Already set {returnParam1}, {returnParam2}, {returnParam3}, {returnParam4}, {returnParam5}, {returnParam6}"
                                 );
                         }
                     }
@@ -492,7 +501,8 @@ public abstract partial class BaseDataAccess
             }
 
             if (string.IsNullOrEmpty(returnParam1) || string.IsNullOrEmpty(returnParam2) ||
-                string.IsNullOrEmpty(returnParam3))
+                string.IsNullOrEmpty(returnParam3) || string.IsNullOrEmpty(returnParam4) ||
+                string.IsNullOrEmpty(returnParam5) || string.IsNullOrEmpty(returnParam6))
             {
                 throw new ArgumentException($"Didn't find Output or InputOutput params. " +
                                             $"{nameof(returnParam1)}: {returnParam1}, "   +
@@ -512,6 +522,7 @@ public abstract partial class BaseDataAccess
             var returnValue4 = cmd.Parameters[returnParam4].Value;
             var returnValue5 = cmd.Parameters[returnParam5].Value;
             var returnValue6 = cmd.Parameters[returnParam6].Value;
+
             return (
                 ExtractValue<T1>(returnValue1),
                 ExtractValue<T2>(returnValue2),
@@ -524,8 +535,10 @@ public abstract partial class BaseDataAccess
         catch (Exception ex)
         {
             Log.Error(ex,
-                      $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
+                      $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: " +
+                      $"{parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
         finally
@@ -533,6 +546,7 @@ public abstract partial class BaseDataAccess
             if (connection != null)
             {
                 connection.Close();
+                connection.Dispose();
             }
         }
     }
@@ -543,27 +557,30 @@ public abstract partial class BaseDataAccess
     /// <param name="procedureName">Name of the procedure.</param>
     /// <param name="parameters">The parameters.</param>
     /// <returns>System.Object.</returns>
-    protected async Task<object> ExecuteScalar(string procedureName, List<DbParameter> parameters)
+    protected async Task<T> ExecuteScalar<T>(string procedureName, IReadOnlyList<DbParameter> parameters) where T : class
     {
-        object returnValue;
+        T returnValue;
         SqlConnection connection = null;
+
         try
         {
             connection = GetConnection();
             var cmd = GetCommand(connection, procedureName, CommandType.StoredProcedure);
 
-            if (parameters != null && parameters.Count > 0)
+            if (parameters is { Count: > 0 })
             {
                 cmd.Parameters.AddRange(parameters.ToArray());
             }
 
-            returnValue = await cmd.ExecuteScalarAsync();
+            returnValue = (T)await cmd.ExecuteScalarAsync();
         }
         catch (Exception ex)
         {
             Log.Error(ex,
-                      $"{ex.Message}. Failed to ExecuteScalar for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
+                      $"{ex.Message}. Failed to ExecuteScalar for {procedureName}, " +
+                      $"parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
         finally
@@ -584,19 +601,22 @@ public abstract partial class BaseDataAccess
     /// <param name="parameters">The parameters.</param>
     /// <param name="commandType">Type of the command.</param>
     /// <returns>DbDataReader.</returns>
-    protected async Task<DbDataReader> GetDataReader(
+    private async Task<DbDataReader> GetDataReader(
         string procedureName,
-        List<DbParameter> parameters,
-        CommandType commandType = CommandType.StoredProcedure)
+        IReadOnlyList<DbParameter> parameters,
+        CommandType commandType = CommandType.StoredProcedure
+    )
     {
         DbDataReader ds;
 
         try
         {
             DbConnection connection = GetConnection();
+
             {
                 var cmd = GetCommand(connection, procedureName, commandType);
-                if (parameters != null && parameters.Count > 0)
+
+                if (parameters is { Count: > 0 })
                 {
                     cmd.Parameters.AddRange(parameters.ToArray());
                 }
@@ -607,8 +627,10 @@ public abstract partial class BaseDataAccess
         catch (Exception ex)
         {
             Log.Error(ex,
-                      $"{ex.Message}. Failed to GetDataReader for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
+                      $"{ex.Message}. Failed to GetDataReader for {procedureName}, " +
+                      $"parameters: {parameters?.GetStringFromArray()}"
             );
+
             throw;
         }
 
@@ -616,7 +638,7 @@ public abstract partial class BaseDataAccess
     }
 
     /// <summary>
-    /// Manies the specified SQL value.
+    /// Many the specified SQL value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="sqlValue">The SQL value.</param>
@@ -625,42 +647,43 @@ public abstract partial class BaseDataAccess
     /// <returns>Task&lt;List&lt;T&gt;&gt;.</returns>
     protected async Task<List<T>> Many<T>(
         string sqlValue,
-        List<DbParameter> paramList,
-        Func<DbDataReader, T> funcName)
+        IReadOnlyList<DbParameter> paramList,
+        Func<DbDataReader, T> funcName
+    )
     {
         var result = new List<T>();
 
-        using (var dataReader = await GetDataReader(sqlValue, paramList))
+        await using var dataReader = await GetDataReader(sqlValue, paramList);
+
+        if (dataReader is not { HasRows: true })
         {
-            if (dataReader != null && dataReader.HasRows)
-            {
-                while (await dataReader.ReadAsync())
-                {
-                    result.Add(funcName(dataReader));
-                }
-            }
+            return result;
+        }
+
+        while (await dataReader.ReadAsync())
+        {
+            result.Add(funcName(dataReader));
         }
 
         return result;
     }
 
-
-    protected async Task<List<T>> Many<T>(
+    private async Task<List<T>> Many<T>(
         string sqlValue,
-        List<DbParameter> paramList,
+        IReadOnlyList<DbParameter> paramList,
         CommandType commandType,
-        Func<DbDataReader, T> funcName)
+        Func<DbDataReader, T> funcName
+    )
     {
         var result = new List<T>();
 
-        using (var dataReader = await GetDataReader(sqlValue, paramList, commandType))
+        await using var dataReader = await GetDataReader(sqlValue, paramList, commandType);
+
+        if (dataReader is { HasRows: true })
         {
-            if (dataReader != null && dataReader.HasRows)
+            while (await dataReader.ReadAsync())
             {
-                while (await dataReader.ReadAsync())
-                {
-                    result.Add(funcName(dataReader));
-                }
+                result.Add(funcName(dataReader));
             }
         }
 
@@ -675,17 +698,18 @@ public abstract partial class BaseDataAccess
     /// <param name="paramList">The parameter list.</param>
     /// <param name="funcName">Name of the function.</param>
     /// <returns>Task&lt;T&gt;.</returns>
-    protected async Task<T> Single<T>(string sqlValue, List<DbParameter> paramList, Func<DbDataReader, T> funcName)
+    protected async Task<T> Single<T>(string sqlValue, IReadOnlyList<DbParameter> paramList, Func<DbDataReader, T> funcName)
     {
-        using (var dataReader = await GetDataReader(sqlValue, paramList))
+        await using var dataReader = await GetDataReader(sqlValue, paramList);
+
+        if (dataReader is not { HasRows: true })
         {
-            if (dataReader != null && dataReader.HasRows)
-            {
-                while (await dataReader.ReadAsync())
-                {
-                    return funcName(dataReader);
-                }
-            }
+            return default;
+        }
+
+        while (await dataReader.ReadAsync())
+        {
+            return funcName(dataReader);
         }
 
         return default;
@@ -698,6 +722,6 @@ public abstract partial class BaseDataAccess
             return default;
         }
 
-        return (T) Convert.ChangeType(value, typeof(T));
+        return (T)Convert.ChangeType(value, typeof(T));
     }
 }

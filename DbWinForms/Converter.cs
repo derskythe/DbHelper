@@ -1,19 +1,4 @@
-﻿// ***********************************************************************
-// Assembly         : Db
-// Author           : p.g.parpura
-// Created          : 08-19-2020
-//
-// Last Modified By : p.g.parpura
-// Last Modified On : 09-29-2020
-// ***********************************************************************
-// <copyright file="Converter.cs" company="skif@skif.ws">
-//     Copyright (c) . All rights reserved.
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
 using System.Data.Common;
 using DbWinForms.Models;
@@ -43,42 +28,40 @@ public static class Converter
 
     public static ParameterInfo ToParameterInfo(DbDataReader row)
     {
-        return new ParameterInfo
-        {
-            Index = row["order_num"].GetInt() - 1,
-            Name = row["name"].GetString(),
-            DbType = row["type"].GetString(),
-            NetType = row["type"].GetString().GetNetType(),
-            InParam = !row["is_output"].GetBool()
-        };
+        return new ParameterInfo(
+            row["order_num"].GetInt() - 1,
+            row["name"].GetString(),
+            row["type"].GetString(),
+            row["type"].GetString().GetNetType(),
+            !row["is_output"].GetBool()
+        );
     }
 
     public static ParameterInfo ToProcedureParameterInfo(DbDataReader row)
     {
-        return new ParameterInfo
-        {
-            Index = row["column_ordinal"].GetInt() - 1,
-            Name = row["name"].GetString(),
-            DbType = row["system_type_name"].GetString(),
-            NetType = row["system_type_name"].GetString().GetNetType(),
-            InParam = true
-        };
+        return new ParameterInfo(
+            row["column_ordinal"].GetInt() - 1,
+            row["name"].GetString(),
+            row["system_type_name"].GetString(),
+            row["system_type_name"].GetString().GetNetType(),
+            true
+        );
     }
 
     public static ParameterInfo ToColumn(DbDataReader row)
     {
-        return new ParameterInfo
-        {
-            Index = row["order_num"].GetInt() - 1,
-            Name = row["name"].GetString(),
-            DbType = row["type"].GetString(),
-            NetType = row["type"].GetString().GetNetType()
-        };
+        return new ParameterInfo(
+            row["order_num"].GetInt() - 1,
+            row["name"].GetString(),
+            row["type"].GetString(),
+            row["type"].GetString().GetNetType()
+        );
     }
 
     public static string GetNetType(this string msSqlDbType)
     {
         msSqlDbType = msSqlDbType.ToUpperInvariant();
+
         if (msSqlDbType.Contains("BIGINT"))
         {
             return "long";
@@ -152,6 +135,7 @@ public static class Converter
     public static string GetDbParamType(this string msSqlDbType)
     {
         msSqlDbType = msSqlDbType.ToUpperInvariant();
+
         foreach (string name in Enum.GetNames(typeof(SqlDbType)))
         {
             if (name.ToUpperInvariant() == msSqlDbType)

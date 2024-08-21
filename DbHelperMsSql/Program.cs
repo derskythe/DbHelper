@@ -9,6 +9,7 @@ namespace DbHelperMsSql;
 internal static class Program
 {
     public static Settings Settings { get; private set; }
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -18,9 +19,11 @@ internal static class Program
         var logger = LogManager.Setup()
                                .LoadConfigurationFromFile("NLog.config")
                                .GetCurrentClassLogger();
+
         try
         {
             logger.Info("Starting");
+
             var loadSettings = SettingsHelper.SettingsHelpers.Load<Settings>(
 #if DEBUG
                 false
@@ -28,6 +31,7 @@ internal static class Program
                     true
 #endif
             );
+
             if (!loadSettings.Success)
             {
                 throw new Exception(loadSettings.OutputMessage);
@@ -51,7 +55,13 @@ internal static class Program
         catch (Exception exp)
         {
             logger.Error(exp, exp.Message);
+
             throw;
+        }
+        finally
+        {
+            logger.Info("Closing");
+            LogManager.Shutdown();
         }
     }
 }

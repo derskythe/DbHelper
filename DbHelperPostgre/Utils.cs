@@ -14,7 +14,7 @@ internal static class Utils
 
     public static string GenerateSelectTableOrViewMethod(
         string className,
-        List<ParameterInfo> list,
+        IReadOnlyList<ParameterInfo> list,
         string selectedItem)
     {
         var funcData = new StringBuilder();
@@ -76,7 +76,7 @@ internal static class Utils
 
     #region GeneratePlSqlProcedure
 
-    public static string GeneratePlSqlProcedure(string selectedItem, List<ParameterInfo> list)
+    public static string GeneratePlSqlProcedure(string selectedItem, IReadOnlyList<ParameterInfo> list)
     {
         var str = new StringBuilder();
         str.Append("CREATE FUNCTION ").Append(selectedItem).Append("_SAVE(\r\n");
@@ -149,7 +149,7 @@ internal static class Utils
     public static string GenerateProcedure(
         string selectedItem,
         string returnType,
-        List<ParameterInfo> paramList,
+        IReadOnlyList<ParameterInfo> paramList,
         bool radioSeparateChecked)
     {
         var funcData = new StringBuilder();
@@ -245,13 +245,13 @@ internal static class Utils
         return funcData.ToString();
     }
 
-    public static string GenerateClassData(string className, List<ParameterInfo> list)
+    public static string GenerateClassData(string className, IReadOnlyList<ParameterInfo> list)
     {
         var classData = new StringBuilder();
 
         classData.Append("[Serializable]\r\n");
         classData.Append("[DataContract]\r\n");
-        classData.Append("public class ").Append(className).Append("\r\n{");
+        classData.Append("public sealed record ").Append(className).Append("\r\n{");
         var upperList = new List<string>();
         foreach (var pair in list)
         {
@@ -334,7 +334,7 @@ internal static class Utils
         return classData.ToString();
     }
 
-    private static string GetNpgsqlDbType(this string type)
+    public static string GetNpgsqlDbType(this string type)
     {
         return type switch
         {
@@ -358,14 +358,13 @@ internal static class Utils
         {
             return value.Substring(3).ToUpperCamelCase(true);
         }
-        else if (value.StartsWith("list"))
+
+        if (value.StartsWith("list"))
         {
             return value.Substring(4).ToUpperCamelCase(true);
         }
-        else
-        {
-            return value.ToUpperCamelCase(true);
-        }
+
+        return value.ToUpperCamelCase(true);
     }
 
     public static string GetDbParamType(this string dbType)
