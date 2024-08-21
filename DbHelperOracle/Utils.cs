@@ -400,13 +400,13 @@ internal static partial class Utils
     {
         return type switch
         {
-            "long"     => "OracleDbType.Int64",
-            "int"      => "OracleDbType.Int32",
-            "decimal"  => "OracleDbType.Decimal",
-            "string"   => "OracleDbType.Varchar2",
+            "long" => "OracleDbType.Int64",
+            "int" => "OracleDbType.Int32",
+            "decimal" => "OracleDbType.Decimal",
+            "string" => "OracleDbType.Varchar2",
             "DateTime" => "OracleDbType.TimeStamp",
-            "byte[]"   => "OracleDbType.Blob",
-            _          => string.Empty
+            "byte[]" => "OracleDbType.Blob",
+            _ => string.Empty
         };
     }
 }

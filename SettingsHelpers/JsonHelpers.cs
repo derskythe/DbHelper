@@ -107,140 +107,140 @@ internal static class JsonHelpers
         switch (sourceToken.Type)
         {
             case JTokenType.Object:
-            {
-                var current = sourceToken as JObject;
-                var model = targetToken as JObject;
-
-                if (current == null && model == null)
                 {
-                    return (false, new List<DetectedChanges>(0));
-                }
+                    var current = sourceToken as JObject;
+                    var model = targetToken as JObject;
 
-                if (current == null)
-                {
-                    return (false, new List<DetectedChanges>
+                    if (current == null && model == null)
+                    {
+                        return (false, new List<DetectedChanges>(0));
+                    }
+
+                    if (current == null)
+                    {
+                        return (false, new List<DetectedChanges>
                     {
                         new DetectedChanges(
                             MissedSide.Source,
                             DifferenceType.Null
                         )
                     });
-                }
+                    }
 
-                if (model == null)
-                {
-                    return (false, new List<DetectedChanges>
+                    if (model == null)
+                    {
+                        return (false, new List<DetectedChanges>
                     {
                         new DetectedChanges(
                             MissedSide.Target,
                             DifferenceType.Null
                         )
                     });
-                }
-
-                var addedKeys = current.Properties()
-                                       .Select(c => c.Name)
-                                       .Except(
-                                           model.Properties()
-                                                .Select(c => c.Name)
-                                       );
-
-                var removedKeys = model.Properties().Select(c => c.Name).Except(current.Properties().Select(c => c.Name));
-
-                //var differentValues = model.Properties().Select(c => c.Path).Except(current.Properties().Select(c => c.Path));
-                var unchangedKeys = current.Properties()
-                                           .Where(c => JToken.DeepEquals(c.Value, targetToken[c.Name]))
-                                           .Select(c => c.Name);
-
-                var calculated = addedKeys as string[] ?? addedKeys.ToArray();
-
-                foreach (var token in calculated)
-                {
-                    if (token.IsEqual("_forced"))
-                    {
-                        continue;
                     }
 
-                    differences.Add(new DetectedChanges(
-                                        MissedSide.Target,
-                                        sourceToken[token]
-                                    )
-                    );
-                }
+                    var addedKeys = current.Properties()
+                                           .Select(c => c.Name)
+                                           .Except(
+                                               model.Properties()
+                                                    .Select(c => c.Name)
+                                           );
 
-                foreach (var token in removedKeys)
-                {
-                    differences.Add(
-                        new DetectedChanges(
-                            MissedSide.Source,
-                            targetToken[token]
-                        )
-                    );
-                }
+                    var removedKeys = model.Properties().Select(c => c.Name).Except(current.Properties().Select(c => c.Name));
 
-                var potentiallyModifiedKeys = current.Properties()
-                                                     .Select(c => c.Name)
-                                                     .Except(calculated)
-                                                     .Except(unchangedKeys);
+                    //var differentValues = model.Properties().Select(c => c.Path).Except(current.Properties().Select(c => c.Path));
+                    var unchangedKeys = current.Properties()
+                                               .Where(c => JToken.DeepEquals(c.Value, targetToken[c.Name]))
+                                               .Select(c => c.Name);
 
-                foreach (var k in potentiallyModifiedKeys)
-                {
-                    var foundDiff = CompareJson(current[k], model[k], forcedList);
+                    var calculated = addedKeys as string[] ?? addedKeys.ToArray();
 
-                    if (!foundDiff.IsEqual)
+                    foreach (var token in calculated)
                     {
-                        differences.AddRange(foundDiff.Differences);
+                        if (token.IsEqual("_forced"))
+                        {
+                            continue;
+                        }
+
+                        differences.Add(new DetectedChanges(
+                                            MissedSide.Target,
+                                            sourceToken[token]
+                                        )
+                        );
+                    }
+
+                    foreach (var token in removedKeys)
+                    {
+                        differences.Add(
+                            new DetectedChanges(
+                                MissedSide.Source,
+                                targetToken[token]
+                            )
+                        );
+                    }
+
+                    var potentiallyModifiedKeys = current.Properties()
+                                                         .Select(c => c.Name)
+                                                         .Except(calculated)
+                                                         .Except(unchangedKeys);
+
+                    foreach (var k in potentiallyModifiedKeys)
+                    {
+                        var foundDiff = CompareJson(current[k], model[k], forcedList);
+
+                        if (!foundDiff.IsEqual)
+                        {
+                            differences.AddRange(foundDiff.Differences);
+                        }
                     }
                 }
-            }
 
                 break;
 
             case JTokenType.Array:
-            {
-                var current = sourceToken as JArray;
-                var model = targetToken as JArray;
-
-                if (current == null && model == null)
                 {
-                    return (false, new List<DetectedChanges>(0));
-                }
+                    var current = sourceToken as JArray;
+                    var model = targetToken as JArray;
 
-                if (current == null)
-                {
-                    return (false, new List<DetectedChanges>
+                    if (current == null && model == null)
+                    {
+                        return (false, new List<DetectedChanges>(0));
+                    }
+
+                    if (current == null)
+                    {
+                        return (false, new List<DetectedChanges>
                     {
                         new DetectedChanges(MissedSide.Source, DifferenceType.Null)
                     });
-                }
+                    }
 
-                if (model == null)
-                {
-                    return (false, new List<DetectedChanges>
+                    if (model == null)
+                    {
+                        return (false, new List<DetectedChanges>
                     {
                         new DetectedChanges(MissedSide.Target, DifferenceType.Null),
                     });
-                }
+                    }
 
-                var plus = new JArray(current.Except(model, new JTokenEqualityComparer()));
-                var minus = new JArray(model.Except(current, new JTokenEqualityComparer()));
+                    var plus = new JArray(current.Except(model, new JTokenEqualityComparer()));
+                    var minus = new JArray(model.Except(current, new JTokenEqualityComparer()));
 
-                if (plus.HasValues)
-                {
-                    foreach (var token in plus)
+                    if (plus.HasValues)
                     {
-                        differences.Add(new DetectedChanges(MissedSide.Target, token));
+                        foreach (var token in plus)
+                        {
+                            differences.Add(new DetectedChanges(MissedSide.Target, token));
+                        }
+                    }
+
+                    if (minus.HasValues)
+                    {
+                        foreach (var token in minus)
+                        {
+                            differences.Add(new DetectedChanges(MissedSide.Source, token));
+                        }
                     }
                 }
-
-                if (minus.HasValues)
-                {
-                    foreach (var token in minus)
-                    {
-                        differences.Add(new DetectedChanges(MissedSide.Source, token));
-                    }
-                }
-            }
 
                 break;
 

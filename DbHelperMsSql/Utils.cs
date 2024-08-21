@@ -455,20 +455,20 @@ internal static class Utils
     {
         return type switch
         {
-            "long"           => "SqlDbType.BigInt",
-            "byte[]"         => "SqlDbType.VarBinary",
-            "int"            => "SqlDbType.Int",
-            "decimal"        => "SqlDbType.Decimal",
-            "string"         => "SqlDbType.VarChar",
-            "DateTime"       => "SqlDbType.DateTime",
-            "bool"           => "SqlDbType.Bit",
+            "long" => "SqlDbType.BigInt",
+            "byte[]" => "SqlDbType.VarBinary",
+            "int" => "SqlDbType.Int",
+            "decimal" => "SqlDbType.Decimal",
+            "string" => "SqlDbType.VarChar",
+            "DateTime" => "SqlDbType.DateTime",
+            "bool" => "SqlDbType.Bit",
             "DateTimeOffset" => "SqlDbType.DateTimeOffset",
-            "double"         => "SqlDbType.Float",
-            "float"          => "SqlDbType.Real",
-            "short"          => "SqlDbType.SmallInt",
-            "TimeSpan"       => "SqlDbType.Time",
-            "byte"           => "SqlDbType.TinyInt",
-            _                => string.Empty
+            "double" => "SqlDbType.Float",
+            "float" => "SqlDbType.Real",
+            "short" => "SqlDbType.SmallInt",
+            "TimeSpan" => "SqlDbType.Time",
+            "byte" => "SqlDbType.TinyInt",
+            _ => string.Empty
         };
     }
 

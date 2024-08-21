@@ -41,14 +41,14 @@ public abstract partial class BaseDataAccess
     {
         ConnectionString = configuration.ToString();
 
-        var outputString = $"Server={configuration.HostName};"      +
+        var outputString = $"Server={configuration.HostName};" +
                            $"Database={configuration.ServiceName};" +
-                           $"User Id={configuration.Username};"     +
-                           "Password=*****;"                        +
-                           "Persist Security Info=True;"            +
-                           "Integrated Security=True;"              +
-                           "MultipleActiveResultSets=true;"         +
-                           "Trusted_Connection=False;"              +
+                           $"User Id={configuration.Username};" +
+                           "Password=*****;" +
+                           "Persist Security Info=True;" +
+                           "Integrated Security=True;" +
+                           "MultipleActiveResultSets=true;" +
+                           "Trusted_Connection=False;" +
                            "TrustServerCertificate=True";
 
         Log.Info(outputString);
@@ -400,8 +400,8 @@ public abstract partial class BaseDataAccess
                 string.IsNullOrEmpty(returnParam3))
             {
                 throw new ArgumentException($"Didn't find Output or InputOutput params. " +
-                                            $"{nameof(returnParam1)}: {returnParam1}, "   +
-                                            $"{nameof(returnParam2)}: {returnParam2}"     +
+                                            $"{nameof(returnParam1)}: {returnParam1}, " +
+                                            $"{nameof(returnParam2)}: {returnParam2}" +
                                             $"{nameof(returnParam3)}: {returnParam3}"
                 );
             }
@@ -505,11 +505,11 @@ public abstract partial class BaseDataAccess
                 string.IsNullOrEmpty(returnParam5) || string.IsNullOrEmpty(returnParam6))
             {
                 throw new ArgumentException($"Didn't find Output or InputOutput params. " +
-                                            $"{nameof(returnParam1)}: {returnParam1}, "   +
-                                            $"{nameof(returnParam2)}: {returnParam2}"     +
-                                            $"{nameof(returnParam3)}: {returnParam3}"     +
-                                            $"{nameof(returnParam4)}: {returnParam4}"     +
-                                            $"{nameof(returnParam5)}: {returnParam5}"     +
+                                            $"{nameof(returnParam1)}: {returnParam1}, " +
+                                            $"{nameof(returnParam2)}: {returnParam2}" +
+                                            $"{nameof(returnParam3)}: {returnParam3}" +
+                                            $"{nameof(returnParam4)}: {returnParam4}" +
+                                            $"{nameof(returnParam5)}: {returnParam5}" +
                                             $"{nameof(returnParam6)}: {returnParam6}"
                 );
             }

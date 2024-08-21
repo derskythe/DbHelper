@@ -93,7 +93,7 @@ public static class Converter
         }
 
         if (msSqlDbType.Contains("VARCHAR") || msSqlDbType.Contains("NVARCHAR") || msSqlDbType.Contains("CHAR") ||
-            msSqlDbType.Contains("NCHAR")   || msSqlDbType.Contains("NTEXT")    || msSqlDbType.Contains("TEXT"))
+            msSqlDbType.Contains("NCHAR") || msSqlDbType.Contains("NTEXT") || msSqlDbType.Contains("TEXT"))
         {
             return "string";
         }

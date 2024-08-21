@@ -185,7 +185,7 @@ public partial class FormMain : Form
         txtUsername.Text = _Settings.DbConfig.Username;
 
         if (!string.IsNullOrEmpty(txtHostname.Text) && !string.IsNullOrEmpty(txtServiceName.Text) &&
-            !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtPort.Text)        &&
+            !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtPort.Text) &&
             !string.IsNullOrEmpty(txtUsername.Text))
         {
             Connect();

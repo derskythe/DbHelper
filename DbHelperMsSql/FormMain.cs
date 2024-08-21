@@ -62,12 +62,12 @@ public partial class FormMain : Form
             Cursor = Cursors.WaitCursor;
 
             _DataAccess = new DataAccessTheory(new DbConfigOption()
-                {
-                    HostName = txtHostname.Text,
-                    Username = txtUsername.Text,
-                    Password = txtPassword.Text,
-                    ServiceName = txtServiceName.Text
-                }
+            {
+                HostName = txtHostname.Text,
+                Username = txtUsername.Text,
+                Password = txtPassword.Text,
+                ServiceName = txtServiceName.Text
+            }
             );
 
             if (await _DataAccess.CheckConnection())
@@ -129,22 +129,22 @@ public partial class FormMain : Form
         foreach (var item in tables)
         {
             ComboView.Items.Add(new ComboboxItem
-                {
-                    Id = item,
-                    Value = $"{item} (Table)",
-                    ObjectType = ObjectType.Table
-                }
+            {
+                Id = item,
+                Value = $"{item} (Table)",
+                ObjectType = ObjectType.Table
+            }
             );
         }
 
         foreach (var item in views)
         {
             ComboView.Items.Add(new ComboboxItem
-                {
-                    Id = item,
-                    Value = $"{item} (Table)",
-                    ObjectType = ObjectType.View
-                }
+            {
+                Id = item,
+                Value = $"{item} (Table)",
+                ObjectType = ObjectType.View
+            }
             );
         }
 
