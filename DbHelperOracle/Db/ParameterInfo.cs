@@ -1,21 +1,21 @@
 ﻿namespace DbHelperOracle.Db;
 
 
-class ParameterInfo
+internal struct ParameterInfo
 {
-    public string DbName { get; set; }
+    public string DbName { get; init; }
 
-    public string DbType { get; set; }
+    public string DbType { get; init; }
 
-    public bool InParam { get; set; }
+    public bool InParam { get; init; }
 
-    public int Index { get; set; }
+    public int Index { get; init; }
 
-    public string NetType { get; set; }
+    public string NetType { get; init; }
 
-    public string Name { get; set; }
+    public string Name { get; init; }
 
-    public string NameLowerCamelCase { get; set; }
+    public string NameLowerCamelCase { get; init; }
 
     public ParameterInfo(string dbName,
                          string dbType,

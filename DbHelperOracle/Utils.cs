@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 using DbHelperOracle.Db;
+using Shared;
+
 // ReSharper disable HeuristicUnreachableCode
 #pragma warning disable CS0162
 
 namespace DbHelperOracle;
 
 
-internal static class Utils
+internal static partial class Utils
 {
     private const string SPACE = "    ";
-    private const bool _IsStatic = false;
+    private const bool IS_STATIC = false;
 
-    public static string GenerateViewFunction(string className, List<KeyValuePair<string, string>> list, string selectedItem)
+    public static string GenerateViewFunction(string className, IReadOnlyList<KeyValuePair<string, string>> list, string selectedItem)
     {
         var funcData = new StringBuilder();
 
-        if (_IsStatic)
+        if (IS_STATIC)
         {
             funcData.Append("public static async Task<List<").Append(className).Append(">> List").Append(className).Append("()\r\n{");
         }
@@ -30,28 +29,39 @@ internal static class Utils
 
         funcData.Append(SPACE).Append(SPACE).Append("const string query = \"SELECT ");
         var i = 0;
+
         foreach (var pair in list)
         {
             funcData.Append("t.").Append(pair.Key);
             i++;
+
             if (i < list.Count)
             {
                 funcData.Append(", ");
             }
         }
+
         funcData.Append(" FROM ").Append(selectedItem).Append(" t WHERE t.id = :id\";\r\n\r\n");
-        funcData.Append(SPACE).Append("var paramList = new List<DbParam>\r\n{\r\nnew DbParam(\"id\", OracleDbType.Int32, 0)\r\n};\r\n");
+        funcData.Append(SPACE).Append("var paramList = new DbParam[]\r\n{\r\nnew DbParam(\"id\", OracleDbType.Int32, 0)\r\n};\r\n");
+
         funcData.Append("return await SelectMany(query, paramList, To")
                 .Append(className)
                 .Append(");\r\n}\r\n\r\n");
 
         funcData.Append("public static ").Append(className).Append(" To").Append(className).Append("(DbDataReader reader)\r\n{\r\n");
         funcData.Append("var result = new ").Append(className).Append("\r\n{\r\n");
+
         foreach (var pair in list)
         {
-            var paramName = ToUpperCamelCase(pair.Key, true);
-            var funcName = GetNetType(pair.Value);
-            funcData.Append(SPACE).Append(SPACE).Append(SPACE).Append(SPACE).Append(SPACE).Append(paramName)
+            var paramName = pair.Key.ToUpperCamelCase(true);
+            var funcName = pair.Value.GetNetType();
+
+            funcData.Append(SPACE)
+                    .Append(SPACE)
+                    .Append(SPACE)
+                    .Append(SPACE)
+                    .Append(SPACE)
+                    .Append(paramName)
                     .Append(" = ");
 
 
@@ -80,7 +90,7 @@ internal static class Utils
         return funcData.ToString();
     }
 
-    public static string GeneratePlSqlProcedure(string selectedItem, List<KeyValuePair<string, string>> list)
+    public static string GeneratePlSqlProcedure(string selectedItem, IReadOnlyList<KeyValuePair<string, string>> list)
     {
         var str = new StringBuilder();
         str.Append("PROCEDURE SAVE_").Append(selectedItem).Append("(\r\n");
@@ -90,6 +100,7 @@ internal static class Utils
         var fieldInsertName = new StringBuilder();
         var fieldInsertValues = new StringBuilder();
         var fieldUpdate = new StringBuilder();
+
         foreach (var pair in list)
         {
             str.Append("V_").Append(pair.Key);
@@ -98,6 +109,7 @@ internal static class Utils
             fieldInsertName.Append(pair.Key);
             fieldInsertValues.Append("V_").Append(pair.Key);
             fieldUpdate.Append(pair.Key).Append(" = ").Append("V_").Append(pair.Key);
+
             if (i < list.Count - 1)
             {
                 str.Append(",\r\n");
@@ -110,9 +122,11 @@ internal static class Utils
         }
 
         str.Append(") IS\r\n");
+
         str.Append(
             "EXP_CUSTOM EXCEPTION;\r\nPRAGMA EXCEPTION_INIT(EXP_CUSTOM, -20001);\r\nV_CODE NUMBER;\r\nV_ERRM VARCHAR2(255);\r\nBEGIN\r\n"
         );
+
         // IF V_ID IS NULL THEN
         // INSERT STATEMENT
         str.Append("IF V_ID IS NULL THEN\r\n");
@@ -120,40 +134,51 @@ internal static class Utils
         str.Append("INSERT INTO").Append(' ').Append(selectedItem).Append("\r\n(");
         str.Append(fieldInsertName).Append("\r\n)\r\nVALUES\r\n(\r\n");
         str.Append(fieldInsertValues).Append("\r\n);\r\n");
+
         // ELSE
         // UPDATE STATEMENT
         str.Append("ELSE\r\n");
         str.Append("UPDATE ").Append(selectedItem).Append("\r\nSET\r\n");
         str.Append(fieldUpdate);
         str.Append("\r\nWHERE id = V_ID;\r\nEND IF;\r\n");
+
         // EXCEPTION
         str.Append(
                "EXCEPTION\r\nWHEN OTHERS THEN\r\nROLLBACK;\r\nV_CODE:= SQLCODE;\r\nV_ERRM:= SUBSTR(SQLERRM, 1, 255);\r\nRAISE_APPLICATION_ERROR(-20001, V_CODE || CHR(10) || V_ERRM || CHR(10) || DBMS_UTILITY.FORMAT_ERROR_BACKTRACE || CHR(10));\r\nEND "
            )
+
            //.Append("SAVE_")
            //.Append(selectedItem)
            .Append(";\r\n");
 
         var result = str.ToString();
+
         return result;
     }
 
-    public static string GenerateProcedure(string ownerName, string packageName, string procName, bool radioSeparateChecked)
+    public static string GenerateProcedure(
+        string ownerName,
+        string packageName,
+        string procName,
+        bool radioSeparateChecked
+    )
     {
         var list = OracleDb.ListProcedureParameters(ownerName, packageName, procName);
 
         var str = new StringBuilder();
-        var upperPackageName = ToUpperCamelCase(packageName, true);
-        var upperProcName = ToUpperCamelCase(procName, true);
+        var upperPackageName = packageName.ToUpperCamelCase(true, false);
+        var upperProcName = procName.ToUpperCamelCase(true, false);
+
         foreach (var paramList in list.ParamList)
         {
             var strParamList = new StringBuilder();
             var strArgumentsList = new StringBuilder();
             var listOutputTypes = new List<string>();
+
             foreach (var info in paramList)
             {
                 strParamList.Append("new DbParam(\"").Append(info.DbName).Append("\", ").Append(info.NetType.GetOracleType()).Append(", ");
-                    
+
                 if (!info.InParam)
                 {
                     listOutputTypes.Add(info.NetType);
@@ -197,14 +222,14 @@ internal static class Utils
             }
             else
             {
-                str.Append("public static async Task ").Append(upperPackageName).Append(upperProcName).Append("(\r\n");                    
+                str.Append("public static async Task ").Append(upperPackageName).Append(upperProcName).Append("(\r\n");
             }
 
             var args = strArgumentsList.ToString();
             str.Append(args.Substring(0, args.LastIndexOf(',')));
 
             str.Append(")\r\n{\r\n");
-            str.Append("var paramList = new List<DbParam> {\r\n");
+            str.Append("var paramList = new DbParam[] {\r\n");
             str.Append(strParamList);
             str.Append("};\r\n\r\n");
 
@@ -212,6 +237,7 @@ internal static class Utils
             {
                 str.Append("var result = await ExecuteNonQuery<");
                 str.Append(string.Join(',', listOutputTypes));
+
                 str.Append(">(\"")
                    .Append(string.IsNullOrEmpty(packageName) ? ownerName : ownerName + "." + packageName)
                    .Append('.')
@@ -229,29 +255,36 @@ internal static class Utils
         }
 
         str.AppendLine();
+
         return str.ToString();
     }
 
-    public static string GenerateClassData(string className, List<KeyValuePair<string, string>> list)
+    public static string GenerateClassData(string className, IReadOnlyList<KeyValuePair<string, string>> list)
     {
         var classData = new StringBuilder();
 
         classData.Append("[Serializable, XmlRoot(\"").Append(className).Append("\")]\r\n");
+
         classData.Append("[DataContract(Name = \"")
                  .Append(className)
                  .Append("\")]\r\n");
-        classData.Append("public class ").Append(className).Append("\r\n{");
+
+        classData.Append("public sealed record ").Append(className).Append("\r\n{");
         var upperList = new List<string>();
+
         foreach (var pair in list)
         {
-            var upper = ToUpperCamelCase(pair.Key, true);
+            var upper = pair.Key.ToUpperCamelCase(true, false);
             classData.Append(SPACE).Append("[XmlElement]\r\n");
             classData.Append(SPACE).Append("[DataMember]\r\n");
-            classData.Append(SPACE).Append("public ")
-                     .Append(GetNetType(pair.Value))
-                     .Append(" ")
+
+            classData.Append(SPACE)
+                     .Append("public ")
+                     .Append(pair.Value.GetNetType())
+                     .Append(' ')
                      .Append(upper)
                      .Append(" { get; set; }\r\n\r\n");
+
             upperList.Add(upper);
         }
 
@@ -260,14 +293,18 @@ internal static class Utils
 
         var lowerList = new List<string>();
         var i = 0;
+
         foreach (var pair in list)
         {
-            var lower = ToLowerCamelCase(pair.Key, true);
-            classData.Append(GetNetType(pair.Value))
-                     .Append(" ")
+            var lower = pair.Key.ToLowerCamelCase(true);
+
+            classData.Append(pair.Value.GetNetType())
+                     .Append(' ')
                      .Append(lower);
+
             i++;
             lowerList.Add(lower);
+
             if (i < list.Count)
             {
                 classData.Append(",\r\n");
@@ -276,12 +313,14 @@ internal static class Utils
 
         classData.Append(")\r\n{\r\n");
         i = 0;
+
         foreach (var _ in list)
         {
             classData.Append(upperList[i])
                      .Append(" = ")
                      .Append(lowerList[i])
                      .Append(";\r\n");
+
             i++;
         }
 
@@ -289,6 +328,7 @@ internal static class Utils
 
         classData.Append(SPACE).Append("public override string ToString()\r\n{\r\nreturn string.Format(\"");
         i = 0;
+
         foreach (var pair in upperList)
         {
             classData.Append(pair)
@@ -296,15 +336,18 @@ internal static class Utils
                      .Append('{')
                      .Append(i)
                      .Append("}, ");
+
             i++;
         }
 
         classData.Append("\",\r\n");
         i = 0;
+
         foreach (var pair in upperList)
         {
             classData.Append(pair);
             i++;
+
             if (i < list.Count)
             {
                 classData.Append(",");
@@ -312,18 +355,20 @@ internal static class Utils
         }
 
         classData.Append(");\r\n}\r\n}\r\n");
+
         return classData.ToString();
     }
 
     public static string GetNetType(this string oracleType)
     {
         oracleType = oracleType.ToUpperInvariant();
-        if (oracleType.Contains("NUMBER(15)"))
+
+        if (oracleType.Contains("NUMBER(15.0)"))
         {
             return "long";
         }
 
-        if (oracleType.Contains("NUMBER(5)"))
+        if (oracleType.Contains("NUMBER(5.0)"))
         {
             return "int";
         }
@@ -363,123 +408,5 @@ internal static class Utils
             "byte[]"   => "OracleDbType.Blob",
             _          => string.Empty
         };
-    }
-
-    public static string ToUpperCamelCase(string value, bool cleanVar, bool manyType = false)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return string.Empty;
-        }
-        var regex = new Regex(@"^([a-z]{1}_)(.*)$", RegexOptions.IgnoreCase);
-        string[] s;
-        if (cleanVar)
-        {
-            s = value.ToUpperInvariant().Split('_');
-        }
-        else
-        {
-            var m = regex.Match(value);
-            s = m.Success ? m.Groups[2].Value.Split('_') : value.ToUpperInvariant().Split('_');
-        }
-        var str = new StringBuilder();
-        foreach (var word in s)
-        {
-            if (!string.IsNullOrEmpty(word))
-            {
-                str.Append(char.ToUpperInvariant(word[0])).Append(word[1..].ToLowerInvariant());
-            }
-        }
-
-        var result = str.ToString();
-        if (manyType)
-        {
-            var r = new Regex(@"^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
-            if (r.IsMatch(result))
-            {
-                result = r.Match(result).Groups[1].Value;
-            }
-            else
-            {
-                r = new Regex(@"^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
-                if (r.IsMatch(result))
-                {
-                    result = r.Match(result).Groups[1].Value;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public static string ToLowerCamelCase(string value, bool cleanVar, bool manyType = false)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return string.Empty;
-        }
-
-        var regex = new Regex(@"^([a-z]{1}_)(.*)$", RegexOptions.IgnoreCase);
-        string[] s;
-        if (cleanVar)
-        {
-            s = value.ToLowerInvariant().Split('_');
-        }
-        else
-        {
-            var m = regex.Match(value);
-            s = m.Success ? m.Groups[2].Value.Split('_') : value.ToLowerInvariant().Split('_');
-        }
-        //var s = cleanVar
-        //    ? value.ToLowerInvariant().Split('_')
-        //    : value[2..].ToLowerInvariant().Split('_');
-        var str = new StringBuilder();
-        var i = 0;
-        foreach (var word in s)
-        {
-            if (!string.IsNullOrEmpty(word))
-            {
-                if (i == 0)
-                {
-                    str.Append(word.ToLowerInvariant());
-                }
-                else
-                {
-                    str.Append(char.ToUpperInvariant(word[0])).Append(word[1..].ToLowerInvariant());
-                }
-
-                i++;
-            }
-        }
-
-        var result = str.ToString();
-        if (manyType)
-        {
-            var r = new Regex(@"^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
-            if (r.IsMatch(result))
-            {
-                result = r.Match(result).Groups[1].Value;
-            }
-            else
-            {
-                r = new Regex(@"^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
-                if (r.IsMatch(result))
-                {
-                    result = r.Match(result).Groups[1].Value;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public static bool IsEqual(this string value1, string value2)
-    {
-        if (string.IsNullOrEmpty(value1))
-        {
-            return false;
-        }
-
-        return value1.Equals(value2, StringComparison.InvariantCultureIgnoreCase);
     }
 }

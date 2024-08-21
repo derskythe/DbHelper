@@ -30,6 +30,7 @@ public static class SettingsHelpers
             }
 
             _DefaultDrive = value;
+
             if (string.IsNullOrWhiteSpace(_BackupAppPath))
             {
                 _BackupAppPath = BackupAppPath;
@@ -45,6 +46,7 @@ public static class SettingsHelpers
             if (string.IsNullOrWhiteSpace(_BackupAppPath))
             {
                 var assembly = Assembly.GetEntryAssembly();
+
                 _BackupAppPath = Path.Combine(_DefaultDrive,
                                               assembly != null ?
                                                   assembly.GetName().Name :
@@ -67,6 +69,7 @@ public static class SettingsHelpers
             }
 
             var parent = Directory.GetParent(value);
+
             if (parent == null)
             {
                 throw new IOException($"Can't obtain parent of {value}");
@@ -103,12 +106,14 @@ public static class SettingsHelpers
             }
 
             _CurrentAppPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
             if (!string.IsNullOrEmpty(_CurrentAppPath))
             {
                 return _CurrentAppPath;
             }
 
             _CurrentAppPath = Path.GetDirectoryName(Directory.GetCurrentDirectory());
+
             if (string.IsNullOrEmpty(_CurrentAppPath))
             {
                 throw new Exception("Can't find path of current application!");
@@ -121,6 +126,7 @@ public static class SettingsHelpers
     public static (bool Success, string OutputMessage) Save(this SettingsHolderBase value, string appData = "")
     {
         string outputMessage;
+
         try
         {
             return Save(JToken.FromObject(value), appData, null);
@@ -137,6 +143,7 @@ public static class SettingsHelpers
     {
         var success = false;
         var outputMessage = string.Empty;
+
         try
         {
             if (string.IsNullOrWhiteSpace(appData))
@@ -147,6 +154,7 @@ public static class SettingsHelpers
             var jsonObj = JsonConvert.SerializeObject(value,
                                                       Formatting.Indented
             );
+
             if (!isProduction.HasValue)
             {
                 File.WriteAllText(Path.Combine(appData, SettingsFileProd), jsonObj);
@@ -181,6 +189,7 @@ public static class SettingsHelpers
         var scratchSettingsPath = Path.Combine(CurrentAppPath, file);
 
         outputMessage.Append("Using: ").AppendLine(workingSettingsPath);
+
         if (!File.Exists(workingSettingsPath))
         {
             try
@@ -199,6 +208,7 @@ public static class SettingsHelpers
                 scratchSettingsPath,
                 isProduction
             );
+
             if (!string.IsNullOrEmpty(checkSettingsForChanges))
             {
                 outputMessage.AppendLine(checkSettingsForChanges);
@@ -210,16 +220,20 @@ public static class SettingsHelpers
             var builder = new ConfigurationBuilder()
                           .SetBasePath(BackupAppPath)
                           .AddJsonFile(file, optional: true, reloadOnChange: true);
+
             var configuration = builder.Build();
+
             // var configurationResult = configuration.GetSection("unknown");
             // configurationResult.Bind(settings);
 
             var settings = configuration.Get<T>();
+
             return (true, settings, settings.ToString());
         }
         catch (Exception exp)
         {
             outputMessage.AppendLine(exp.Message);
+
             return (false, null, outputMessage.ToString());
         }
     }
@@ -227,20 +241,24 @@ public static class SettingsHelpers
     private static string CheckSettingsForChanges(
         string workingSettingsPath,
         string scratchSettingsPath,
-        bool isProduction)
+        bool isProduction
+    )
     {
         var outputMessage = new StringBuilder();
+
         try
         {
             var scratchJson = JObject.Parse(File.ReadAllText(scratchSettingsPath));
             var workingJson = JObject.Parse(File.ReadAllText(workingSettingsPath));
             var (isEqual, differences) = scratchJson.CompareJson(workingJson, CheckForced(scratchJson));
+
             if (isEqual)
             {
                 return outputMessage.ToString();
             }
 
             var applyChanges = false;
+
             foreach (var item in differences)
             {
 #if DEBUG
@@ -259,6 +277,7 @@ public static class SettingsHelpers
                     applyChanges = true;
                     var node = scratchJson.SelectToken(item.Path);
                     workingJson.ReplaceNested(item.Path, node);
+
                     outputMessage.AppendLine("Force change node: ")
                                  .Append(item.Path)
                                  .Append(", JSON: ")
@@ -276,6 +295,7 @@ public static class SettingsHelpers
                     applyChanges = true;
                     var node = scratchJson.SelectToken(item.Path);
                     workingJson.ReplaceNested(item.Path, node);
+
                     outputMessage.AppendLine("Added new node: ")
                                  .Append(item.Path)
                                  .Append(", JSON: ")
@@ -299,6 +319,7 @@ public static class SettingsHelpers
     private static List<string> CheckForced(JObject jObject)
     {
         var result = new List<string>();
+
         using (var nodes = jObject.GetEnumerator())
         {
             while (nodes.MoveNext())
@@ -324,6 +345,7 @@ public static class SettingsHelpers
     {
         var success = false;
         var errMsg = string.Empty;
+
         try
         {
             var jsonObj = JsonConvert.SerializeObject(value, Formatting.Indented);

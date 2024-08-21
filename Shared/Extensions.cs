@@ -10,15 +10,18 @@ public static class Extensions
 {
     public static string GetStringFromArray<T>(this IEnumerable<T> list)
     {
-        var fields = new StringBuilder();
-        if (list != null)
+        if (list == null)
         {
-            foreach (var item in list)
+            return string.Empty;
+        }
+
+        var fields = new StringBuilder();
+
+        foreach (var item in list)
+        {
+            if (item != null)
             {
-                if (item != null)
-                {
-                    fields.Append(item).Append('\n');
-                }
+                fields.Append(item).Append('\n');
             }
         }
 
@@ -77,10 +80,10 @@ public static class Extensions
 
         if (string.IsNullOrEmpty(base64String) ||
             base64String.Length % 4 != 0       ||
-            base64String.Contains(" ")         ||
-            base64String.Contains("\t")        ||
-            base64String.Contains("\r")        ||
-            base64String.Contains("\n"))
+            base64String.Contains(' ')         ||
+            base64String.Contains('\t')        ||
+            base64String.Contains('\r')        ||
+            base64String.Contains('\n'))
         {
             return Encoding.ASCII.GetBytes(base64String);
         }
@@ -145,12 +148,8 @@ public static class Extensions
 
     public static bool IsEqual(this string value1, string value2)
     {
-        if (string.IsNullOrEmpty(value1))
-        {
-            return false;
-        }
-
-        return value1.Equals(value2, StringComparison.InvariantCultureIgnoreCase);
+        return !string.IsNullOrEmpty(value1) &&
+               value1.Equals(value2, StringComparison.InvariantCultureIgnoreCase);
     }
 
     public static string ToUpperCamelCase(this string value, bool cleanVar, bool manyType = false)
@@ -162,15 +161,18 @@ public static class Extensions
 
         string[] s;
         var valueUpper = value.ToLowerInvariant();
+
         if (valueUpper.StartsWith("v_"))
         {
-            s = cleanVar ? valueUpper[2..].Split('_') : valueUpper[3..].Split('_');                
+            s = cleanVar ? valueUpper[2..].Split('_') : valueUpper[3..].Split('_');
         }
         else
         {
             s = cleanVar ? valueUpper.Split('_') : valueUpper[1..].Split('_');
         }
+
         var str = new StringBuilder();
+
         foreach (var word in s)
         {
             if (!string.IsNullOrEmpty(word))
@@ -180,18 +182,22 @@ public static class Extensions
         }
 
         var result = str.ToString();
+
         if (!manyType)
         {
             return result;
         }
-        var r = new Regex(@"^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
+
+        var r = new Regex("^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
+
         if (r.IsMatch(result))
         {
             result = r.Match(result).Groups[1].Value;
         }
         else
         {
-            r = new Regex(@"^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
+            r = new Regex("^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
+
             if (r.IsMatch(result))
             {
                 result = r.Match(result).Groups[1].Value;
@@ -211,6 +217,7 @@ public static class Extensions
         var s = cleanVar ? value.ToLowerInvariant().Split('_') : value[1..].ToLowerInvariant().Split('_');
         var str = new StringBuilder();
         var i = 0;
+
         foreach (var word in s)
         {
             if (!string.IsNullOrEmpty(word))
@@ -229,18 +236,22 @@ public static class Extensions
         }
 
         var result = str.ToString();
+
         if (!manyType)
         {
             return result;
         }
-        var r = new Regex(@"^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
+
+        var r = new Regex("^([a-z0-9]+)es$", RegexOptions.IgnoreCase);
+
         if (r.IsMatch(result))
         {
             result = r.Match(result).Groups[1].Value;
         }
         else
         {
-            r = new Regex(@"^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
+            r = new Regex("^([a-z0-9]+)s$", RegexOptions.IgnoreCase);
+
             if (r.IsMatch(result))
             {
                 result = r.Match(result).Groups[1].Value;

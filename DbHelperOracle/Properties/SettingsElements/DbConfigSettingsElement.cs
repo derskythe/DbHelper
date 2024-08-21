@@ -1,18 +1,4 @@
-﻿// ***********************************************************************
-// Assembly         : DbHelper
-// Author           : Skif
-// Created          : 06-28-2021
-//
-// Last Modified By : Skif
-// Last Modified On : 06-28-2021
-// ***********************************************************************
-// <copyright file="Settings.cs" company="DbHelper">
-//     Copyright (c) . All rights reserved.
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using SettingsHelper;
 
@@ -24,7 +10,7 @@ namespace DbHelperOracle.Properties.SettingsElements;
 /// Implements the <see cref="SettingsElementBase" />
 /// </summary>
 /// <seealso cref="SettingsElementBase" />
-public class DbConfigSettingsElement : SettingsElementBase
+public sealed class DbConfigSettingsElement : SettingsElementBase
 {
     /// <summary>
     /// Gets or sets the name of the host.
