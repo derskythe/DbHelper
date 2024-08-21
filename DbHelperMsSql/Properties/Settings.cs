@@ -7,8 +7,14 @@ namespace DbHelperMsSql.Properties;
 
 public sealed class Settings : SettingsHolderBase
 {
-    public DbConfigSettingsElement DbConfig { get; set; }
-    public UiSettingsElement Ui { get; set; }
+    public DbConfigSettingsElement DbConfig {
+        get;
+        set;
+    }
+    public UiSettingsElement Ui {
+        get;
+        set;
+    }
 
     public Settings()
     {

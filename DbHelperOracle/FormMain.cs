@@ -59,7 +59,7 @@ public partial class FormMain : Form
                           txtPassword.Text,
                           txtServiceName.Text,
                           txtPort.Text
-            );
+                         );
 
             if (OracleDb.CheckConnection())
             {
@@ -185,8 +185,8 @@ public partial class FormMain : Form
         txtUsername.Text = _Settings.DbConfig.Username;
 
         if (!string.IsNullOrEmpty(txtHostname.Text) && !string.IsNullOrEmpty(txtServiceName.Text) &&
-            !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtPort.Text)        &&
-            !string.IsNullOrEmpty(txtUsername.Text))
+                !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtPort.Text)        &&
+                !string.IsNullOrEmpty(txtUsername.Text))
         {
             Connect();
         }
@@ -254,11 +254,11 @@ public partial class FormMain : Form
             }
 
             txtProcedure.Text = Utils.GenerateProcedure(
-                _Settings.DbConfig.Username.ToUpperInvariant(),
-                selectedItem.AdditionalData,
-                selectedItem.ClearName,
-                radioSeparate.Checked
-            );
+                                    _Settings.DbConfig.Username.ToUpperInvariant(),
+                                    selectedItem.AdditionalData,
+                                    selectedItem.ClearName,
+                                    radioSeparate.Checked
+                                );
 
             _Settings.Ui.ComboView = selectedItem.Id;
             _Settings.Save();

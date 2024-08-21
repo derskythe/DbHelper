@@ -65,14 +65,14 @@ public partial class FormMain : Form
             var port = Convert.ToInt32(txtPort.Text);
 
             _DataAccess = new Db.Db(new DbConfigSettingsElement()
-                {
-                    HostName = txtHostname.Text,
-                    Username = txtUsername.Text,
-                    Password = txtPassword.Text,
-                    Database = txtServiceName.Text,
-                    Port = port
-                }
-            );
+            {
+                HostName = txtHostname.Text,
+                Username = txtUsername.Text,
+                Password = txtPassword.Text,
+                Database = txtServiceName.Text,
+                Port = port
+            }
+                                   );
 
             if (await _DataAccess.CheckConnection())
             {
@@ -137,20 +137,20 @@ public partial class FormMain : Form
         foreach (var item in tables)
         {
             ComboView.Items.Add(new ComboboxItem
-                {
-                    Id = item,
-                    Value = $"{item} ({objectType.AsString()})",
-                    ObjectType = objectType
-                }
-            );
+            {
+                Id = item,
+                Value = $"{item} ({objectType.AsString()})",
+                ObjectType = objectType
+            }
+                               );
 
             ComboTablesForProcedureGeneration.Items.Add(new ComboboxItem
-                {
-                    Id = item,
-                    Value = $"{item} ({objectType.AsString()})",
-                    ObjectType = objectType
-                }
-            );
+            {
+                Id = item,
+                Value = $"{item} ({objectType.AsString()})",
+                ObjectType = objectType
+            }
+                                                       );
         }
 
         objectType = ObjectType.View;
@@ -158,12 +158,12 @@ public partial class FormMain : Form
         foreach (var item in views)
         {
             ComboView.Items.Add(new ComboboxItem
-                {
-                    Id = item,
-                    Value = $"{item} ({objectType.AsString()})",
-                    ObjectType = objectType
-                }
-            );
+            {
+                Id = item,
+                Value = $"{item} ({objectType.AsString()})",
+                ObjectType = objectType
+            }
+                               );
         }
 
         ComboView.DisplayMember = "Value";
@@ -192,14 +192,14 @@ public partial class FormMain : Form
         foreach (var item in list)
         {
             ComboProcedureList.Items.Add(new ComboboxItem
-                {
-                    Id = item.SpecificName,
-                    Value = $"{item.Name} ({item.DbType})",
-                    ObjectType = ObjectType.Procedure,
-                    AdditionalData = item.DbType,
-                    ClearName = item.Name
-                }
-            );
+            {
+                Id = item.SpecificName,
+                Value = $"{item.Name} ({item.DbType})",
+                ObjectType = ObjectType.Procedure,
+                AdditionalData = item.DbType,
+                ClearName = item.Name
+            }
+                                        );
         }
 
         ComboView.DisplayMember = "Value";
@@ -229,7 +229,7 @@ public partial class FormMain : Form
         txtPort.Text = _Settings.DbConfig.Port.ToString();
 
         if (!string.IsNullOrEmpty(txtHostname.Text) && !string.IsNullOrEmpty(txtServiceName.Text) &&
-            !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtUsername.Text)    && !string.IsNullOrEmpty(txtPort.Text))
+                !string.IsNullOrEmpty(txtPassword.Text) && !string.IsNullOrEmpty(txtUsername.Text)    && !string.IsNullOrEmpty(txtPort.Text))
         {
             await ConnectDb();
         }
@@ -280,8 +280,8 @@ public partial class FormMain : Form
             txtClass.Text = FormatUsingRoslyn(Utils.GenerateClassData(className, list));
 
             txtViewFunction.Text = FormatUsingRoslyn(
-                Utils.GenerateSelectTableOrViewMethod(className, list, selectedItem)
-            );
+                                       Utils.GenerateSelectTableOrViewMethod(className, list, selectedItem)
+                                   );
 
             await InitializeAsync(webViewClass);
             await InitializeAsync(webViewViewFunction);
@@ -321,11 +321,11 @@ public partial class FormMain : Form
             var paramList = await _DataAccess.ListProcedureParameters(selectedName);
 
             txtProcedure.Text = FormatUsingRoslyn(Utils.GenerateProcedure(sel.ClearName,
-                                                                          sel.AdditionalData,
-                                                                          paramList,
-                                                                          radioSeparate.Checked
-                                                  )
-            );
+                                                  sel.AdditionalData,
+                                                  paramList,
+                                                  radioSeparate.Checked
+                                                                         )
+                                                 );
 
             var formatter = new HtmlFormatter();
             var html = formatter.GetHtmlString(txtProcedure.Text, Languages.CSharp);

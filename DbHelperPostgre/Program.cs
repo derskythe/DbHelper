@@ -8,7 +8,10 @@ namespace DbHelperPostgre;
 
 static class Program
 {
-    public static Settings Settings { get; private set; }
+    public static Settings Settings {
+        get;
+        private set;
+    }
 
     /// <summary>
     ///  The main entry point for the application.
@@ -17,8 +20,8 @@ static class Program
     private static void Main()
     {
         var logger = LogManager.Setup()
-                               .LoadConfigurationFromFile("NLog.config")
-                               .GetCurrentClassLogger();
+                     .LoadConfigurationFromFile("NLog.config")
+                     .GetCurrentClassLogger();
 
         try
         {
@@ -26,11 +29,11 @@ static class Program
 
             var loadSettings = SettingsHelper.SettingsHelpers.Load<Settings>(
 #if DEBUG
-                false
+                                   false
 #else
-                    true
+                                   true
 #endif
-            );
+                               );
 
             if (!loadSettings.Success)
             {

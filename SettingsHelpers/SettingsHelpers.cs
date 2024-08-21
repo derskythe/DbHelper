@@ -13,8 +13,14 @@ namespace SettingsHelper;
 
 public static class SettingsHelpers
 {
-    public static string SettingsFileProd { get; set; } = "appsettings.json";
-    public static string SettingsFileDev { get; set; } = "appsettings.Development.json";
+    public static string SettingsFileProd {
+        get;
+        set;
+    } = "appsettings.json";
+    public static string SettingsFileDev {
+        get;
+        set;
+    } = "appsettings.Development.json";
     private static string _CurrentAppPath;
     private static string _BackupAppPath;
     private static string _DefaultDrive = "C:\\";
@@ -49,9 +55,9 @@ public static class SettingsHelpers
 
                 _BackupAppPath = Path.Combine(_DefaultDrive,
                                               assembly != null ?
-                                                  assembly.GetName().Name :
-                                                  Assembly.GetCallingAssembly().GetName().Name
-                );
+                                              assembly.GetName().Name :
+                                              Assembly.GetCallingAssembly().GetName().Name
+                                             );
             }
 
             if (!Directory.Exists(_BackupAppPath))
@@ -152,8 +158,8 @@ public static class SettingsHelpers
             }
 
             var jsonObj = JsonConvert.SerializeObject(value,
-                                                      Formatting.Indented
-            );
+                          Formatting.Indented
+                                                     );
 
             if (!isProduction.HasValue)
             {
@@ -180,7 +186,7 @@ public static class SettingsHelpers
     }
 
     public static (bool Success, T Value, string OutputMessage) Load<T>(bool isProduction)
-        where T : SettingsHolderBase, new()
+    where T : SettingsHolderBase, new()
     {
         var outputMessage = new StringBuilder();
 
@@ -204,10 +210,10 @@ public static class SettingsHelpers
         else
         {
             var checkSettingsForChanges = CheckSettingsForChanges(
-                workingSettingsPath,
-                scratchSettingsPath,
-                isProduction
-            );
+                                              workingSettingsPath,
+                                              scratchSettingsPath,
+                                              isProduction
+                                          );
 
             if (!string.IsNullOrEmpty(checkSettingsForChanges))
             {
@@ -218,8 +224,8 @@ public static class SettingsHelpers
         try
         {
             var builder = new ConfigurationBuilder()
-                          .SetBasePath(BackupAppPath)
-                          .AddJsonFile(file, optional: true, reloadOnChange: true);
+            .SetBasePath(BackupAppPath)
+            .AddJsonFile(file, optional: true, reloadOnChange: true);
 
             var configuration = builder.Build();
 
@@ -279,16 +285,16 @@ public static class SettingsHelpers
                     workingJson.ReplaceNested(item.Path, node);
 
                     outputMessage.AppendLine("Force change node: ")
-                                 .Append(item.Path)
-                                 .Append(", JSON: ")
-                                 .AppendLine(node?.ToString(Formatting.None));
+                    .Append(item.Path)
+                    .Append(", JSON: ")
+                    .AppendLine(node?.ToString(Formatting.None));
                 }
                 else if (item.Side == MissedSide.Source)
                 {
                     outputMessage.Append("Scratch file missing path: ")
-                                 .Append(item.Path)
-                                 .Append(", JSON: ")
-                                 .AppendLine(scratchJson.SelectToken(item.Path)?.ToString(Formatting.None));
+                    .Append(item.Path)
+                    .Append(", JSON: ")
+                    .AppendLine(scratchJson.SelectToken(item.Path)?.ToString(Formatting.None));
                 }
                 else
                 {
@@ -297,9 +303,9 @@ public static class SettingsHelpers
                     workingJson.ReplaceNested(item.Path, node);
 
                     outputMessage.AppendLine("Added new node: ")
-                                 .Append(item.Path)
-                                 .Append(", JSON: ")
-                                 .AppendLine(node?.ToString(Formatting.None));
+                    .Append(item.Path)
+                    .Append(", JSON: ")
+                    .AppendLine(node?.ToString(Formatting.None));
                 }
             }
 
@@ -325,7 +331,7 @@ public static class SettingsHelpers
             while (nodes.MoveNext())
             {
                 if (!nodes.Current.Key.IsEqual("_forced") || nodes.Current.Value?.Type != JTokenType.Array ||
-                    !(nodes.Current.Value is JArray array))
+                        !(nodes.Current.Value is JArray array))
                 {
                     continue;
                 }

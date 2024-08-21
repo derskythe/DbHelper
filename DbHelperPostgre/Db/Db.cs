@@ -35,7 +35,9 @@ public partial class Db
     /// Gets or sets the connection string.
     /// </summary>
     /// <value>The connection string.</value>
-    private string ConnectionString { get; }
+    private string ConnectionString {
+        get;
+    }
 
     /// <summary>
     /// This class represents a database helper for PostgreSQL.
@@ -194,8 +196,8 @@ public partial class Db
         if (value != null)
         {
             parameterObject = value.GetType().IsEnum ?
-                new NpgsqlParameter(parameter, (int)value) :
-                new NpgsqlParameter(parameter, value);
+                              new NpgsqlParameter(parameter, (int)value) :
+                              new NpgsqlParameter(parameter, value);
         }
         else
         {
@@ -203,7 +205,7 @@ public partial class Db
         }
 
         if (type == SqlDbType.NVarChar || type == SqlDbType.VarChar || type == SqlDbType.NText ||
-            type == SqlDbType.Text)
+                type == SqlDbType.Text)
         {
             parameterObject.Size = -1;
         }
@@ -246,7 +248,7 @@ public partial class Db
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, " +
                       $"parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }
@@ -288,7 +290,7 @@ public partial class Db
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteScalar for {procedureName}, " +
                       $"parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }
@@ -315,7 +317,7 @@ public partial class Db
             await using var cmd = GetCommand(connection,
                                              $"SELECT COUNT(*) FROM {tableName}",
                                              CommandType.Text
-            );
+                                            );
 
             if (parameters is { Count: > 0 })
             {
@@ -325,15 +327,15 @@ public partial class Db
             var rawValue = await cmd.ExecuteScalarAsync();
 
             returnValue = rawValue != null ?
-                Convert.ToInt32(rawValue) :
-                0;
+                          Convert.ToInt32(rawValue) :
+                          0;
         }
         catch (Exception ex)
         {
             Log.Error(ex,
                       $"{ex.Message}. Failed to Count for {tableName}, " +
                       $"parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }
@@ -386,7 +388,7 @@ public partial class Db
             Log.Error(ex,
                       $"{ex.Message}. Failed to GetDataReader for {procedureName}, " +
                       $"parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }

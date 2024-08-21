@@ -12,32 +12,50 @@ public class DetectedChanges
     /// Gets or sets the path.
     /// </summary>
     /// <value>The path.</value>
-    public string Path { get; set; }
+    public string Path {
+        get;
+        set;
+    }
     /// <summary>
     /// Gets or sets the side.
     /// </summary>
     /// <value>The side.</value>
-    public MissedSide Side { get; set; }
+    public MissedSide Side {
+        get;
+        set;
+    }
     /// <summary>
     /// Gets or sets the type.
     /// </summary>
     /// <value>The type.</value>
-    public DifferenceType Type { get; set; }
+    public DifferenceType Type {
+        get;
+        set;
+    }
     /// <summary>
     /// Gets or sets the source value.
     /// </summary>
     /// <value>The source value.</value>
-    public string SourceValue { get; set; }
+    public string SourceValue {
+        get;
+        set;
+    }
     /// <summary>
     /// Gets or sets the target value.
     /// </summary>
     /// <value>The target value.</value>
-    public string TargetValue { get; set; }
+    public string TargetValue {
+        get;
+        set;
+    }
     /// <summary>
     /// Gets or sets a value indicating whether this instance has values.
     /// </summary>
     /// <value><c>true</c> if this instance has values; otherwise, <c>false</c>.</value>
-    public bool HasValues { get; set; }
+    public bool HasValues {
+        get;
+        set;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DetectedChanges"/> class.

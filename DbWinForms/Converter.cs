@@ -29,33 +29,33 @@ public static class Converter
     public static ParameterInfo ToParameterInfo(DbDataReader row)
     {
         return new ParameterInfo(
-            row["order_num"].GetInt() - 1,
-            row["name"].GetString(),
-            row["type"].GetString(),
-            row["type"].GetString().GetNetType(),
-            !row["is_output"].GetBool()
-        );
+                   row["order_num"].GetInt() - 1,
+                   row["name"].GetString(),
+                   row["type"].GetString(),
+                   row["type"].GetString().GetNetType(),
+                   !row["is_output"].GetBool()
+               );
     }
 
     public static ParameterInfo ToProcedureParameterInfo(DbDataReader row)
     {
         return new ParameterInfo(
-            row["column_ordinal"].GetInt() - 1,
-            row["name"].GetString(),
-            row["system_type_name"].GetString(),
-            row["system_type_name"].GetString().GetNetType(),
-            true
-        );
+                   row["column_ordinal"].GetInt() - 1,
+                   row["name"].GetString(),
+                   row["system_type_name"].GetString(),
+                   row["system_type_name"].GetString().GetNetType(),
+                   true
+               );
     }
 
     public static ParameterInfo ToColumn(DbDataReader row)
     {
         return new ParameterInfo(
-            row["order_num"].GetInt() - 1,
-            row["name"].GetString(),
-            row["type"].GetString(),
-            row["type"].GetString().GetNetType()
-        );
+                   row["order_num"].GetInt() - 1,
+                   row["name"].GetString(),
+                   row["type"].GetString(),
+                   row["type"].GetString().GetNetType()
+               );
     }
 
     public static string GetNetType(this string msSqlDbType)
@@ -93,7 +93,7 @@ public static class Converter
         }
 
         if (msSqlDbType.Contains("VARCHAR") || msSqlDbType.Contains("NVARCHAR") || msSqlDbType.Contains("CHAR") ||
-            msSqlDbType.Contains("NCHAR")   || msSqlDbType.Contains("NTEXT")    || msSqlDbType.Contains("TEXT"))
+                msSqlDbType.Contains("NCHAR")   || msSqlDbType.Contains("NTEXT")    || msSqlDbType.Contains("TEXT"))
         {
             return "string";
         }
@@ -109,7 +109,7 @@ public static class Converter
         }
 
         if (msSqlDbType.Contains("VARBINARY") || msSqlDbType.Contains("BINARY") ||
-            msSqlDbType.Contains("TIMESTAMP") || msSqlDbType.Contains("IMAGE"))
+                msSqlDbType.Contains("TIMESTAMP") || msSqlDbType.Contains("IMAGE"))
         {
             return "byte[]";
         }

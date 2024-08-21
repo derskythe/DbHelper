@@ -137,8 +137,8 @@ internal static class Utils
             }
 
             return Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) is not DescriptionAttribute attribute ?
-                value.ToString() :
-                attribute.Description;
+                   value.ToString() :
+                   attribute.Description;
         }
         catch (Exception exp)
         {

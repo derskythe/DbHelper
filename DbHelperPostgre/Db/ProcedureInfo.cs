@@ -7,16 +7,28 @@ namespace DbHelperPostgre.Db;
 public record ProcedureInfo
 {
     [DataMember]
-    public string Name { get; set; }
+    public string Name {
+        get;
+        set;
+    }
 
     [DataMember]
-    public string DbType { get; set; }
+    public string DbType {
+        get;
+        set;
+    }
 
     [DataMember]
-    public string NetType { get; set; }
+    public string NetType {
+        get;
+        set;
+    }
 
     [DataMember]
-    public string SpecificName { get; set; }
+    public string SpecificName {
+        get;
+        set;
+    }
 
     public override string ToString()
     {

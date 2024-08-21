@@ -18,7 +18,10 @@ public sealed class DbConfigSettingsElement : SettingsElementBase
     /// <value>The name of the host.</value>
     [DataMember]
     [Required]
-    public string HostName { get; set; }
+    public string HostName {
+        get;
+        set;
+    }
 
     /// <summary>
     /// Gets or sets the username.
@@ -26,7 +29,10 @@ public sealed class DbConfigSettingsElement : SettingsElementBase
     /// <value>The username.</value>
     [DataMember]
     [Required]
-    public string Username { get; set; }
+    public string Username {
+        get;
+        set;
+    }
 
     /// <summary>
     /// Gets or sets the password.
@@ -34,7 +40,10 @@ public sealed class DbConfigSettingsElement : SettingsElementBase
     /// <value>The password.</value>
     [DataMember]
     [Required]
-    public string Password { get; set; }
+    public string Password {
+        get;
+        set;
+    }
 
     /// <summary>
     /// Gets or sets the name of the service.
@@ -42,7 +51,10 @@ public sealed class DbConfigSettingsElement : SettingsElementBase
     /// <value>The name of the service.</value>
     [DataMember]
     [Required]
-    public string Database { get; set; }
+    public string Database {
+        get;
+        set;
+    }
 
     /// <summary>
     /// Gets or sets the port.
@@ -51,7 +63,10 @@ public sealed class DbConfigSettingsElement : SettingsElementBase
     [DataMember]
     [Required]
     [Range(1, 65535, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
-    public int Port { get; set; }
+    public int Port {
+        get;
+        set;
+    }
 
     /// <summary>
     /// Returns a <see cref="System.String" /> that represents this instance.

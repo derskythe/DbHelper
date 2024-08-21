@@ -65,7 +65,7 @@ public abstract partial class BaseDataAccess
             GetParameter("@name", tableName)
         };
         var sql = objectType == ObjectType.Table ?
-            @"SELECT
+                  @"SELECT
             c.column_id AS order_num
             , c.name AS name
             , UPPER(t.name) AS type
@@ -74,7 +74,7 @@ public abstract partial class BaseDataAccess
         INNER JOIN sys.tables AS p on c.object_id = p.object_id
         INNER JOIN sys.types AS t on c.system_type_id = t.system_type_id AND c.user_type_id = t.user_type_id
         WHERE p.name = @name" :
-            @"SELECT
+                  @"SELECT
             c.column_id AS order_num
             , c.name AS name
             , UPPER(t.name) AS type

@@ -7,19 +7,34 @@ namespace DbHelperPostgre.Db;
 public record ParameterInfo
 {
     [DataMember]
-    public string DbType { get; set; }
+    public string DbType {
+        get;
+        set;
+    }
 
     [DataMember]
-    public bool InParam { get; set; }
+    public bool InParam {
+        get;
+        set;
+    }
 
     [DataMember]
-    public int Index { get; set; }
+    public int Index {
+        get;
+        set;
+    }
 
     [DataMember]
-    public string Name { get; set; }
+    public string Name {
+        get;
+        set;
+    }
 
     [DataMember]
-    public string NetType { get; set; }
+    public string NetType {
+        get;
+        set;
+    }
 
     public override string ToString()
     {

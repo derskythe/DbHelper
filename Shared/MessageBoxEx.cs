@@ -279,7 +279,7 @@ public sealed class MessageBoxEx
                                icon,
                                defButton,
                                options
-        );
+                              );
     }
 
     /// <summary>
@@ -585,7 +585,7 @@ public sealed class MessageBoxEx
                                       _HookProc,
                                       IntPtr.Zero,
                                       Environment.CurrentManagedThreadId
-            );
+                                     );
         }
     }
 
@@ -661,6 +661,6 @@ public sealed class MessageBoxEx
                    width,
                    height,
                    false
-        );
+                  );
     }
 }

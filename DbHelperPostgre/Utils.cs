@@ -20,10 +20,10 @@ internal static class Utils
         var funcData = new StringBuilder();
 
         funcData.Append("public async Task<List<")
-                .Append(className)
-                .Append(">> List")
-                .Append(className)
-                .Append("()\r\n{");
+        .Append(className)
+        .Append(">> List")
+        .Append(className)
+        .Append("()\r\n{");
 
         funcData.Append(SPACE).Append(SPACE).Append("const string query = \"SELECT ");
         var i = 0;
@@ -41,32 +41,32 @@ internal static class Utils
         funcData.Append(SPACE).Append("var paramList = new List<NpgsqlParameter> { ");
         funcData.Append(SPACE).Append("GetParameter(\"@id\", 0, NpgsqlDbType.Integer) };\r\n");
         funcData.Append("return await Many(query, paramList, Converter.To")
-                .Append(className)
-                .Append(");\r\n}\r\n\r\n");
+        .Append(className)
+        .Append(");\r\n}\r\n\r\n");
 
         funcData.Append("public static ")
-                .Append(className)
-                .Append(" To")
-                .Append(className)
-                .Append("(DbDataReader reader)\r\n{\r\n");
+        .Append(className)
+        .Append(" To")
+        .Append(className)
+        .Append("(DbDataReader reader)\r\n{\r\n");
         funcData.Append("var result = new ").Append(className).Append("\r\n{\r\n");
         foreach (var pair in list)
         {
             var paramName = pair.Name.ToUpperCamelCase(true);
             funcData.Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(paramName)
-                    .Append(" = ")
-                    .Append("reader[\"")
-                    .Append(pair.Name)
-                    .Append("\"]")
-                    .Append(".Get")
-                    .Append(char.ToUpperInvariant(pair.NetType[0]))
-                    .Append(pair.NetType.Substring(1))
-                    .Append("(),\r\n");
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(paramName)
+            .Append(" = ")
+            .Append("reader[\"")
+            .Append(pair.Name)
+            .Append("\"]")
+            .Append(".Get")
+            .Append(char.ToUpperInvariant(pair.NetType[0]))
+            .Append(pair.NetType.Substring(1))
+            .Append("(),\r\n");
         }
 
         funcData.Append("};\r\nreturn result;\r\n}");
@@ -201,17 +201,17 @@ internal static class Utils
                 if (!info.InParam)
                 {
                     funcData.Append("GetParameterOut(\"@")
-                            .Append(info.Name)
-                            .Append("\", ")
-                            .Append(info.DbType.GetDbParamType())
-                            .Append(", ");
+                    .Append(info.Name)
+                    .Append("\", ")
+                    .Append(info.DbType.GetDbParamType())
+                    .Append(", ");
                     funcData.Append("null, ParameterDirection.Output");
                 }
                 else
                 {
                     funcData.Append("GetParameter(\"@")
-                            .Append(info.Name)
-                            .Append("\", ");
+                    .Append(info.Name)
+                    .Append("\", ");
                     if (radioSeparateChecked)
                     {
                         funcData.Append(info.Name.ToLowerCamelCase(false));
@@ -259,11 +259,11 @@ internal static class Utils
             //classData.Append(SPACE).Append("[XmlElement]\r\n");
             classData.Append(SPACE).Append("[DataMember]\r\n");
             classData.Append(SPACE)
-                     .Append("public ")
-                     .Append(pair.NetType)
-                     .Append(' ')
-                     .Append(upper)
-                     .Append(" { get; set; }\r\n\r\n");
+            .Append("public ")
+            .Append(pair.NetType)
+            .Append(' ')
+            .Append(upper)
+            .Append(" { get; set; }\r\n\r\n");
             upperList.Add(upper);
         }
 
@@ -278,8 +278,8 @@ internal static class Utils
         {
             var lower = pair.Name.ToLowerCamelCase(true);
             classData.Append(pair.NetType)
-                     .Append(' ')
-                     .Append(lower);
+            .Append(' ')
+            .Append(lower);
             i++;
             lowerList.Add(lower);
             if (i < list.Count)
@@ -293,9 +293,9 @@ internal static class Utils
         foreach (var _ in list)
         {
             classData.Append(upperList[i])
-                     .Append(" = ")
-                     .Append(lowerList[i])
-                     .Append(";\r\n");
+            .Append(" = ")
+            .Append(lowerList[i])
+            .Append(";\r\n");
             i++;
         }
 
@@ -306,20 +306,20 @@ internal static class Utils
         foreach (var value in upperList)
         {
             classData.Append(value)
-                     .Append(": ");
+            .Append(": ");
 
             if (list[i].NetType == "byte[]")
             {
                 classData.Append('{')
-                         .Append(value)
-                         .Append(" != null")
-                         .Append('}');
+                .Append(value)
+                .Append(" != null")
+                .Append('}');
             }
             else
             {
                 classData.Append('{')
-                         .Append(value)
-                         .Append('}');
+                .Append(value)
+                .Append('}');
             }
 
             if (i + 1 < upperList.Count)
@@ -337,22 +337,22 @@ internal static class Utils
     public static string GetNpgsqlDbType(this string type)
     {
         return type switch
-        {
-            "long"     => "NpgsqlDbType.BigInt",
-            "byte[]"   => "NpgsqlDbType.Bytea",
-            "int"      => "NpgsqlDbType.Integer",
-            "decimal"  => "NpgsqlDbType.Numeric",
-            "string"   => "NpgsqlDbType.Varchar",
-            "DateTime" => "NpgsqlDbType.Timestamp",
-            "bool"     => "NpgsqlDbType.Bit",
-            "double"   => "NpgsqlDbType.Double",
-            "float"    => "NpgsqlDbType.Real",
-            "short"    => "NpgsqlDbType.SmallInt",
-            _          => string.Empty
-        };
-    }
+    {
+        "long"     => "NpgsqlDbType.BigInt",
+        "byte[]"   => "NpgsqlDbType.Bytea",
+        "int"      => "NpgsqlDbType.Integer",
+        "decimal"  => "NpgsqlDbType.Numeric",
+        "string"   => "NpgsqlDbType.Varchar",
+        "DateTime" => "NpgsqlDbType.Timestamp",
+        "bool"     => "NpgsqlDbType.Bit",
+        "double"   => "NpgsqlDbType.Double",
+        "float"    => "NpgsqlDbType.Real",
+        "short"    => "NpgsqlDbType.SmallInt",
+        _          => string.Empty
+    };
+}
 
-    public static string GetClassName(this string value)
+public static string GetClassName(this string value)
     {
         if (value.StartsWith("get"))
         {

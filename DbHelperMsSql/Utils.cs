@@ -20,10 +20,10 @@ internal static class Utils
         var funcData = new StringBuilder();
 
         funcData.Append("public async Task<List<")
-                .Append(className)
-                .Append(">> List")
-                .Append(className)
-                .Append("()\r\n{");
+        .Append(className)
+        .Append(">> List")
+        .Append(className)
+        .Append("()\r\n{");
 
         funcData.Append(SPACE).Append(SPACE).Append("const string query = \"SELECT ");
         var i = 0;
@@ -40,32 +40,32 @@ internal static class Utils
         funcData.Append(" FROM ").Append(selectedItem).Append(" t\";\r\n\r\n");
         funcData.Append(SPACE).Append("var paramList = new DbParameter[]\r\n{};\r\n");
         funcData.Append("return await Many(query, paramList, Converter.To")
-                .Append(className)
-                .Append(");\r\n}\r\n\r\n");
+        .Append(className)
+        .Append(");\r\n}\r\n\r\n");
 
         funcData.Append("public static ")
-                .Append(className)
-                .Append(" To")
-                .Append(className)
-                .Append("(DbDataReader reader)\r\n{\r\n");
+        .Append(className)
+        .Append(" To")
+        .Append(className)
+        .Append("(DbDataReader reader)\r\n{\r\n");
         funcData.Append("var result = new ").Append(className).Append("\r\n{\r\n");
         foreach (var pair in list)
         {
             var paramName = pair.Name.ToUpperCamelCase(true);
             funcData.Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(paramName)
-                    .Append(" = ")
-                    .Append("reader[\"")
-                    .Append(pair.Name)
-                    .Append("\"]")
-                    .Append(".Get")
-                    .Append(char.ToUpperInvariant(pair.NetType[0]))
-                    .Append(pair.NetType.Substring(1))
-                    .Append("(),\r\n");
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(paramName)
+            .Append(" = ")
+            .Append("reader[\"")
+            .Append(pair.Name)
+            .Append("\"]")
+            .Append(".Get")
+            .Append(char.ToUpperInvariant(pair.NetType[0]))
+            .Append(pair.NetType.Substring(1))
+            .Append("(),\r\n");
         }
 
         funcData.Append("};\r\nreturn result;\r\n}");
@@ -122,11 +122,11 @@ internal static class Utils
         str.Append("\r\nWHERE id = V_ID;\r\nEND IF;\r\n");
         // EXCEPTION
         str.Append(
-               "EXCEPTION\r\nWHEN OTHERS THEN\r\nROLLBACK;\r\nV_CODE:= SQLCODE;\r\nV_ERRM:= SUBSTR(SQLERRM, 1, 255);\r\nRAISE_APPLICATION_ERROR(-20001, V_CODE || CHR(10) || V_ERRM || CHR(10) || DBMS_UTILITY.FORMAT_ERROR_BACKTRACE || CHR(10));\r\nEND "
-           )
-           //.Append("SAVE_")
-           //.Append(selectedItem)
-           .Append(";\r\n");
+            "EXCEPTION\r\nWHEN OTHERS THEN\r\nROLLBACK;\r\nV_CODE:= SQLCODE;\r\nV_ERRM:= SUBSTR(SQLERRM, 1, 255);\r\nRAISE_APPLICATION_ERROR(-20001, V_CODE || CHR(10) || V_ERRM || CHR(10) || DBMS_UTILITY.FORMAT_ERROR_BACKTRACE || CHR(10));\r\nEND "
+        )
+        //.Append("SAVE_")
+        //.Append(selectedItem)
+        .Append(";\r\n");
 
         var result = str.ToString();
         return result;
@@ -176,19 +176,19 @@ internal static class Utils
                 if (!info.InParam)
                 {
                     funcData.Append("GetParameterOut(\"")
-                            .Append(info.Name)
-                            .Append("\", ")
-                            .Append(info.DbType.GetDbParamType())
-                            .Append(", ");
+                    .Append(info.Name)
+                    .Append("\", ")
+                    .Append(info.DbType.GetDbParamType())
+                    .Append(", ");
                     funcData.Append("null, ParameterDirection.Output");
                 }
                 else
                 {
                     funcData.Append("GetParameter(\"")
-                            .Append(info.Name)
-                            .Append("\", ")
-                            .Append(info.DbType.GetDbParamType())
-                            .Append(", ");
+                    .Append(info.Name)
+                    .Append("\", ")
+                    .Append(info.DbType.GetDbParamType())
+                    .Append(", ");
 
                     if (radioSeparateChecked)
                     {
@@ -207,7 +207,7 @@ internal static class Utils
         }
 
         funcData.Append("await ExecuteNonQuery(\"")
-                .Append(selectedItem);
+        .Append(selectedItem);
         funcData.Append(paramList.Count > 0 ? "\", paramList);\r\n}" : "\", null);\r\n}");
 
         return funcData.ToString();
@@ -225,16 +225,16 @@ internal static class Utils
         if (singleRecord)
         {
             funcData.Append("public async Task<")
-                    .Append(className)
-                    .Append("> ")
-                    .Append(selectedItem.ToUpperCamelCase(true));
+            .Append(className)
+            .Append("> ")
+            .Append(selectedItem.ToUpperCamelCase(true));
         }
         else
         {
             funcData.Append("public async Task<List<")
-                    .Append(className)
-                    .Append(">> ")
-                    .Append(selectedItem.ToUpperCamelCase(true));
+            .Append(className)
+            .Append(">> ")
+            .Append(selectedItem.ToUpperCamelCase(true));
         }
 
         var i = 0;
@@ -274,19 +274,19 @@ internal static class Utils
                 if (!info.InParam)
                 {
                     funcData.Append("GetParameterOut(\"")
-                            .Append(info.Name)
-                            .Append("\", ")
-                            .Append(info.DbType.GetDbParamType())
-                            .Append(", ");
+                    .Append(info.Name)
+                    .Append("\", ")
+                    .Append(info.DbType.GetDbParamType())
+                    .Append(", ");
                     funcData.Append("null, ParameterDirection.Output");
                 }
                 else
                 {
                     funcData.Append("GetParameter(\"")
-                            .Append(info.Name)
-                            .Append("\", ")
-                            .Append(info.DbType.GetDbParamType())
-                            .Append(", ");
+                    .Append(info.Name)
+                    .Append("\", ")
+                    .Append(info.DbType.GetDbParamType())
+                    .Append(", ");
 
                     if (radioSeparateChecked)
                     {
@@ -317,33 +317,33 @@ internal static class Utils
 
 
         funcData.Append("(\"")
-                .Append(selectedItem)
-                .Append("\", ")
-                .Append(paramList.Count > 0 ? "paramList, " : "null, ")
-                .Append("Converter.To")
-                .Append(className)
-                .Append(");\r\n}\r\n\r\n");
+        .Append(selectedItem)
+        .Append("\", ")
+        .Append(paramList.Count > 0 ? "paramList, " : "null, ")
+        .Append("Converter.To")
+        .Append(className)
+        .Append(");\r\n}\r\n\r\n");
 
         funcData.Append("public static ")
-                .Append(className)
-                .Append(" To")
-                .Append(className)
-                .Append("(DbDataReader reader)\r\n{\r\n");
+        .Append(className)
+        .Append(" To")
+        .Append(className)
+        .Append("(DbDataReader reader)\r\n{\r\n");
         funcData.Append("var result = new ").Append(className).Append("\r\n{\r\n");
         foreach (var pair in returnedFields)
         {
             var paramName = pair.Name.ToUpperCamelCase(true);
             funcData.Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(paramName)
-                    .Append(" = ")
-                    .Append("reader[\"")
-                    .Append(pair.Name)
-                    .Append("\"]")
-                    .Append(".Get");
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(paramName)
+            .Append(" = ")
+            .Append("reader[\"")
+            .Append(pair.Name)
+            .Append("\"]")
+            .Append(".Get");
             if (pair.NetType == "byte[]")
             {
                 funcData.Append("Bytes");
@@ -351,7 +351,7 @@ internal static class Utils
             else
             {
                 funcData.Append(char.ToUpperInvariant(pair.NetType[0]))
-                        .Append(pair.NetType.Substring(1));
+                .Append(pair.NetType.Substring(1));
             }
 
             funcData.Append("(),\r\n");
@@ -376,11 +376,11 @@ internal static class Utils
             //classData.Append(SPACE).Append("[XmlElement]\r\n");
             classData.Append(SPACE).Append("[DataMember]\r\n");
             classData.Append(SPACE)
-                     .Append("public ")
-                     .Append(pair.NetType)
-                     .Append(' ')
-                     .Append(upper)
-                     .Append(" { get; set; }\r\n\r\n");
+            .Append("public ")
+            .Append(pair.NetType)
+            .Append(' ')
+            .Append(upper)
+            .Append(" { get; set; }\r\n\r\n");
             upperList.Add(upper);
         }
 
@@ -395,8 +395,8 @@ internal static class Utils
         {
             var lower = pair.Name.ToLowerCamelCase(true);
             classData.Append(pair.NetType)
-                     .Append(' ')
-                     .Append(lower);
+            .Append(' ')
+            .Append(lower);
             i++;
             lowerList.Add(lower);
             if (i < list.Count)
@@ -410,9 +410,9 @@ internal static class Utils
         foreach (var _ in list)
         {
             classData.Append(upperList[i])
-                     .Append(" = ")
-                     .Append(lowerList[i])
-                     .Append(";\r\n");
+            .Append(" = ")
+            .Append(lowerList[i])
+            .Append(";\r\n");
             i++;
         }
 
@@ -423,20 +423,20 @@ internal static class Utils
         foreach (var value in upperList)
         {
             classData.Append(value)
-                     .Append(": ");
+            .Append(": ");
 
             if (list[i].NetType == "byte[]")
             {
                 classData.Append('{')
-                         .Append(value)
-                         .Append(" != null")
-                         .Append('}');
+                .Append(value)
+                .Append(" != null")
+                .Append('}');
             }
             else
             {
                 classData.Append('{')
-                         .Append(value)
-                         .Append('}');
+                .Append(value)
+                .Append('}');
             }
 
             if (i + 1 < upperList.Count)
@@ -454,25 +454,25 @@ internal static class Utils
     private static string GetSqlDbType(this string type)
     {
         return type switch
-        {
-            "long"           => "SqlDbType.BigInt",
-            "byte[]"         => "SqlDbType.VarBinary",
-            "int"            => "SqlDbType.Int",
-            "decimal"        => "SqlDbType.Decimal",
-            "string"         => "SqlDbType.VarChar",
-            "DateTime"       => "SqlDbType.DateTime",
-            "bool"           => "SqlDbType.Bit",
-            "DateTimeOffset" => "SqlDbType.DateTimeOffset",
-            "double"         => "SqlDbType.Float",
-            "float"          => "SqlDbType.Real",
-            "short"          => "SqlDbType.SmallInt",
-            "TimeSpan"       => "SqlDbType.Time",
-            "byte"           => "SqlDbType.TinyInt",
-            _                => string.Empty
-        };
-    }
+    {
+        "long"           => "SqlDbType.BigInt",
+        "byte[]"         => "SqlDbType.VarBinary",
+        "int"            => "SqlDbType.Int",
+        "decimal"        => "SqlDbType.Decimal",
+        "string"         => "SqlDbType.VarChar",
+        "DateTime"       => "SqlDbType.DateTime",
+        "bool"           => "SqlDbType.Bit",
+        "DateTimeOffset" => "SqlDbType.DateTimeOffset",
+        "double"         => "SqlDbType.Float",
+        "float"          => "SqlDbType.Real",
+        "short"          => "SqlDbType.SmallInt",
+        "TimeSpan"       => "SqlDbType.Time",
+        "byte"           => "SqlDbType.TinyInt",
+        _                => string.Empty
+    };
+}
 
-    public static string GetClassName(this string value)
+public static string GetClassName(this string value)
     {
         if (value.StartsWith("get"))
         {

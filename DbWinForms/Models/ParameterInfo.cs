@@ -7,19 +7,29 @@ namespace DbWinForms.Models;
 public readonly record struct ParameterInfo
 {
     [DataMember]
-    public int Index { get; }
+    public int Index {
+        get;
+    }
 
     [DataMember]
-    public string Name { get; }
+    public string Name {
+        get;
+    }
 
     [DataMember]
-    public string DbType { get; }
+    public string DbType {
+        get;
+    }
 
     [DataMember]
-    public string NetType { get; }
+    public string NetType {
+        get;
+    }
 
     [DataMember]
-    public bool InParam { get; }
+    public bool InParam {
+        get;
+    }
 
     public ParameterInfo()
     { }

@@ -3,19 +3,40 @@
 
 internal struct ParameterInfo
 {
-    public string DbName { get; init; }
+    public string DbName {
+        get;
+        init;
+    }
 
-    public string DbType { get; init; }
+    public string DbType {
+        get;
+        init;
+    }
 
-    public bool InParam { get; init; }
+    public bool InParam {
+        get;
+        init;
+    }
 
-    public int Index { get; init; }
+    public int Index {
+        get;
+        init;
+    }
 
-    public string NetType { get; init; }
+    public string NetType {
+        get;
+        init;
+    }
 
-    public string Name { get; init; }
+    public string Name {
+        get;
+        init;
+    }
 
-    public string NameLowerCamelCase { get; init; }
+    public string NameLowerCamelCase {
+        get;
+        init;
+    }
 
     public ParameterInfo(string dbName,
                          string dbType,

@@ -136,12 +136,12 @@ internal static class OracleDb
 
                     result.Add(
                         new ComboboxItem
-                        {
-                            Id = item,
-                            Value = item,
-                            AdditionalData = string.Empty,
-                            ObjectType = ObjectType.View
-                        }
+                    {
+                        Id = item,
+                        Value = item,
+                        AdditionalData = string.Empty,
+                        ObjectType = ObjectType.View
+                    }
                     );
                 }
             }
@@ -186,13 +186,13 @@ internal static class OracleDb
                     if (!string.IsNullOrEmpty(item))
                     {
                         result.Add(new ComboboxItem
-                            {
-                                Id = item,
-                                Value = item,
-                                AdditionalData = string.Empty,
-                                ObjectType = ObjectType.Table
-                            }
-                        );
+                        {
+                            Id = item,
+                            Value = item,
+                            AdditionalData = string.Empty,
+                            ObjectType = ObjectType.Table
+                        }
+                                  );
                     }
                 }
             }
@@ -238,14 +238,14 @@ internal static class OracleDb
                     var item = GetString(reader["OBJECT_NAME"]);
 
                     result.Add(new ComboboxItem
-                        {
-                            Id = item,
-                            Value = item,
-                            ClearName = item,
-                            AdditionalData = string.Empty,
-                            ObjectType = ObjectType.Procedure
-                        }
-                    );
+                    {
+                        Id = item,
+                        Value = item,
+                        ClearName = item,
+                        AdditionalData = string.Empty,
+                        ObjectType = ObjectType.Procedure
+                    }
+                              );
                 }
             }
         }
@@ -292,14 +292,14 @@ internal static class OracleDb
                     var procedureName = GetString(reader["PROCEDURE_NAME"]);
 
                     result.Add(new ComboboxItem
-                        {
-                            Id = $"{objectName}.{procedureName}",
-                            Value = $"{objectName}.{procedureName}",
-                            AdditionalData = objectName,
-                            ClearName = procedureName,
-                            ObjectType = ObjectType.Package
-                        }
-                    );
+                    {
+                        Id = $"{objectName}.{procedureName}",
+                        Value = $"{objectName}.{procedureName}",
+                        AdditionalData = objectName,
+                        ClearName = procedureName,
+                        ObjectType = ObjectType.Package
+                    }
+                              );
                 }
             }
         }
@@ -339,8 +339,8 @@ internal static class OracleDb
 
                 //command.Parameters.Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input).Value = package;
                 command.Parameters
-                       .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
-                       .Value = desiredProcedure.ClearName;
+                .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
+                .Value = desiredProcedure.ClearName;
 
                 using var reader = command.ExecuteReader();
 
@@ -381,12 +381,12 @@ internal static class OracleDb
                 command.BindByName = true;
 
                 command.Parameters
-                       .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
-                       .Value = desiredProcedure.ClearName;
+                .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
+                .Value = desiredProcedure.ClearName;
 
                 command.Parameters
-                       .Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input)
-                       .Value = desiredProcedure.AdditionalData;
+                .Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input)
+                .Value = desiredProcedure.AdditionalData;
 
                 using var reader = command.ExecuteReader();
 
@@ -446,8 +446,8 @@ internal static class OracleDb
                 command.CommandText = sql;
 
                 command.Parameters
-                       .Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input)
-                       .Value = package;
+                .Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input)
+                .Value = package;
             }
             else
             {
@@ -461,12 +461,12 @@ internal static class OracleDb
 
             //command.Parameters.Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input).Value = package;
             command.Parameters
-                   .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
-                   .Value = procedureName;
+            .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
+            .Value = procedureName;
 
             command.Parameters
-                   .Add("owner", OracleDbType.Varchar2, ParameterDirection.Input)
-                   .Value = ownerName;
+            .Add("owner", OracleDbType.Varchar2, ParameterDirection.Input)
+            .Value = ownerName;
 
             using var reader = command.ExecuteReader();
 
@@ -534,7 +534,7 @@ internal static class OracleDb
                                    reader["column_name"].GetString(),
                                    reader["DATA_TYPE"].GetString()
                                )
-                    );
+                              );
                 }
             }
         }

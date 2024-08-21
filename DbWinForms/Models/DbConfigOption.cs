@@ -48,13 +48,13 @@ public record DbConfigOption
     public override string ToString()
     {
         return  $"Server={HostName};"            +
-                $"Database={ServiceName};"       +
-                $"User Id={Username};"           +
-                $"Password={Password};"          +
-                "Persist Security Info=True;"    +
-                "Integrated Security=True;"      +
-                "MultipleActiveResultSets=true;" +
-                "Trusted_Connection=False;"      +
-                "TrustServerCertificate=True;";
+        $"Database={ServiceName};"       +
+        $"User Id={Username};"           +
+        $"Password={Password};"          +
+        "Persist Security Info=True;"    +
+        "Integrated Security=True;"      +
+        "MultipleActiveResultSets=true;" +
+        "Trusted_Connection=False;"      +
+        "TrustServerCertificate=True;";
     }
 }

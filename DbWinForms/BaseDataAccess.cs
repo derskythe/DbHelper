@@ -31,7 +31,9 @@ public abstract partial class BaseDataAccess
     /// Gets or sets the connection string.
     /// </summary>
     /// <value>The connection string.</value>
-    private string ConnectionString { get; }
+    private string ConnectionString {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseDataAccess" /> class.
@@ -148,7 +150,7 @@ public abstract partial class BaseDataAccess
         var parameterObject = new SqlParameter(parameter, type);
 
         if (type == SqlDbType.NVarChar || type == SqlDbType.VarChar || type == SqlDbType.NText ||
-            type == SqlDbType.Text)
+                type == SqlDbType.Text)
         {
             parameterObject.Size = -1;
         }
@@ -191,7 +193,7 @@ public abstract partial class BaseDataAccess
         {
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }
@@ -209,7 +211,7 @@ public abstract partial class BaseDataAccess
         IReadOnlyList<DbParameter> parameters,
         CommandType commandType = CommandType.StoredProcedure
     )
-        where T1 : IConvertible
+    where T1 : IConvertible
     {
         SqlConnection connection = null;
 
@@ -224,7 +226,7 @@ public abstract partial class BaseDataAccess
                 foreach (var parameter in parameters)
                 {
                     if (parameter.Direction == ParameterDirection.Output ||
-                        parameter.Direction == ParameterDirection.InputOutput)
+                            parameter.Direction == ParameterDirection.InputOutput)
                     {
                         if (string.IsNullOrEmpty(returnParam1))
                         {
@@ -243,8 +245,8 @@ public abstract partial class BaseDataAccess
             if (string.IsNullOrEmpty(returnParam1))
             {
                 throw new
-                    ArgumentException($"Didn't find Output or InputOutput params. {nameof(returnParam1)}: {returnParam1}"
-                    );
+                ArgumentException($"Didn't find Output or InputOutput params. {nameof(returnParam1)}: {returnParam1}"
+                                 );
             }
 
             await cmd.ExecuteNonQueryAsync();
@@ -257,7 +259,7 @@ public abstract partial class BaseDataAccess
         {
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }
@@ -275,7 +277,7 @@ public abstract partial class BaseDataAccess
         List<DbParameter> parameters,
         CommandType commandType = CommandType.StoredProcedure
     )
-        where T1 : IConvertible
+    where T1 : IConvertible
         where T2 : IConvertible
     {
         SqlConnection connection = null;
@@ -292,7 +294,7 @@ public abstract partial class BaseDataAccess
                 foreach (var parameter in parameters)
                 {
                     if (parameter.Direction == ParameterDirection.Output ||
-                        parameter.Direction == ParameterDirection.InputOutput)
+                            parameter.Direction == ParameterDirection.InputOutput)
                     {
                         if (string.IsNullOrEmpty(returnParam1))
                         {
@@ -305,8 +307,8 @@ public abstract partial class BaseDataAccess
                         else
                         {
                             throw new
-                                ArgumentException($"Too many OUTPUT params. Already set {returnParam1}, {returnParam2}"
-                                );
+                            ArgumentException($"Too many OUTPUT params. Already set {returnParam1}, {returnParam2}"
+                                             );
                         }
                     }
 
@@ -317,9 +319,9 @@ public abstract partial class BaseDataAccess
             if (string.IsNullOrEmpty(returnParam1) || string.IsNullOrEmpty(returnParam2))
             {
                 throw new
-                    ArgumentException(
-                        $"Didn't find Output or InputOutput params. {nameof(returnParam1)}: {returnParam1}, {nameof(returnParam2)}: {returnParam2}"
-                    );
+                ArgumentException(
+                    $"Didn't find Output or InputOutput params. {nameof(returnParam1)}: {returnParam1}, {nameof(returnParam2)}: {returnParam2}"
+                );
             }
 
             await cmd.ExecuteNonQueryAsync();
@@ -333,7 +335,7 @@ public abstract partial class BaseDataAccess
         {
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }
@@ -351,7 +353,7 @@ public abstract partial class BaseDataAccess
         List<DbParameter> parameters,
         CommandType commandType = CommandType.StoredProcedure
     )
-        where T1 : IConvertible
+    where T1 : IConvertible
         where T2 : IConvertible
         where T3 : IConvertible
     {
@@ -370,7 +372,7 @@ public abstract partial class BaseDataAccess
                 foreach (var parameter in parameters)
                 {
                     if (parameter.Direction == ParameterDirection.Output ||
-                        parameter.Direction == ParameterDirection.InputOutput)
+                            parameter.Direction == ParameterDirection.InputOutput)
                     {
                         if (string.IsNullOrEmpty(returnParam1))
                         {
@@ -387,8 +389,8 @@ public abstract partial class BaseDataAccess
                         else
                         {
                             throw new
-                                ArgumentException($"Too many OUTPUT params. Already set {returnParam1}, {returnParam2}, {returnParam3}"
-                                );
+                            ArgumentException($"Too many OUTPUT params. Already set {returnParam1}, {returnParam2}, {returnParam3}"
+                                             );
                         }
                     }
 
@@ -397,13 +399,13 @@ public abstract partial class BaseDataAccess
             }
 
             if (string.IsNullOrEmpty(returnParam1) || string.IsNullOrEmpty(returnParam2) ||
-                string.IsNullOrEmpty(returnParam3))
+                    string.IsNullOrEmpty(returnParam3))
             {
                 throw new ArgumentException($"Didn't find Output or InputOutput params. " +
                                             $"{nameof(returnParam1)}: {returnParam1}, "   +
                                             $"{nameof(returnParam2)}: {returnParam2}"     +
                                             $"{nameof(returnParam3)}: {returnParam3}"
-                );
+                                           );
             }
 
             await cmd.ExecuteNonQueryAsync();
@@ -418,7 +420,7 @@ public abstract partial class BaseDataAccess
         {
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }
@@ -436,7 +438,7 @@ public abstract partial class BaseDataAccess
         List<DbParameter> parameters,
         CommandType commandType = CommandType.StoredProcedure
     )
-        where T1 : IConvertible
+    where T1 : IConvertible
         where T2 : IConvertible
         where T3 : IConvertible
         where T4 : IConvertible
@@ -461,7 +463,7 @@ public abstract partial class BaseDataAccess
                 foreach (var parameter in parameters)
                 {
                     if (parameter.Direction == ParameterDirection.Output ||
-                        parameter.Direction == ParameterDirection.InputOutput)
+                            parameter.Direction == ParameterDirection.InputOutput)
                     {
                         if (string.IsNullOrEmpty(returnParam1))
                         {
@@ -490,9 +492,9 @@ public abstract partial class BaseDataAccess
                         else
                         {
                             throw new
-                                ArgumentException(
-                                    $"Too many OUTPUT params. Already set {returnParam1}, {returnParam2}, {returnParam3}, {returnParam4}, {returnParam5}, {returnParam6}"
-                                );
+                            ArgumentException(
+                                $"Too many OUTPUT params. Already set {returnParam1}, {returnParam2}, {returnParam3}, {returnParam4}, {returnParam5}, {returnParam6}"
+                            );
                         }
                     }
 
@@ -501,8 +503,8 @@ public abstract partial class BaseDataAccess
             }
 
             if (string.IsNullOrEmpty(returnParam1) || string.IsNullOrEmpty(returnParam2) ||
-                string.IsNullOrEmpty(returnParam3) || string.IsNullOrEmpty(returnParam4) ||
-                string.IsNullOrEmpty(returnParam5) || string.IsNullOrEmpty(returnParam6))
+                    string.IsNullOrEmpty(returnParam3) || string.IsNullOrEmpty(returnParam4) ||
+                    string.IsNullOrEmpty(returnParam5) || string.IsNullOrEmpty(returnParam6))
             {
                 throw new ArgumentException($"Didn't find Output or InputOutput params. " +
                                             $"{nameof(returnParam1)}: {returnParam1}, "   +
@@ -511,7 +513,7 @@ public abstract partial class BaseDataAccess
                                             $"{nameof(returnParam4)}: {returnParam4}"     +
                                             $"{nameof(returnParam5)}: {returnParam5}"     +
                                             $"{nameof(returnParam6)}: {returnParam6}"
-                );
+                                           );
             }
 
             await cmd.ExecuteNonQueryAsync();
@@ -524,20 +526,20 @@ public abstract partial class BaseDataAccess
             var returnValue6 = cmd.Parameters[returnParam6].Value;
 
             return (
-                ExtractValue<T1>(returnValue1),
-                ExtractValue<T2>(returnValue2),
-                ExtractValue<T3>(returnValue3),
-                ExtractValue<T4>(returnValue4),
-                ExtractValue<T5>(returnValue5),
-                ExtractValue<T6>(returnValue6)
-            );
+                       ExtractValue<T1>(returnValue1),
+                       ExtractValue<T2>(returnValue2),
+                       ExtractValue<T3>(returnValue3),
+                       ExtractValue<T4>(returnValue4),
+                       ExtractValue<T5>(returnValue5),
+                       ExtractValue<T6>(returnValue6)
+                   );
         }
         catch (Exception ex)
         {
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteNonQuery for {procedureName}, parameters: " +
                       $"{parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }
@@ -579,7 +581,7 @@ public abstract partial class BaseDataAccess
             Log.Error(ex,
                       $"{ex.Message}. Failed to ExecuteScalar for {procedureName}, " +
                       $"parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }
@@ -629,7 +631,7 @@ public abstract partial class BaseDataAccess
             Log.Error(ex,
                       $"{ex.Message}. Failed to GetDataReader for {procedureName}, " +
                       $"parameters: {parameters?.GetStringFromArray()}"
-            );
+                     );
 
             throw;
         }

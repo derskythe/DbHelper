@@ -45,8 +45,8 @@ internal static partial class Utils
         funcData.Append(SPACE).Append("var paramList = new DbParam[]\r\n{\r\nnew DbParam(\"id\", OracleDbType.Int32, 0)\r\n};\r\n");
 
         funcData.Append("return await SelectMany(query, paramList, To")
-                .Append(className)
-                .Append(");\r\n}\r\n\r\n");
+        .Append(className)
+        .Append(");\r\n}\r\n\r\n");
 
         funcData.Append("public static ").Append(className).Append(" To").Append(className).Append("(DbDataReader reader)\r\n{\r\n");
         funcData.Append("var result = new ").Append(className).Append("\r\n{\r\n");
@@ -57,31 +57,31 @@ internal static partial class Utils
             var funcName = pair.Value.GetNetType();
 
             funcData.Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(SPACE)
-                    .Append(paramName)
-                    .Append(" = ");
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(SPACE)
+            .Append(paramName)
+            .Append(" = ");
 
 
             if (funcName.IsEqual("byte[]"))
             {
                 funcData.Append("GetBlob(")
-                        .Append("reader[\"")
-                        .Append(pair.Key)
-                        .Append("\"]")
-                        .Append("),\r\n");
+                .Append("reader[\"")
+                .Append(pair.Key)
+                .Append("\"]")
+                .Append("),\r\n");
             }
             else
             {
                 funcData.Append("reader[\"")
-                        .Append(pair.Key)
-                        .Append("\"]")
-                        .Append(".Get")
-                        .Append(char.ToUpperInvariant(funcName[0]))
-                        .Append(funcName[1..])
-                        .Append("(),\r\n");
+                .Append(pair.Key)
+                .Append("\"]")
+                .Append(".Get")
+                .Append(char.ToUpperInvariant(funcName[0]))
+                .Append(funcName[1..])
+                .Append("(),\r\n");
             }
         }
 
@@ -144,12 +144,12 @@ internal static partial class Utils
 
         // EXCEPTION
         str.Append(
-               "EXCEPTION\r\nWHEN OTHERS THEN\r\nROLLBACK;\r\nV_CODE:= SQLCODE;\r\nV_ERRM:= SUBSTR(SQLERRM, 1, 255);\r\nRAISE_APPLICATION_ERROR(-20001, V_CODE || CHR(10) || V_ERRM || CHR(10) || DBMS_UTILITY.FORMAT_ERROR_BACKTRACE || CHR(10));\r\nEND "
-           )
+            "EXCEPTION\r\nWHEN OTHERS THEN\r\nROLLBACK;\r\nV_CODE:= SQLCODE;\r\nV_ERRM:= SUBSTR(SQLERRM, 1, 255);\r\nRAISE_APPLICATION_ERROR(-20001, V_CODE || CHR(10) || V_ERRM || CHR(10) || DBMS_UTILITY.FORMAT_ERROR_BACKTRACE || CHR(10));\r\nEND "
+        )
 
-           //.Append("SAVE_")
-           //.Append(selectedItem)
-           .Append(";\r\n");
+        //.Append("SAVE_")
+        //.Append(selectedItem)
+        .Append(";\r\n");
 
         var result = str.ToString();
 
@@ -239,18 +239,18 @@ internal static partial class Utils
                 str.Append(string.Join(',', listOutputTypes));
 
                 str.Append(">(\"")
-                   .Append(string.IsNullOrEmpty(packageName) ? ownerName : ownerName + "." + packageName)
-                   .Append('.')
-                   .Append(procName)
-                   .AppendLine("\", paramList);\r\nreturn result;\r\n}\r\n");
+                .Append(string.IsNullOrEmpty(packageName) ? ownerName : ownerName + "." + packageName)
+                .Append('.')
+                .Append(procName)
+                .AppendLine("\", paramList);\r\nreturn result;\r\n}\r\n");
             }
             else
             {
                 str.Append("await ExecuteNonQuery(\"")
-                   .Append(string.IsNullOrEmpty(packageName) ? ownerName : ownerName + "." + packageName)
-                   .Append('.')
-                   .Append(procName)
-                   .AppendLine("\", paramList);\r\n}\r\n");
+                .Append(string.IsNullOrEmpty(packageName) ? ownerName : ownerName + "." + packageName)
+                .Append('.')
+                .Append(procName)
+                .AppendLine("\", paramList);\r\n}\r\n");
             }
         }
 
@@ -266,8 +266,8 @@ internal static partial class Utils
         classData.Append("[Serializable, XmlRoot(\"").Append(className).Append("\")]\r\n");
 
         classData.Append("[DataContract(Name = \"")
-                 .Append(className)
-                 .Append("\")]\r\n");
+        .Append(className)
+        .Append("\")]\r\n");
 
         classData.Append("public sealed record ").Append(className).Append("\r\n{");
         var upperList = new List<string>();
@@ -279,11 +279,11 @@ internal static partial class Utils
             classData.Append(SPACE).Append("[DataMember]\r\n");
 
             classData.Append(SPACE)
-                     .Append("public ")
-                     .Append(pair.Value.GetNetType())
-                     .Append(' ')
-                     .Append(upper)
-                     .Append(" { get; set; }\r\n\r\n");
+            .Append("public ")
+            .Append(pair.Value.GetNetType())
+            .Append(' ')
+            .Append(upper)
+            .Append(" { get; set; }\r\n\r\n");
 
             upperList.Add(upper);
         }
@@ -299,8 +299,8 @@ internal static partial class Utils
             var lower = pair.Key.ToLowerCamelCase(true);
 
             classData.Append(pair.Value.GetNetType())
-                     .Append(' ')
-                     .Append(lower);
+            .Append(' ')
+            .Append(lower);
 
             i++;
             lowerList.Add(lower);
@@ -317,9 +317,9 @@ internal static partial class Utils
         foreach (var _ in list)
         {
             classData.Append(upperList[i])
-                     .Append(" = ")
-                     .Append(lowerList[i])
-                     .Append(";\r\n");
+            .Append(" = ")
+            .Append(lowerList[i])
+            .Append(";\r\n");
 
             i++;
         }
@@ -332,10 +332,10 @@ internal static partial class Utils
         foreach (var pair in upperList)
         {
             classData.Append(pair)
-                     .Append(": ")
-                     .Append('{')
-                     .Append(i)
-                     .Append("}, ");
+            .Append(": ")
+            .Append('{')
+            .Append(i)
+            .Append("}, ");
 
             i++;
         }
@@ -399,14 +399,14 @@ internal static partial class Utils
     private static string GetOracleType(this string type)
     {
         return type switch
-        {
-            "long"     => "OracleDbType.Int64",
-            "int"      => "OracleDbType.Int32",
-            "decimal"  => "OracleDbType.Decimal",
-            "string"   => "OracleDbType.Varchar2",
-            "DateTime" => "OracleDbType.TimeStamp",
-            "byte[]"   => "OracleDbType.Blob",
-            _          => string.Empty
-        };
-    }
+    {
+        "long"     => "OracleDbType.Int64",
+        "int"      => "OracleDbType.Int32",
+        "decimal"  => "OracleDbType.Decimal",
+        "string"   => "OracleDbType.Varchar2",
+        "DateTime" => "OracleDbType.TimeStamp",
+        "byte[]"   => "OracleDbType.Blob",
+        _          => string.Empty
+    };
+}
 }

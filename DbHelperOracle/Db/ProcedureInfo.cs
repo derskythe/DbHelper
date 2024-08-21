@@ -8,13 +8,24 @@ internal struct ProcedureInfo(int count, string packageName, string procedureNam
 {
     private int _Index;
 
-    public int Count { get; set; } = count;
+    public int Count {
+        get;
+        set;
+    } = count;
 
-    public string PackageName { get; set; } = packageName;
+    public string PackageName {
+        get;
+        set;
+    } = packageName;
 
-    public string ProcedureName { get; set; } = procedureName;
+    public string ProcedureName {
+        get;
+        set;
+    } = procedureName;
 
-    public List<List<ParameterInfo>> ParamList { get; } = new();
+    public List<List<ParameterInfo>> ParamList {
+        get;
+    } = new();
 
     public void AddParam(ParameterInfo info)
     {

@@ -68,8 +68,8 @@ internal static class Converter
         }
 
         if (dbType.Contains("TIME") ||
-            dbType.Contains("DATE") ||
-            dbType.Contains("TIMESTAMP"))
+                dbType.Contains("DATE") ||
+                dbType.Contains("TIMESTAMP"))
         {
             return "DateTime";
         }

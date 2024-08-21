@@ -29,7 +29,7 @@ public static class Extensions
     }
 
     public static int GetInt<T>(this T source, int defaultValue = 0)
-        where T : class
+    where T : class
     {
         return source != DBNull.Value ? Convert.ToInt32(source) : defaultValue;
     }
@@ -41,7 +41,7 @@ public static class Extensions
     /// <param name="source">The source.</param>
     /// <returns>System.Int64.</returns>
     public static long GetLong<T>(this T source)
-        where T : class
+    where T : class
     {
         return source != DBNull.Value ? Convert.ToInt64(source) : 0L;
     }
@@ -53,7 +53,7 @@ public static class Extensions
     /// <param name="source">The source.</param>
     /// <returns>System.String.</returns>
     public static string GetString<T>(this T source)
-        where T : class
+    where T : class
     {
         return source != DBNull.Value ? Convert.ToString(source) : string.Empty;
     }
@@ -65,7 +65,7 @@ public static class Extensions
     /// <param name="source">The source.</param>
     /// <returns>System.Byte[].</returns>
     public static byte[] GetBase64String<T>(this T source)
-        where T : class
+    where T : class
     {
         return source != DBNull.Value ? Convert.ToString(source).IsBase64() : null;
     }
@@ -79,11 +79,11 @@ public static class Extensions
         }
 
         if (string.IsNullOrEmpty(base64String) ||
-            base64String.Length % 4 != 0       ||
-            base64String.Contains(' ')         ||
-            base64String.Contains('\t')        ||
-            base64String.Contains('\r')        ||
-            base64String.Contains('\n'))
+                base64String.Length % 4 != 0       ||
+                base64String.Contains(' ')         ||
+                base64String.Contains('\t')        ||
+                base64String.Contains('\r')        ||
+                base64String.Contains('\n'))
         {
             return Encoding.ASCII.GetBytes(base64String);
         }
@@ -107,7 +107,7 @@ public static class Extensions
     /// <param name="source">The source.</param>
     /// <returns>DateTime.</returns>
     public static DateTime GetDateTime<T>(this T source)
-        where T : class
+    where T : class
     {
         return source != DBNull.Value ? Convert.ToDateTime(source) : DateTime.MinValue;
     }
@@ -119,7 +119,7 @@ public static class Extensions
     /// <param name="source">The source.</param>
     /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
     public static bool GetBool<T>(this T source)
-        where T : class
+    where T : class
     {
         return source != DBNull.Value && Convert.ToInt32(source) != 0;
     }
@@ -131,7 +131,7 @@ public static class Extensions
     /// <param name="source">The source.</param>
     /// <returns>System.Decimal.</returns>
     public static decimal GetDecimal<T>(this T source)
-        where T : class
+    where T : class
     {
         return source != DBNull.Value ? Convert.ToDecimal(source) : 0M;
     }
