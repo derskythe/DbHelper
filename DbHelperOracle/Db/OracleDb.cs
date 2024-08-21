@@ -186,12 +186,12 @@ internal static class OracleDb
                     if (!string.IsNullOrEmpty(item))
                     {
                         result.Add(new ComboboxItem
-                            {
-                                Id = item,
-                                Value = item,
-                                AdditionalData = string.Empty,
-                                ObjectType = ObjectType.Table
-                            }
+                        {
+                            Id = item,
+                            Value = item,
+                            AdditionalData = string.Empty,
+                            ObjectType = ObjectType.Table
+                        }
                         );
                     }
                 }
@@ -238,13 +238,13 @@ internal static class OracleDb
                     var item = GetString(reader["OBJECT_NAME"]);
 
                     result.Add(new ComboboxItem
-                        {
-                            Id = item,
-                            Value = item,
-                            ClearName = item,
-                            AdditionalData = string.Empty,
-                            ObjectType = ObjectType.Procedure
-                        }
+                    {
+                        Id = item,
+                        Value = item,
+                        ClearName = item,
+                        AdditionalData = string.Empty,
+                        ObjectType = ObjectType.Procedure
+                    }
                     );
                 }
             }
@@ -292,13 +292,13 @@ internal static class OracleDb
                     var procedureName = GetString(reader["PROCEDURE_NAME"]);
 
                     result.Add(new ComboboxItem
-                        {
-                            Id = $"{objectName}.{procedureName}",
-                            Value = $"{objectName}.{procedureName}",
-                            AdditionalData = objectName,
-                            ClearName = procedureName,
-                            ObjectType = ObjectType.Package
-                        }
+                    {
+                        Id = $"{objectName}.{procedureName}",
+                        Value = $"{objectName}.{procedureName}",
+                        AdditionalData = objectName,
+                        ClearName = procedureName,
+                        ObjectType = ObjectType.Package
+                    }
                     );
                 }
             }
@@ -369,7 +369,7 @@ internal static class OracleDb
             else
             {
                 const string sql =
-                    "SELECT "                                                           +
+                    "SELECT " +
                     " t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t " +
                     " WHERE OBJECT_NAME = :procName AND package_name = :packageName ORDER BY t.SEQUENCE";
 

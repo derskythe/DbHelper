@@ -338,17 +338,17 @@ internal static class Utils
     {
         return type switch
         {
-            "long"     => "NpgsqlDbType.BigInt",
-            "byte[]"   => "NpgsqlDbType.Bytea",
-            "int"      => "NpgsqlDbType.Integer",
-            "decimal"  => "NpgsqlDbType.Numeric",
-            "string"   => "NpgsqlDbType.Varchar",
+            "long" => "NpgsqlDbType.BigInt",
+            "byte[]" => "NpgsqlDbType.Bytea",
+            "int" => "NpgsqlDbType.Integer",
+            "decimal" => "NpgsqlDbType.Numeric",
+            "string" => "NpgsqlDbType.Varchar",
             "DateTime" => "NpgsqlDbType.Timestamp",
-            "bool"     => "NpgsqlDbType.Bit",
-            "double"   => "NpgsqlDbType.Double",
-            "float"    => "NpgsqlDbType.Real",
-            "short"    => "NpgsqlDbType.SmallInt",
-            _          => string.Empty
+            "bool" => "NpgsqlDbType.Bit",
+            "double" => "NpgsqlDbType.Double",
+            "float" => "NpgsqlDbType.Real",
+            "short" => "NpgsqlDbType.SmallInt",
+            _ => string.Empty
         };
     }
 

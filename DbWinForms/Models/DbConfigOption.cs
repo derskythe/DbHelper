@@ -47,14 +47,14 @@ public record DbConfigOption
     /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
     public override string ToString()
     {
-        return  $"Server={HostName};"            +
-                $"Database={ServiceName};"       +
-                $"User Id={Username};"           +
-                $"Password={Password};"          +
-                "Persist Security Info=True;"    +
-                "Integrated Security=True;"      +
+        return $"Server={HostName};" +
+                $"Database={ServiceName};" +
+                $"User Id={Username};" +
+                $"Password={Password};" +
+                "Persist Security Info=True;" +
+                "Integrated Security=True;" +
                 "MultipleActiveResultSets=true;" +
-                "Trusted_Connection=False;"      +
+                "Trusted_Connection=False;" +
                 "TrustServerCertificate=True;";
     }
 }

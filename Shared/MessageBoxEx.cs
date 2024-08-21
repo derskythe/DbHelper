@@ -633,7 +633,7 @@ public sealed class MessageBoxEx
         var recChild = new Rectangle(0, 0, 0, 0);
         GetWindowRect(hChildWnd, ref recChild);
 
-        var width = recChild.Width   - recChild.X;
+        var width = recChild.Width - recChild.X;
         var height = recChild.Height - recChild.Y;
 
         var recParent = new Rectangle(0, 0, 0, 0);
@@ -641,14 +641,14 @@ public sealed class MessageBoxEx
 
         var ptCenter = new Point(0, 0)
         {
-            X = recParent.X + ((recParent.Width  - recParent.X) / 2),
+            X = recParent.X + ((recParent.Width - recParent.X) / 2),
             Y = recParent.Y + ((recParent.Height - recParent.Y) / 2)
         };
 
 
         var ptStart = new Point(0, 0)
         {
-            X = (ptCenter.X - (width  / 2)),
+            X = (ptCenter.X - (width / 2)),
             Y = (ptCenter.Y - (height / 2))
         };
 
