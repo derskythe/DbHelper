@@ -23,7 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NLog" Version="5.3.4" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.6.0" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.6.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SettingsHelpers\SettingsHelper.csproj" />
