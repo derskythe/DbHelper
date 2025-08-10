@@ -32,7 +32,8 @@ internal static class Converter
     {
         dbType = dbType.ToUpperInvariant();
 
-        if (dbType.Contains("INT8") || dbType.Contains("BIGINT"))
+        if (dbType.Contains("INT8")
+            || dbType.Contains("BIGINT"))
         {
             return "long";
         }
@@ -47,17 +48,21 @@ internal static class Converter
             return "bool";
         }
 
-        if (dbType.Contains("INT4") || dbType.Contains("INTEGER"))
+        if (dbType.Contains("INT4")
+            || dbType.Contains("INTEGER"))
         {
             return "int";
         }
 
-        if (dbType.Contains("NUMERIC") || dbType.Contains("MONEY"))
+        if (dbType.Contains("NUMERIC")
+            || dbType.Contains("MONEY"))
         {
             return "decimal";
         }
 
-        if (dbType.Contains("VARCHAR") || dbType.Contains("CHARACTER VARYING") || dbType.Contains("TEXT"))
+        if (dbType.Contains("VARCHAR")
+            || dbType.Contains("CHARACTER VARYING")
+            || dbType.Contains("TEXT"))
         {
             return "string";
         }
@@ -67,9 +72,9 @@ internal static class Converter
             return "TimeSpan";
         }
 
-        if (dbType.Contains("TIME") ||
-            dbType.Contains("DATE") ||
-            dbType.Contains("TIMESTAMP"))
+        if (dbType.Contains("TIME")
+            || dbType.Contains("DATE")
+            || dbType.Contains("TIMESTAMP"))
         {
             return "DateTime";
         }

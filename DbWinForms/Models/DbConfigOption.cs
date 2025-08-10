@@ -6,7 +6,7 @@ namespace DbWinForms.Models;
 /// <summary>
 /// Class DbConfigOption.
 /// </summary>
-public record DbConfigOption
+public sealed record DbConfigOption
 {
     /// <summary>
     /// The name
@@ -18,28 +18,28 @@ public record DbConfigOption
     /// </summary>
     /// <value>The name of the host.</value>
     [Required]
-    public string HostName { get; set; }
+    public required string HostName { get; set; }
 
     /// <summary>
     /// Gets or sets the username.
     /// </summary>
     /// <value>The username.</value>
     [Required]
-    public string Username { get; set; }
+    public required string Username { get; set; }
 
     /// <summary>
     /// Gets or sets the password.
     /// </summary>
     /// <value>The password.</value>
     [Required]
-    public string Password { get; set; }
+    public required string Password { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the service.
     /// </summary>
     /// <value>The name of the service.</value>
     [Required]
-    public string ServiceName { get; set; }
+    public required string ServiceName { get; set; }
 
     /// <summary>
     /// Returns a <see cref="System.String" /> that represents this instance.

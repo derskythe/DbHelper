@@ -6,7 +6,7 @@ namespace SettingsHelper.Models;
 /// <summary>
 /// Class DetectedChanges.
 /// </summary>
-public class DetectedChanges
+public sealed class DetectedChanges
 {
     /// <summary>
     /// Gets or sets the path.

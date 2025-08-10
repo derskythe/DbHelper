@@ -22,11 +22,11 @@ internal static class OracleDb
         string pass,
         string dbase,
         string port,
-        bool perfCounter = false
-    )
+        bool perfCounter = false)
     {
-        _ConnectionString =
-            $"Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={hostName})(PORT={port})))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME={dbase})));User Id={user};Password={pass};Min Pool Size=1;Max Pool Size=150;Pooling=True;Validate Connection=true;Connection Lifetime=300;Connection Timeout=300;";
+        _ConnectionString = $"Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={hostName})(PORT={port
+        })))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME={dbase})));User Id={user};Password={pass
+        };Min Pool Size=1;Max Pool Size=150;Pooling=True;Validate Connection=true;Connection Lifetime=300;Connection Timeout=300;";
 
         //$"User Id={user};Password={pass};Data Source={hostName}:1521/{dbase}";
         //$"Data Source={hostName}:1521/XE;Persist Security Info=True;User ID={user};Password={pass}";
@@ -81,32 +81,44 @@ internal static class OracleDb
 
     private static int? GetInt(object value)
     {
-        return value != DBNull.Value ? Convert.ToInt32(value) : null;
+        return value != DBNull.Value
+                   ? Convert.ToInt32(value)
+                   : null;
     }
 
     private static string GetString(this object order)
     {
-        return order != DBNull.Value ? Convert.ToString(order) : null;
+        return order != DBNull.Value
+                   ? Convert.ToString(order)
+                   : null;
     }
 
     private static DateTime? GetDateTime(object order)
     {
-        return order != DBNull.Value ? Convert.ToDateTime(order) : null;
+        return order != DBNull.Value
+                   ? Convert.ToDateTime(order)
+                   : null;
     }
 
     private static int? GetInt(OracleDataReader reader, string order)
     {
-        return reader[order] != DBNull.Value ? Convert.ToInt32(reader[order]) : null;
+        return reader[order] != DBNull.Value
+                   ? Convert.ToInt32(reader[order])
+                   : null;
     }
 
     private static string GetString(OracleDataReader reader, string order)
     {
-        return reader[order] != DBNull.Value ? Convert.ToString(reader[order]) : null;
+        return reader[order] != DBNull.Value
+                   ? Convert.ToString(reader[order])
+                   : null;
     }
 
     private static DateTime? GetDateTime(OracleDataReader reader, string order)
     {
-        return reader[order] != DBNull.Value ? Convert.ToDateTime(reader[order]) : null;
+        return reader[order] != DBNull.Value
+                   ? Convert.ToDateTime(reader[order])
+                   : null;
     }
 
     public static List<ComboboxItem> ListViews()
@@ -141,8 +153,7 @@ internal static class OracleDb
                             Value = item,
                             AdditionalData = string.Empty,
                             ObjectType = ObjectType.View
-                        }
-                    );
+                        });
                 }
             }
         }
@@ -185,14 +196,14 @@ internal static class OracleDb
 
                     if (!string.IsNullOrEmpty(item))
                     {
-                        result.Add(new ComboboxItem
-                        {
-                            Id = item,
-                            Value = item,
-                            AdditionalData = string.Empty,
-                            ObjectType = ObjectType.Table
-                        }
-                        );
+                        result.Add(
+                            new ComboboxItem
+                            {
+                                Id = item,
+                                Value = item,
+                                AdditionalData = string.Empty,
+                                ObjectType = ObjectType.Table
+                            });
                     }
                 }
             }
@@ -219,15 +230,20 @@ internal static class OracleDb
             connection = new OracleConnection(_ConnectionString);
             connection.Open();
 
-            const string sql =
-                "SELECT p.OBJECT_NAME,p.PROCEDURE_NAME FROM SYS.ALL_PROCEDURES p WHERE p.OBJECT_NAME = p.OBJECT_NAME AND p.OBJECT_TYPE = 'PROCEDURE' AND p.OWNER = :ownerName AND PROCEDURE_NAME IS NULL ORDER BY p.OBJECT_NAME,p.PROCEDURE_NAME";
+            const string sql
+                = "SELECT p.OBJECT_NAME,p.PROCEDURE_NAME FROM SYS.ALL_PROCEDURES p WHERE p.OBJECT_NAME = p.OBJECT_NAME AND p.OBJECT_TYPE = 'PROCEDURE' AND p.OWNER = :ownerName AND PROCEDURE_NAME IS NULL ORDER BY p.OBJECT_NAME,p.PROCEDURE_NAME";
 
             using var command = new OracleCommand();
             command.CommandText = sql;
             command.CommandType = CommandType.Text;
             command.Connection = connection;
             command.BindByName = true;
-            command.Parameters.Add("ownerName", OracleDbType.Varchar2, ParameterDirection.Input).Value = ownerName.ToUpperInvariant();
+
+            command.Parameters.Add(
+                       "ownerName",
+                       OracleDbType.Varchar2,
+                       ParameterDirection.Input)
+                   .Value = ownerName.ToUpperInvariant();
 
             using var reader = command.ExecuteReader();
 
@@ -237,15 +253,15 @@ internal static class OracleDb
                 {
                     var item = GetString(reader["OBJECT_NAME"]);
 
-                    result.Add(new ComboboxItem
-                    {
-                        Id = item,
-                        Value = item,
-                        ClearName = item,
-                        AdditionalData = string.Empty,
-                        ObjectType = ObjectType.Procedure
-                    }
-                    );
+                    result.Add(
+                        new ComboboxItem
+                        {
+                            Id = item,
+                            Value = item,
+                            ClearName = item,
+                            AdditionalData = string.Empty,
+                            ObjectType = ObjectType.Procedure
+                        });
                 }
             }
         }
@@ -271,8 +287,8 @@ internal static class OracleDb
             connection = new OracleConnection(_ConnectionString);
             connection.Open();
 
-            const string sql =
-                "SELECT p.OBJECT_NAME,p.PROCEDURE_NAME FROM SYS.ALL_PROCEDURES p WHERE p.OBJECT_NAME = p.OBJECT_NAME AND p.OBJECT_TYPE = 'PACKAGE' AND p.OWNER = :ownerName AND PROCEDURE_NAME IS NOT NULL ORDER BY p.OBJECT_NAME,p.PROCEDURE_NAME";
+            const string sql
+                = "SELECT p.OBJECT_NAME,p.PROCEDURE_NAME FROM SYS.ALL_PROCEDURES p WHERE p.OBJECT_NAME = p.OBJECT_NAME AND p.OBJECT_TYPE = 'PACKAGE' AND p.OWNER = :ownerName AND PROCEDURE_NAME IS NOT NULL ORDER BY p.OBJECT_NAME,p.PROCEDURE_NAME";
 
             using var command = new OracleCommand();
 
@@ -280,7 +296,12 @@ internal static class OracleDb
             command.CommandType = CommandType.Text;
             command.Connection = connection;
             command.BindByName = true;
-            command.Parameters.Add("ownerName", OracleDbType.Varchar2, ParameterDirection.Input).Value = ownerName.ToUpperInvariant();
+
+            command.Parameters.Add(
+                       "ownerName",
+                       OracleDbType.Varchar2,
+                       ParameterDirection.Input)
+                   .Value = ownerName.ToUpperInvariant();
 
             using var reader = command.ExecuteReader();
 
@@ -291,15 +312,15 @@ internal static class OracleDb
                     var objectName = GetString(reader["OBJECT_NAME"]);
                     var procedureName = GetString(reader["PROCEDURE_NAME"]);
 
-                    result.Add(new ComboboxItem
-                    {
-                        Id = $"{objectName}.{procedureName}",
-                        Value = $"{objectName}.{procedureName}",
-                        AdditionalData = objectName,
-                        ClearName = procedureName,
-                        ObjectType = ObjectType.Package
-                    }
-                    );
+                    result.Add(
+                        new ComboboxItem
+                        {
+                            Id = $"{objectName}.{procedureName}",
+                            Value = $"{objectName}.{procedureName}",
+                            AdditionalData = objectName,
+                            ClearName = procedureName,
+                            ObjectType = ObjectType.Package
+                        });
                 }
             }
         }
@@ -318,7 +339,11 @@ internal static class OracleDb
     public static ProcedureInfo ListProcedureParameters(ComboboxItem desiredProcedure)
     {
         OracleConnection connection = null;
-        var result = new ProcedureInfo(0, desiredProcedure.AdditionalData, desiredProcedure.ClearName);
+
+        var result = new ProcedureInfo(
+            0,
+            desiredProcedure.AdditionalData,
+            desiredProcedure.ClearName);
 
         try
         {
@@ -327,8 +352,8 @@ internal static class OracleDb
 
             if (string.IsNullOrEmpty(desiredProcedure.AdditionalData))
             {
-                const string sql =
-                    "SELECT t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t WHERE OBJECT_NAME = :procName AND package_name IS NULL ORDER BY t.SEQUENCE";
+                const string sql
+                    = "SELECT t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t WHERE OBJECT_NAME = :procName AND package_name IS NULL ORDER BY t.SEQUENCE";
 
                 using var command = new OracleCommand();
                 command.CommandText = sql;
@@ -338,8 +363,10 @@ internal static class OracleDb
                 command.BindByName = true;
 
                 //command.Parameters.Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input).Value = package;
-                command.Parameters
-                       .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
+                command.Parameters.Add(
+                           "procName",
+                           OracleDbType.Varchar2,
+                           ParameterDirection.Input)
                        .Value = desiredProcedure.ClearName;
 
                 using var reader = command.ExecuteReader();
@@ -359,8 +386,7 @@ internal static class OracleDb
                             i++,
                             reader["DATA_TYPE"].GetString().GetNetType(),
                             name.ToUpperCamelCase(false),
-                            name.ToLowerCamelCase(false)
-                        );
+                            name.ToLowerCamelCase(false));
 
                         result.AddParam(info);
                     }
@@ -368,10 +394,9 @@ internal static class OracleDb
             }
             else
             {
-                const string sql =
-                    "SELECT " +
-                    " t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t " +
-                    " WHERE OBJECT_NAME = :procName AND package_name = :packageName ORDER BY t.SEQUENCE";
+                const string sql = "SELECT "
+                                   + " t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t "
+                                   + " WHERE OBJECT_NAME = :procName AND package_name = :packageName ORDER BY t.SEQUENCE";
 
                 using var command = new OracleCommand();
                 command.CommandText = sql;
@@ -380,12 +405,16 @@ internal static class OracleDb
                 command.Connection = connection;
                 command.BindByName = true;
 
-                command.Parameters
-                       .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
+                command.Parameters.Add(
+                           "procName",
+                           OracleDbType.Varchar2,
+                           ParameterDirection.Input)
                        .Value = desiredProcedure.ClearName;
 
-                command.Parameters
-                       .Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input)
+                command.Parameters.Add(
+                           "packageName",
+                           OracleDbType.Varchar2,
+                           ParameterDirection.Input)
                        .Value = desiredProcedure.AdditionalData;
 
                 using var reader = command.ExecuteReader();
@@ -405,8 +434,7 @@ internal static class OracleDb
                             i++,
                             reader["DATA_TYPE"].GetString().GetNetType(),
                             name.ToUpperCamelCase(false),
-                            name.ToLowerCamelCase(false)
-                        );
+                            name.ToLowerCamelCase(false));
 
                         result.AddParam(info);
                     }
@@ -428,7 +456,11 @@ internal static class OracleDb
     public static ProcedureInfo ListProcedureParameters(string ownerName, string package, string procedureName)
     {
         OracleConnection connection = null;
-        var result = new ProcedureInfo(0, package, procedureName);
+
+        var result = new ProcedureInfo(
+            0,
+            package,
+            procedureName);
 
         try
         {
@@ -440,19 +472,21 @@ internal static class OracleDb
 
             if (!string.IsNullOrEmpty(package))
             {
-                const string sql =
-                    "SELECT t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t WHERE package_name = :packageName AND OBJECT_NAME = :procName AND owner = :owner AND ARGUMENT_NAME IS NOT NULL ORDER BY t.SEQUENCE";
+                const string sql
+                    = "SELECT t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t WHERE package_name = :packageName AND OBJECT_NAME = :procName AND owner = :owner AND ARGUMENT_NAME IS NOT NULL ORDER BY t.SEQUENCE";
 
                 command.CommandText = sql;
 
-                command.Parameters
-                       .Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input)
+                command.Parameters.Add(
+                           "packageName",
+                           OracleDbType.Varchar2,
+                           ParameterDirection.Input)
                        .Value = package;
             }
             else
             {
-                const string sql =
-                    "SELECT t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t WHERE package_name IS NULL AND OBJECT_NAME = :procName AND owner = :owner AND ARGUMENT_NAME IS NOT NULL ORDER BY t.SEQUENCE";
+                const string sql
+                    = "SELECT t.ARGUMENT_NAME, t.in_out, t.DATA_TYPE FROM SYS.ALL_ARGUMENTS t WHERE package_name IS NULL AND OBJECT_NAME = :procName AND owner = :owner AND ARGUMENT_NAME IS NOT NULL ORDER BY t.SEQUENCE";
 
                 command.CommandText = sql;
             }
@@ -460,12 +494,16 @@ internal static class OracleDb
             command.Connection = connection;
 
             //command.Parameters.Add("packageName", OracleDbType.Varchar2, ParameterDirection.Input).Value = package;
-            command.Parameters
-                   .Add("procName", OracleDbType.Varchar2, ParameterDirection.Input)
+            command.Parameters.Add(
+                       "procName",
+                       OracleDbType.Varchar2,
+                       ParameterDirection.Input)
                    .Value = procedureName;
 
-            command.Parameters
-                   .Add("owner", OracleDbType.Varchar2, ParameterDirection.Input)
+            command.Parameters.Add(
+                       "owner",
+                       OracleDbType.Varchar2,
+                       ParameterDirection.Input)
                    .Value = ownerName;
 
             using var reader = command.ExecuteReader();
@@ -485,8 +523,7 @@ internal static class OracleDb
                         i++,
                         reader["DATA_TYPE"].GetString().GetNetType(),
                         name.ToUpperCamelCase(false),
-                        name.ToLowerCamelCase(false)
-                    );
+                        name.ToLowerCamelCase(false));
 
                     result.AddParam(info);
                 }
@@ -520,7 +557,12 @@ internal static class OracleDb
             command.CommandType = CommandType.Text;
             command.Connection = connection;
             command.BindByName = true;
-            command.Parameters.Add("viewName", OracleDbType.Varchar2, ParameterDirection.Input).Value = tableOrView;
+
+            command.Parameters.Add(
+                       "viewName",
+                       OracleDbType.Varchar2,
+                       ParameterDirection.Input)
+                   .Value = tableOrView;
 
             using var reader = command.ExecuteReader();
 
@@ -530,11 +572,10 @@ internal static class OracleDb
 
                 while (reader.Read())
                 {
-                    result.Add(new KeyValuePair<string, string>(
-                                   reader["column_name"].GetString(),
-                                   reader["DATA_TYPE"].GetString()
-                               )
-                    );
+                    result.Add(
+                        new KeyValuePair<string, string>(
+                            reader["column_name"].GetString(),
+                            reader["DATA_TYPE"].GetString()));
                 }
             }
         }

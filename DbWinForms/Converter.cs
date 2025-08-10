@@ -33,8 +33,7 @@ public static class Converter
             row["name"].GetString(),
             row["type"].GetString(),
             row["type"].GetString().GetNetType(),
-            !row["is_output"].GetBool()
-        );
+            !row["is_output"].GetBool());
     }
 
     public static ParameterInfo ToProcedureParameterInfo(DbDataReader row)
@@ -44,8 +43,7 @@ public static class Converter
             row["name"].GetString(),
             row["system_type_name"].GetString(),
             row["system_type_name"].GetString().GetNetType(),
-            true
-        );
+            true);
     }
 
     public static ParameterInfo ToColumn(DbDataReader row)
@@ -54,8 +52,7 @@ public static class Converter
             row["order_num"].GetInt() - 1,
             row["name"].GetString(),
             row["type"].GetString(),
-            row["type"].GetString().GetNetType()
-        );
+            row["type"].GetString().GetNetType());
     }
 
     public static string GetNetType(this string msSqlDbType)
@@ -87,13 +84,19 @@ public static class Converter
             return "int";
         }
 
-        if (msSqlDbType.Contains("DECIMAL") || msSqlDbType.Contains("MONEY") || msSqlDbType.Contains("SMALLMONEY"))
+        if (msSqlDbType.Contains("DECIMAL")
+            || msSqlDbType.Contains("MONEY")
+            || msSqlDbType.Contains("SMALLMONEY"))
         {
             return "decimal";
         }
 
-        if (msSqlDbType.Contains("VARCHAR") || msSqlDbType.Contains("NVARCHAR") || msSqlDbType.Contains("CHAR") ||
-            msSqlDbType.Contains("NCHAR") || msSqlDbType.Contains("NTEXT") || msSqlDbType.Contains("TEXT"))
+        if (msSqlDbType.Contains("VARCHAR")
+            || msSqlDbType.Contains("NVARCHAR")
+            || msSqlDbType.Contains("CHAR")
+            || msSqlDbType.Contains("NCHAR")
+            || msSqlDbType.Contains("NTEXT")
+            || msSqlDbType.Contains("TEXT"))
         {
             return "string";
         }
@@ -103,13 +106,17 @@ public static class Converter
             return "DateTimeOffset";
         }
 
-        if (msSqlDbType.Contains("DATE") || msSqlDbType.Contains("DATETIME") || msSqlDbType.Contains("TIME"))
+        if (msSqlDbType.Contains("DATE")
+            || msSqlDbType.Contains("DATETIME")
+            || msSqlDbType.Contains("TIME"))
         {
             return "DateTime";
         }
 
-        if (msSqlDbType.Contains("VARBINARY") || msSqlDbType.Contains("BINARY") ||
-            msSqlDbType.Contains("TIMESTAMP") || msSqlDbType.Contains("IMAGE"))
+        if (msSqlDbType.Contains("VARBINARY")
+            || msSqlDbType.Contains("BINARY")
+            || msSqlDbType.Contains("TIMESTAMP")
+            || msSqlDbType.Contains("IMAGE"))
         {
             return "byte[]";
         }
@@ -136,7 +143,7 @@ public static class Converter
     {
         msSqlDbType = msSqlDbType.ToUpperInvariant();
 
-        foreach (string name in Enum.GetNames(typeof(SqlDbType)))
+        foreach (var name in Enum.GetNames(typeof(SqlDbType)))
         {
             if (name.ToUpperInvariant() == msSqlDbType)
             {

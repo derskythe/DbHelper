@@ -8,7 +8,7 @@ namespace Shared;
 
 public static class Extensions
 {
-    public static string GetStringFromArray<T>(this IEnumerable<T> list)
+    public static string GetStringFromArray<T>(this IEnumerable<T?>? list)
     {
         if (list == null)
         {
@@ -31,7 +31,9 @@ public static class Extensions
     public static int GetInt<T>(this T source, int defaultValue = 0)
         where T : class
     {
-        return source != DBNull.Value ? Convert.ToInt32(source) : defaultValue;
+        return source != DBNull.Value
+                   ? Convert.ToInt32(source)
+                   : defaultValue;
     }
 
     /// <summary>
@@ -43,7 +45,9 @@ public static class Extensions
     public static long GetLong<T>(this T source)
         where T : class
     {
-        return source != DBNull.Value ? Convert.ToInt64(source) : 0L;
+        return source != DBNull.Value
+                   ? Convert.ToInt64(source)
+                   : 0L;
     }
 
     /// <summary>
@@ -52,10 +56,12 @@ public static class Extensions
     /// <typeparam name="T"></typeparam>
     /// <param name="source">The source.</param>
     /// <returns>System.String.</returns>
-    public static string GetString<T>(this T source)
+    public static string GetString<T>(this T? source)
         where T : class
     {
-        return source != DBNull.Value ? Convert.ToString(source) : string.Empty;
+        return source != null && source != DBNull.Value
+                   ? Convert.ToString(source) ?? string.Empty
+                   : string.Empty;
     }
 
     /// <summary>
@@ -64,26 +70,28 @@ public static class Extensions
     /// <typeparam name="T"></typeparam>
     /// <param name="source">The source.</param>
     /// <returns>System.Byte[].</returns>
-    public static byte[] GetBase64String<T>(this T source)
+    public static byte[] GetBase64String<T>(this T? source)
         where T : class
     {
-        return source != DBNull.Value ? Convert.ToString(source).IsBase64() : null;
+        return source != null && source != DBNull.Value
+                   ? Convert.ToString(source)?.IsBase64() ?? Array.Empty<byte>()
+                   : Array.Empty<byte>();
     }
 
-    private static byte[] IsBase64(this string base64String)
+    private static byte[] IsBase64(this string? base64String)
     {
         // Credit: oybek https://stackoverflow.com/users/794764/oybek
         if (string.IsNullOrEmpty(base64String))
         {
-            return null;
+            return Array.Empty<byte>();
         }
 
-        if (string.IsNullOrEmpty(base64String) ||
-            base64String.Length % 4 != 0 ||
-            base64String.Contains(' ') ||
-            base64String.Contains('\t') ||
-            base64String.Contains('\r') ||
-            base64String.Contains('\n'))
+        if (string.IsNullOrEmpty(base64String)
+            || base64String.Length % 4 != 0
+            || base64String.Contains(' ')
+            || base64String.Contains('\t')
+            || base64String.Contains('\r')
+            || base64String.Contains('\n'))
         {
             return Encoding.ASCII.GetBytes(base64String);
         }
@@ -109,7 +117,9 @@ public static class Extensions
     public static DateTime GetDateTime<T>(this T source)
         where T : class
     {
-        return source != DBNull.Value ? Convert.ToDateTime(source) : DateTime.MinValue;
+        return source != DBNull.Value
+                   ? Convert.ToDateTime(source)
+                   : DateTime.MinValue;
     }
 
     /// <summary>
@@ -133,7 +143,9 @@ public static class Extensions
     public static decimal GetDecimal<T>(this T source)
         where T : class
     {
-        return source != DBNull.Value ? Convert.ToDecimal(source) : 0M;
+        return source != DBNull.Value
+                   ? Convert.ToDecimal(source)
+                   : 0M;
     }
 
     /// <summary>
@@ -141,15 +153,16 @@ public static class Extensions
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>System.Byte[].</returns>
-    public static byte[] GetBlob(object value)
+    public static byte[] GetBlob(object? value)
     {
-        return value != DBNull.Value ? (byte[])value : null;
+        return value != null && value != DBNull.Value
+                   ? (byte[])value
+                   : Array.Empty<byte>();
     }
 
     public static bool IsEqual(this string value1, string value2)
     {
-        return !string.IsNullOrEmpty(value1) &&
-               value1.Equals(value2, StringComparison.InvariantCultureIgnoreCase);
+        return !string.IsNullOrEmpty(value1) && value1.Equals(value2, StringComparison.InvariantCultureIgnoreCase);
     }
 
     public static string ToUpperCamelCase(this string value, bool cleanVar, bool manyType = false)
@@ -162,13 +175,17 @@ public static class Extensions
         string[] s;
         var valueUpper = value.ToLowerInvariant();
 
-        if (valueUpper.StartsWith("v_"))
+        if (valueUpper.StartsWith("v_", StringComparison.Ordinal))
         {
-            s = cleanVar ? valueUpper[2..].Split('_') : valueUpper[3..].Split('_');
+            s = cleanVar
+                    ? valueUpper[2..].Split('_')
+                    : valueUpper[3..].Split('_');
         }
         else
         {
-            s = cleanVar ? valueUpper.Split('_') : valueUpper[1..].Split('_');
+            s = cleanVar
+                    ? valueUpper.Split('_')
+                    : valueUpper[1..].Split('_');
         }
 
         var str = new StringBuilder();
@@ -214,7 +231,10 @@ public static class Extensions
             return string.Empty;
         }
 
-        var s = cleanVar ? value.ToLowerInvariant().Split('_') : value[1..].ToLowerInvariant().Split('_');
+        var s = cleanVar
+                    ? value.ToLowerInvariant().Split('_')
+                    : value[1..].ToLowerInvariant().Split('_');
+
         var str = new StringBuilder();
         var i = 0;
 

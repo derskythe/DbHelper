@@ -48,9 +48,9 @@ public static class SettingsHelpers
                 var assembly = Assembly.GetEntryAssembly();
 
                 _BackupAppPath = Path.Combine(_DefaultDrive,
-                                              assembly != null ?
-                                                  assembly.GetName().Name :
-                                                  Assembly.GetCallingAssembly().GetName().Name
+                                              (assembly != null ?
+                                                   assembly.GetName().Name :
+                                                   Assembly.GetCallingAssembly().GetName().Name) ?? string.Empty
                 );
             }
 

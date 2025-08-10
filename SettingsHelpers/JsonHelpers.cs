@@ -35,7 +35,7 @@ internal static class JsonHelpers
         var pathParts = path.Split('.');
         JToken currentNode = self;
 
-        for (int i = 0; i < pathParts.Length; i++)
+        for (var i = 0; i < pathParts.Length; i++)
         {
             var pathPart = pathParts[i];
             var isLast = i == pathParts.Length - 1;
@@ -52,7 +52,9 @@ internal static class JsonHelpers
                 currentNode = partNode;
 
                 if (isLast)
+                {
                     currentNode.Replace(value);
+                }
             }
         }
     }

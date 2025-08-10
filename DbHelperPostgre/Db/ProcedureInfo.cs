@@ -4,7 +4,7 @@ namespace DbHelperPostgre.Db;
 
 
 [DataContract]
-public record ProcedureInfo
+public sealed record ProcedureInfo
 {
     [DataMember]
     public string Name { get; set; }

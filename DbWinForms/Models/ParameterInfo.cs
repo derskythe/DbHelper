@@ -22,14 +22,19 @@ public readonly record struct ParameterInfo
     public bool InParam { get; }
 
     public ParameterInfo()
-    { }
+    {
+        Name = string.Empty;
+        DbType = string.Empty;
+        NetType = string.Empty;
+        InParam = false;
+        Index = 0;
+    }
 
     public ParameterInfo(
         int index,
         string name,
         string dbType,
-        string netType
-    )
+        string netType)
     {
         Index = index;
         Name = name;
@@ -42,8 +47,7 @@ public readonly record struct ParameterInfo
         string name,
         string dbType,
         string netType,
-        bool inParam
-    )
+        bool inParam)
     {
         Index = index;
         Name = name;

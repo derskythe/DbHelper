@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using DbHelperPostgre.Db;
 using EnumsNET;
@@ -87,7 +88,7 @@ internal static class Utils
         var fieldUpdate = new StringBuilder();
         foreach (var pair in list)
         {
-            bool isId = pair.Name.IsEqual("id");
+            var isId = pair.Name.IsEqual("id");
             str.Append(SPACE).Append("V_").Append(pair.Name);
             str.Append(SPACE).Append(isId ? " IN OUT " : " IN ");
             str.Append(SPACE).Append(selectedItem).Append('.').Append(pair.Name).Append("%TYPE");
@@ -354,12 +355,12 @@ internal static class Utils
 
     public static string GetClassName(this string value)
     {
-        if (value.StartsWith("get"))
+        if (value.StartsWith("get", StringComparison.Ordinal))
         {
             return value.Substring(3).ToUpperCamelCase(true);
         }
 
-        if (value.StartsWith("list"))
+        if (value.StartsWith("list", StringComparison.Ordinal))
         {
             return value.Substring(4).ToUpperCamelCase(true);
         }
