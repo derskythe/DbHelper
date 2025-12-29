@@ -9,6 +9,6 @@
     <ProjectReference Include="..\SettingsHelpers\SettingsHelper.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NLog" Version="6.0.5" />
+    <PackageReference Include="NLog" Version="6.0.7" />
   </ItemGroup>
 </Project>
