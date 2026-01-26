@@ -21,7 +21,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.26.0" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.26.100" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SettingsHelpers\SettingsHelper.csproj" />
