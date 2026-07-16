@@ -23,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="Enums.NET" Version="5.0.0" />
     <PackageReference Include="Markdig" Version="1.3.2" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DbWinForms\DbWinForms.csproj" />
