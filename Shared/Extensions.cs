@@ -162,7 +162,7 @@ public static class Extensions
 
     public static bool IsEqual(this string value1, string value2)
     {
-        return !string.IsNullOrEmpty(value1) && value1.Equals(value2, StringComparison.InvariantCultureIgnoreCase);
+        return !string.IsNullOrEmpty(value1) && value1.Equals(value2, StringComparison.OrdinalIgnoreCase);
     }
 
     public static string ToUpperCamelCase(this string value, bool cleanVar, bool manyType = false)

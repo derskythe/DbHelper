@@ -59,79 +59,66 @@ public static class Converter
     {
         msSqlDbType = msSqlDbType.ToUpperInvariant();
 
-        if (msSqlDbType.Contains("BIGINT"))
+        if (msSqlDbType.Contains("BIGINT", StringComparison.OrdinalIgnoreCase))
         {
             return "long";
         }
 
-        if (msSqlDbType.Contains("SMALLINT"))
+        if (msSqlDbType.Contains("SMALLINT", StringComparison.OrdinalIgnoreCase))
         {
             return "short";
         }
 
-        if (msSqlDbType.Contains("BIT"))
+        if (msSqlDbType.Contains("BIT", StringComparison.OrdinalIgnoreCase))
         {
             return "bool";
         }
 
-        if (msSqlDbType.Contains("TINYINT"))
+        if (msSqlDbType.Contains("INT", StringComparison.OrdinalIgnoreCase))
         {
             return "int";
         }
 
-        if (msSqlDbType.Contains("INT"))
-        {
-            return "int";
-        }
-
-        if (msSqlDbType.Contains("DECIMAL")
-            || msSqlDbType.Contains("MONEY")
-            || msSqlDbType.Contains("SMALLMONEY"))
+        if (msSqlDbType.Contains("DECIMAL", StringComparison.OrdinalIgnoreCase)
+            || msSqlDbType.Contains("MONEY", StringComparison.OrdinalIgnoreCase))
         {
             return "decimal";
         }
 
-        if (msSqlDbType.Contains("VARCHAR")
-            || msSqlDbType.Contains("NVARCHAR")
-            || msSqlDbType.Contains("CHAR")
-            || msSqlDbType.Contains("NCHAR")
-            || msSqlDbType.Contains("NTEXT")
-            || msSqlDbType.Contains("TEXT"))
+        if (msSqlDbType.Contains("CHAR", StringComparison.OrdinalIgnoreCase)
+            || msSqlDbType.Contains("TEXT", StringComparison.OrdinalIgnoreCase))
         {
             return "string";
         }
 
-        if (msSqlDbType.Contains("DATETIMEOFFSET"))
+        if (msSqlDbType.Contains("DATETIMEOFFSET", StringComparison.OrdinalIgnoreCase))
         {
             return "DateTimeOffset";
         }
 
-        if (msSqlDbType.Contains("DATE")
-            || msSqlDbType.Contains("DATETIME")
-            || msSqlDbType.Contains("TIME"))
+        if (msSqlDbType.Contains("DATE", StringComparison.OrdinalIgnoreCase)
+            || msSqlDbType.Contains("TIME", StringComparison.OrdinalIgnoreCase))
         {
             return "DateTime";
         }
 
-        if (msSqlDbType.Contains("VARBINARY")
-            || msSqlDbType.Contains("BINARY")
-            || msSqlDbType.Contains("TIMESTAMP")
-            || msSqlDbType.Contains("IMAGE"))
+        if (msSqlDbType.Contains("BINARY", StringComparison.OrdinalIgnoreCase)
+            || msSqlDbType.Contains("IMAGE", StringComparison.OrdinalIgnoreCase))
         {
             return "byte[]";
         }
 
-        if (msSqlDbType.Contains("REAL"))
+        if (msSqlDbType.Contains("REAL", StringComparison.OrdinalIgnoreCase))
         {
             return "float";
         }
 
-        if (msSqlDbType.Contains("FLOAT"))
+        if (msSqlDbType.Contains("FLOAT", StringComparison.OrdinalIgnoreCase))
         {
             return "double";
         }
 
-        if (msSqlDbType.Contains("VARIANT"))
+        if (msSqlDbType.Contains("VARIANT", StringComparison.OrdinalIgnoreCase))
         {
             return "object";
         }

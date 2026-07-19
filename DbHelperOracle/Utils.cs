@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using DbHelperOracle.Db;
 using Shared;
@@ -350,7 +351,7 @@ internal static partial class Utils
 
             if (i < list.Count)
             {
-                classData.Append(",");
+                classData.Append(',');
             }
         }
 
@@ -363,32 +364,32 @@ internal static partial class Utils
     {
         oracleType = oracleType.ToUpperInvariant();
 
-        if (oracleType.Contains("NUMBER(15.0)"))
+        if (oracleType.Contains("NUMBER(15.0)", StringComparison.OrdinalIgnoreCase))
         {
             return "long";
         }
 
-        if (oracleType.Contains("NUMBER(5.0)"))
+        if (oracleType.Contains("NUMBER(5.0)", StringComparison.OrdinalIgnoreCase))
         {
             return "int";
         }
 
-        if (oracleType.Contains("NUMBER"))
+        if (oracleType.Contains("NUMBER", StringComparison.OrdinalIgnoreCase))
         {
             return "long";
         }
 
-        if (oracleType.Contains("VARCHAR2") || oracleType.Contains("NVARCHAR2"))
+        if (oracleType.Contains("VARCHAR2", StringComparison.OrdinalIgnoreCase))
         {
             return "string";
         }
 
-        if (oracleType.Contains("TIMESTAMP") || oracleType.Contains("DATE"))
+        if (oracleType.Contains("TIMESTAMP", StringComparison.OrdinalIgnoreCase) || oracleType.Contains("DATE", StringComparison.OrdinalIgnoreCase))
         {
             return "DateTime";
         }
 
-        if (oracleType.Contains("BLOB") || oracleType.Contains("CLOB"))
+        if (oracleType.Contains("BLOB", StringComparison.OrdinalIgnoreCase) || oracleType.Contains("CLOB", StringComparison.OrdinalIgnoreCase))
         {
             return "byte[]";
         }

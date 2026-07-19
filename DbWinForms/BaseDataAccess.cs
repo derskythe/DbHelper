@@ -146,10 +146,7 @@ public abstract partial class BaseDataAccess
     {
         var parameterObject = new SqlParameter(parameter, type);
 
-        if (type == SqlDbType.NVarChar
-            || type == SqlDbType.VarChar
-            || type == SqlDbType.NText
-            || type == SqlDbType.Text)
+        if (type is SqlDbType.NVarChar or SqlDbType.VarChar or SqlDbType.NText or SqlDbType.Text)
         {
             parameterObject.Size = -1;
         }
@@ -209,7 +206,7 @@ public abstract partial class BaseDataAccess
         }
     }
 
-    protected async Task<T1> ExecuteNonQuery<T1>(
+    protected async Task<T1?> ExecuteNonQuery<T1>(
         string procedureName,
         IReadOnlyList<DbParameter> parameters,
         CommandType commandType = CommandType.StoredProcedure)
@@ -278,7 +275,7 @@ public abstract partial class BaseDataAccess
         }
     }
 
-    protected async Task<(T1, T2)> ExecuteNonQuery<T1, T2>(
+    protected async Task<(T1?, T2?)> ExecuteNonQuery<T1, T2>(
         string procedureName,
         List<DbParameter> parameters,
         CommandType commandType = CommandType.StoredProcedure)
@@ -357,7 +354,7 @@ public abstract partial class BaseDataAccess
         }
     }
 
-    protected async Task<(T1, T2, T3)> ExecuteNonQuery<T1, T2, T3>(
+    protected async Task<(T1?, T2?, T3?)> ExecuteNonQuery<T1, T2, T3>(
         string procedureName,
         List<DbParameter> parameters,
         CommandType commandType = CommandType.StoredProcedure)
@@ -446,7 +443,7 @@ public abstract partial class BaseDataAccess
         }
     }
 
-    protected async Task<(T1, T2, T3, T4, T5, T6)> ExecuteNonQuery<T1, T2, T3, T4, T5, T6>(
+    protected async Task<(T1?, T2?, T3?, T4?, T5?, T6?)> ExecuteNonQuery<T1, T2, T3, T4, T5, T6>(
         string procedureName,
         List<DbParameter> parameters,
         CommandType commandType = CommandType.StoredProcedure)
@@ -571,10 +568,10 @@ public abstract partial class BaseDataAccess
     /// <param name="procedureName">Name of the procedure.</param>
     /// <param name="parameters">The parameters.</param>
     /// <returns>System.Object.</returns>
-    protected async Task<T> ExecuteScalar<T>(string procedureName, IReadOnlyList<DbParameter> parameters)
+    protected async Task<T?> ExecuteScalar<T>(string procedureName, IReadOnlyList<DbParameter> parameters)
         where T : class
     {
-        T returnValue;
+        T? returnValue;
         SqlConnection? connection = null;
 
         try
@@ -591,7 +588,7 @@ public abstract partial class BaseDataAccess
                 cmd.Parameters.AddRange(parameters.ToArray());
             }
 
-            returnValue = (T)await cmd.ExecuteScalarAsync();
+            returnValue = (T?)await cmd.ExecuteScalarAsync();
         }
         catch (Exception ex)
         {
@@ -720,7 +717,7 @@ public abstract partial class BaseDataAccess
     /// <param name="paramList">The parameter list.</param>
     /// <param name="funcName">Name of the function.</param>
     /// <returns>Task&lt;T&gt;.</returns>
-    protected async Task<T> Single<T>(
+    protected async Task<T?> Single<T>(
         string sqlValue,
         IReadOnlyList<DbParameter> paramList,
         Func<DbDataReader, T> funcName)
@@ -740,10 +737,9 @@ public abstract partial class BaseDataAccess
         return default;
     }
 
-    private static T ExtractValue<T>(object value)
+    private static T? ExtractValue<T>(object? value)
     {
-        if (value == null
-            || value == DBNull.Value)
+        if (value == null || value == DBNull.Value)
         {
             return default;
         }

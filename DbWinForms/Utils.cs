@@ -127,7 +127,7 @@ internal static class Utils
     {
         for (var i = 0; i < dr.FieldCount; i++)
         {
-            if (dr.GetName(i).Equals(columnName, StringComparison.InvariantCultureIgnoreCase))
+            if (dr.GetName(i).Equals(columnName, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
